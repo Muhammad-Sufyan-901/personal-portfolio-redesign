@@ -9,8 +9,9 @@
 - A `logs/feature-changes/` entry exists for the audited work.
 
 ## Tooling (installed 2026-07-06)
-- **chrome-devtools MCP** (root `.mcp.json`) — performance traces/insights, screenshots, console/network for the Lighthouse ≥ 90 gate; drive the local Vite dev server with it during audits.
+- **chrome-devtools MCP** (root `.mcp.json`) — NOT exposed inside qa-auditor subagent threads; see [runtime-smoke-testing](runtime-smoke-testing.md) for the puppeteer-core fallback.
 - `/impeccable audit` and `/impeccable critique` — deterministic anti-slop design checks; usable as a pre-audit pass.
 
 ## Recurring issues (append as found)
-- (none yet — record repeat offenders here so future audits check them first)
+- Off-token default-Tailwind palette classes (`bg-slate-50` etc.) evade the hex grep — also run `grep -rnE "(bg|text|border)-(slate|gray|zinc|neutral|stone)-" src/components src/features` (found in RootLayout.tsx, 2026-07-07 ch.00 audit).
+- Overlay chapters: check underlying content is `inert` (not just `aria-hidden` on the overlay) — preloader left ThemeToggle tabbable behind the curtain (accepted for ch.00, fix due with Hero).

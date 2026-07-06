@@ -8,6 +8,7 @@ export { Link } from "./Link";
 export { MagneticButton } from "./MagneticButton";
 export { Marquee } from "./Marquee";
 export { ParallaxImage } from "./ParallaxImage";
+export { Preloader } from "./Preloader";
 export { RevealText } from "./RevealText";
 export { Text } from "./Text";
 export { ThemeToggle } from "./ThemeToggle";

@@ -19,7 +19,8 @@
 - `Marquee` — `{ children, speed? = 30 (s/loop), reverse?, pauseOnHover? = true, className? }`. Two `.marquee-track` flex tracks (2nd `aria-hidden`), `xPercent 0→-100` repeat -1; tween in a ref, paused/played by React pointer handlers.
 - `MagneticButton` — `{ children, className?, strength? = 12 }`. `gsap.quickTo` x/y on wrapper; `.magnetic-label` span counter-moves ×-0.35; spring back `elastic.out(1, 0.4)`.
 - `ChapterEyebrow` — `{ index, label, className? }`, NOT animated. `font-mono text-eyebrow`, `text-accent` index, muted em-dash + uppercase label.
-- `Cursor` — no props. 8px dot (`h-2 w-2 bg-paper`) + 40px ring (`h-10 w-10 border-paper/50 mix-blend-difference`); centered via `gsap.set({ xPercent:-50, yPercent:-50 })` (don't use Tailwind translate — gsap x/y would stack oddly). quickTo follow (dot 0.12s, ring 0.45s); `pointerover` → `closest("a, button, [data-cursor]")` → ring scale 1.6 (2.4 + label when `data-cursor` set). Toggles `cursor-none` on `<html>` while mounted+enabled. Returns null on coarse pointer / reduced motion. NOT yet mounted in `__root.tsx` — mounts with Preloader/Hero work.
+- `Cursor` — no props. 8px dot (`h-2 w-2 bg-paper`) + 40px ring (`h-10 w-10 border-paper/50 mix-blend-difference`); centered via `gsap.set({ xPercent:-50, yPercent:-50 })` (don't use Tailwind translate — gsap x/y would stack oddly). quickTo follow (dot 0.12s, ring 0.45s); `pointerover` → `closest("a, button, [data-cursor]")` → ring scale 1.6 (2.4 + label when `data-cursor` set). Toggles `cursor-none` on `<html>` while mounted+enabled. Returns null on coarse pointer / reduced motion. Mounted in `__root.tsx`.
+- `Preloader` — no props (name from `siteConfig.name` in `src/config/site.ts`; common/ must not import features). Timeline: name mask-reveal (yPercent 100→0) + counter proxy `{value}` 0→100 (1.8s, textContent in onUpdate) → wipe `yPercent: -100` 1.2s `power4.inOut` (≈ `--ease-inout`; no CustomEase registered). onComplete → `sessionStorage["preloader-done"]="1"` + `setPreloaderDone(true)` + unmount (null). Skipped-session/reduced motion: renders null, signals done in a layout effect. Scroll-locks via `lenis?.stop()/start()`. Mounted in `__root.tsx`.
 
 ## Motion tokens (design_system §7; live in src/styles/globals.css @theme)
 - `--ease-out` ≈ `power4.out` (the gsap default), `--ease-inout cubic-bezier(0.83,0,0.17,1)`; durations 0.4/0.8/1.2s; Lenis lerp 0.09.
@@ -27,9 +28,11 @@
 - Avoid the `Text` component for token type styles: its variant baseline (`text-base leading-relaxed text-foreground`) collides with custom `text-*` tokens in twMerge (unknown token classes get misclassified). Use `Box` + explicit classes.
 
 ## State & types
-- `src/store/useUIStore.ts` — zustand `{ preloaderDone, menuOpen, setPreloaderDone, setMenuOpen }` only.
+- `src/store/useUIStore.ts` — zustand `{ preloaderDone, menuOpen, setPreloaderDone, setMenuOpen }` only. `preloaderDone` is the Hero timeline's start cue.
 - `src/types/motion.ts` — `RevealMode = "lines"|"chars"|"words"`, `ParallaxConfig { from? = -8, to? = 8 }`.
-- Still to build (with their sections): `Preloader`, `PageTransition`, mounting Cursor/Preloader in `__root.tsx`.
+- `src/routes/__root.tsx` — wiring-only `RootComponent` = `<Preloader/> + <Cursor/> + <RootLayout/>`; local unexported component keeps react-refresh lint happy.
+- z-scale convention: page content ≤ z-50 < preloader `z-[90]` < cursor `z-[100]` (cursor always highest).
+- Still to build: `PageTransition` (only if multi-page ships).
 
 ## Tooling (installed 2026-07-06)
 - **context7 MCP** (root `.mcp.json`) — current GSAP/ScrollTrigger/Lenis docs; prefer over memory for API details. No GSAP-specific MCP exists (only obscure community ones — skipped).
