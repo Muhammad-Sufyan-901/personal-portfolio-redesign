@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This becomes **Muhammad Sufyan's portfolio** — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish only, not its color or content).
 
-- **Content source**: `.agents/context/product_requirements.md` is the *only* content source (profile, skills, work, education, awards, projects, contact) — content is transcribed from it, never invented; unknown fields are omitted, not fabricated. The old repo's content does not exist here.
+- **Content source**: `.agents/context/product_requirements.md` is the _only_ content source (profile, skills, work, education, awards, projects, contact) — content is transcribed from it, never invented; unknown fields are omitted, not fabricated. The old repo's content does not exist here.
 - **Design system**: `.agents/context/design_system.md` — palette, typography, tokens, motion system, per-chapter choreography. Warm ink `#0B0B0F` bg, warm paper `#ECE8E1` text, surgical brass accent.
 - **Stack additions over the current boilerplate**: Tailwind **v4** (`@theme`, no config file) instead of v3; motion via **GSAP** (+ ScrollTrigger) · **Lenis** · **split-type** · `@gsap/react` (`useGSAP`); TypeScript **strict**; contact form via EmailJS.
 - **Non-negotiable rules**: one GSAP source (`src/lib/gsap.ts`) and one Lenis owner (`src/providers/SmoothScrollProvider.tsx`) — no component imports `gsap/ScrollTrigger` directly; every animation runs in `useGSAP(() => {…}, { scope })` with a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden); design tokens only, no raw hex/magic px; `cn()` for conditional classes, `cva` for variants; no `any`; Lighthouse ≥ 90.
@@ -41,3 +41,20 @@ Feature-based structure with TanStack Router file-based routing. Path alias `@/`
 - **Common components (`src/components/common/`)**: `Box`, `Text`, `Heading`, `Container`, `Image`, `Link` wrap native elements (`div`, `p`/`span`, `h1`-`h6`, centered container, `img`, `a`) and are meant to replace raw HTML tags in feature/page code (see the `react/forbid-elements` rule in `.eslintrc`, banning bare `<div>` in favor of `<Box>` — note this legacy `.eslintrc` isn't wired into the ESLint 9 flat config in `eslint.config.js`, so it's a documented convention, not a lint-enforced one).
 - **`src/components/ui/`**: shadcn/ui-generated primitives only (config in `components.json`, style "new-york", Tailwind base color "neutral") — no business logic.
 - **Types vs schemas**: runtime validation lives in a feature's `schemas/` (Zod); static/compile-time types live in `types/`. Generic API envelope types (`ApiResponse<T>`, `ApiError`) live in `src/types/api.type.ts`.
+
+## AI agent operating rules (added)
+
+These apply to Claude Code and any AI agent working in this repo:
+
+- **Custom component primitives:** in feature/page/section TSX, never emit bare `div`/`p`/`span`/`h1`–`h6`/`a`/`img` — use `Box`/`Container`/`Text`/`Heading`/`Link`/`Image` from `@/components/common` (repo enforces `react/forbid-elements`; full mapping + example in `.claude/output-styles/custom-components.md`, also enforced via `.claude/rules/custom-components.md` and the subagents). Interactive controls → shadcn/ui. The `custom-components` output style is the project default (`outputStyle` in `.claude/settings.json`); note output styles don't reach subagents, so the rule + subagent instructions are the durable enforcement.
+- **Feature-change logs:** after creating/changing any feature/section/component, write a log to `logs/feature-changes/` (via `/log-change`) before reporting done, and commit it with the change. Logs are history only. See `.claude/rules/logging.md`.
+- **Agent memory = project knowledge:** `.claude/agent-memory/<agent>/MEMORY.md` (project scope, committed) holds durable knowledge (layout, custom-component API, conventions, decisions, DRY patterns). Read it before building; update it after any change that introduces/revises a pattern, decision, location, or reusable util (via `/update-memory`). Memory is knowledge, not a changelog. See `.claude/rules/memory-context.md`.
+- **Discover tooling:** use `/discover-tooling` to web-search for relevant Claude Code skills and MCP servers for this stack and propose the best fits (propose only; skills → `.claude/skills/`, MCP → `.mcp.json`).
+
+## .claude directory additions (per official docs)
+
+- `output-styles/custom-components.md` — house style forcing the common-component primitives (`keep-coding-instructions: true`).
+- `agent-memory/<agent>/MEMORY.md` — per-subagent durable project knowledge (committed).
+- `workflows/` — home for native `/workflows` JS scripts (see its README; generate `feature-done` + `section-cycle`).
+- `agents/` — subagents now set `memory: project` and are instructed to read/update memory + write logs.
+- New rules: `custom-components.md` (path-scoped), `logging.md`, `memory-context.md`. New skills: `log-change`, `update-memory`, `discover-tooling`.

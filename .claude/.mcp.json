@@ -1,0 +1,10 @@
+{
+  "//": "Rename to .mcp.json to enable. Run /discover-tooling to find more servers for this stack. Never commit secrets — use env vars.",
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "//": "Up-to-date docs for GSAP / TanStack Router / Tailwind v4 / shadcn while coding."
+    }
+  }
+}

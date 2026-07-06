@@ -16,18 +16,22 @@ Before any task, every agent MUST read: `context/product_requirements.md` (conte
 ## Team Roster & Execution Flow
 
 ### 1. @pm — Project Manager / Lead Architect
+
 - Analyzes the brief, writes `PLAN.md` (file tree + chapter build order + technique per chapter + data-mapping table), and surfaces the open decisions in `product_requirements.md §6`.
 - **MUST PAUSE and await explicit user approval** before handing off to engineers.
 
 ### 2. @motion — Motion Engineer
+
 - Owns the GSAP + Lenis layer: `lib/gsap.ts`, `SmoothScrollProvider`, and the motion primitives (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `Cursor`, `Preloader`).
 - Guarantees Lenis ↔ ScrollTrigger sync + a `prefers-reduced-motion` path for every effect. NO business layout decisions.
 
 ### 3. @frontend — Frontend Engineer
+
 - Builds chapter sections and components from the design system, wiring in the motion primitives from @motion. Transcribes content constants from the PRD.
 - MUST use design tokens (no raw hex), `cn()` + `cva`, feature isolation.
 
 ### 4. @qa — Quality Assurance / Auditor
+
 - Audits type-safety, accessibility, reduced-motion, performance (Lighthouse ≥ 90), and cross-feature import hygiene. Writes a physical log at `.artifacts/qa-log.md`.
 - Zero tolerance for TS errors, raw hex, or cross-feature imports.
 
@@ -59,3 +63,21 @@ Claude Code also auto-loads path-scoped `.claude/rules/*`, subagents `.claude/ag
 3. `prefers-reduced-motion` is a first-class path for every effect.
 4. No cross-feature imports; promote shared code up.
 5. TypeScript strict, no `any`; design tokens only, no raw hex in components.
+
+## Post-change discipline (added — all agents)
+
+Every time an agent creates or changes a feature/section/component:
+
+1. **Log it** → append `logs/feature-changes/<YYYY-MM-DD>-<slug>.md` (history only). Claude Code: `/log-change`.
+2. **Update knowledge** → revise the relevant `.claude/agent-memory/<agent>/MEMORY.md` with any new durable pattern/decision/location/util (knowledge, not history). Claude Code: `/update-memory`.
+3. Commit the log + memory update together with the change.
+
+Agent memory (`.claude/agent-memory/`, project scope, committed) is the shared **alternative knowledge base** that keeps generated code clean, DRY, and on-context — read it before building, reuse what it documents.
+
+## Component house style (added — @frontend & @motion)
+
+Feature/page/section JSX uses the custom primitives from `@/components/common` (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`) — never bare `div`/`p`/`span`/`h*`/`a`/`img` (repo enforces `react/forbid-elements`). Interactive controls → shadcn/ui. Enforced by `.claude/output-styles/custom-components.md` (main loop) + `.claude/rules/custom-components.md` + subagent instructions (subagents don't inherit output styles).
+
+## Tooling discovery (added)
+
+`/discover-tooling` — web-search for relevant Claude Code skills + MCP servers for this stack; propose the best (propose only, never auto-install). Skills → `.claude/skills/`, MCP → `.mcp.json`.
