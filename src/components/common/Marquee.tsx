@@ -28,7 +28,7 @@ export function Marquee({ children, speed = 30, reverse = false, pauseOnHover = 
         { xPercent: reverse ? 0 : -100, duration: speed, ease: "none", repeat: -1 },
       );
     },
-    { scope: ref, dependencies: [prefersReducedMotion, speed, reverse] },
+    { scope: ref, dependencies: [prefersReducedMotion, speed, reverse], revertOnUpdate: true },
   );
 
   if (prefersReducedMotion) {

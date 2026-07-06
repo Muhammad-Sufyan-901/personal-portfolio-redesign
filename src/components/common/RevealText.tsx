@@ -67,7 +67,7 @@ export function RevealText({ children, mode = "lines", as = "div", className, de
 
       return () => split.revert();
     },
-    { scope: ref, dependencies: [prefersReducedMotion, mode, delay, stagger] },
+    { scope: ref, dependencies: [prefersReducedMotion, mode, delay, stagger], revertOnUpdate: true },
   );
 
   return (
