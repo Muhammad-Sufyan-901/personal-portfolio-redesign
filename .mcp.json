@@ -1,0 +1,21 @@
+{
+  "//": "Project MCP servers. Never commit secrets — use env vars. Optional: set CONTEXT7_API_KEY in your shell for higher Context7 rate limits (free key at context7.com/dashboard).",
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "//": "Up-to-date docs for GSAP / TanStack Router / Tailwind v4 / shadcn while coding."
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "//": "Official Google. Performance traces, Lighthouse-style insights, screenshots, console/network — used by /qa-audit for the Lighthouse >= 90 gate."
+    },
+    "shadcn": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"],
+      "//": "Official shadcn registry MCP — browse/search/install components; pairs with /add-shadcn."
+    }
+  }
+}

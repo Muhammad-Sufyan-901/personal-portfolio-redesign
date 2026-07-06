@@ -15,5 +15,9 @@
 ## Primitives to own (in components/common)
 `RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `Cursor`, `Preloader`. JSX that renders layout uses `@/components/common` (`Box` etc.), not bare tags.
 
+## Tooling (installed 2026-07-06)
+- **context7 MCP** (root `.mcp.json`) — current GSAP/ScrollTrigger/Lenis docs; prefer over memory for API details. No GSAP-specific MCP exists (only obscure community ones — skipped).
+- **design-taste-frontend** skill (`.claude/skills/design-taste-frontend/`) — MOTION_INTENSITY/VARIANCE/DENSITY dials + GSAP patterns; **impeccable** has `/impeccable animate` for motion passes.
+
 ## Decisions log (durable facts only)
 - (none yet)

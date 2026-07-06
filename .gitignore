@@ -40,6 +40,8 @@ dist-ssr
 
 # Raw Reference Capture (video/frames can be large; re-derivable, not source)
 reference/
+# ...but the impeccable skill's reference docs are part of the skill, not captures
+!.claude/skills/impeccable/reference/
 
 # Agent Markdown
 AGENT_NOTES.md
