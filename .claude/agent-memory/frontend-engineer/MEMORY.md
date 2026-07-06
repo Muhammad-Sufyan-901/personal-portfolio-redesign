@@ -5,7 +5,7 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 
 ## Actual repo layout (boilerplate removed 2026-07-06 — clean base)
 - Auth, dashboard, `_auth`/`_protected` routes, `middlewares/`, `store/`, `lib/axios.ts`, `config/env.ts`, `models/`, `types/api.type.ts` are **gone**. Routing is only `/` → `features/home/pages/HomePage.tsx` (via `routes/index.tsx`; `routes/__root.tsx` → `RootLayout`).
-- Home feature: `features/home/{pages,components,data,types}` — `components/data/types` are empty (`.gitkeep`), ready for the rebuild. HomePage is a minimal placeholder shell.
+- Home feature: `features/home/{pages,components,data,types}` — `data/` now holds PRD constants (see content-data-layer memory); `components/types` still empty (`.gitkeep`). HomePage is a minimal placeholder shell.
 - Global primitives in `src/components/common` (has a barrel `index.ts`); shadcn in `src/components/ui` — **only `button.tsx` + `tooltip.tsx` remain**; add others via `npx shadcn add` / `/add-shadcn`. Utils in `src/lib` (`cn()` in `src/lib/utils.ts`). Path alias `@/` → `src/`.
 - Providers: `main.tsx` → `ThemeProvider` → `TooltipProvider` → `RouterProvider`. No react-query. `routeTree.gen.ts` auto-regenerates via the router Vite plugin on dev/build — never hand-edit.
 - Deps removed with the boilerplate (reinstall only if actually needed): axios, js-cookie, zod, react-hook-form, @hookform/resolvers, zustand, @tanstack/react-query(+devtools), recharts, @tanstack/react-table, date-fns, embla-carousel-react, input-otp, cmdk, vaul, react-day-picker, react-resizable-panels, sonner, next-themes.
@@ -29,6 +29,9 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 - MCP servers in root `.mcp.json`: **context7** (live GSAP/TanStack/Tailwind v4/shadcn docs — prefer over memory for API syntax), **shadcn** (official registry — search/install components, pairs with `/add-shadcn`), **chrome-devtools** (QA).
 - Design-quality skills: **impeccable** (`.claude/skills/impeccable/`, `/impeccable <craft|polish|audit|…>`; run `/impeccable init` first use) and **design-taste-frontend** (`.claude/skills/design-taste-frontend/`, anti-slop dials for portfolios). Use during section builds, not just review.
 - Prettier is a devDependency; PostToolUse hook auto-formats every Edit/Write (`.claude/hooks/format.sh`, respects `.prettierrc`).
+
+## Memories
+- [Content data layer](content-data-layer.md) — PRD constants: `features/home/data/*.data.ts`, `src/constants/{projects.data,navigation}.ts`, `src/config/{site,env}.ts`, typed vs `src/types/portfolio.ts`. Reuse, never re-transcribe.
 
 ## Decisions log (durable facts only)
 - shadcn `ui/` kept minimal (button, tooltip); `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**` (shadcn exports cva variants alongside components).
