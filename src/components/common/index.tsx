@@ -1,7 +1,13 @@
 export { Box } from "./Box";
+export { ChapterEyebrow } from "./ChapterEyebrow";
 export { Container } from "./Container";
+export { Cursor } from "./Cursor";
 export { Heading } from "./Heading";
 export { Image } from "./Image";
 export { Link } from "./Link";
+export { MagneticButton } from "./MagneticButton";
+export { Marquee } from "./Marquee";
+export { ParallaxImage } from "./ParallaxImage";
+export { RevealText } from "./RevealText";
 export { Text } from "./Text";
 export { ThemeToggle } from "./ThemeToggle";
