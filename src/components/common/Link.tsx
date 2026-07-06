@@ -1,5 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "@tanstack/react-router";
+import { useLenis } from "@/hooks/useLenis";
 
 // ============================================
 // LINK COMPONENT (Next.js Style)
@@ -9,35 +10,19 @@ interface LinkOwnProps {
   href: string;
   children: React.ReactNode;
   className?: string;
-  prefetch?: boolean;
   replace?: boolean;
   scroll?: boolean;
-  shallow?: boolean;
   target?: "_blank" | "_self" | "_parent" | "_top";
   rel?: string;
-  locale?: string;
-  passHref?: boolean;
 }
 
 type LinkProps = LinkOwnProps & Omit<React.ComponentPropsWithRef<"a">, keyof LinkOwnProps | "href">;
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  (
-    {
-      href,
-      children,
-      className,
-      prefetch = false,
-      replace = false,
-      scroll = true,
-      target,
-      rel,
-      onClick,
-      onMouseEnter,
-      ...restProps
-    },
-    ref,
-  ) => {
+  ({ href, children, className, replace = false, scroll = true, target, rel, onClick, ...restProps }, ref) => {
+    // Lenis owns smooth scrolling; null under prefers-reduced-motion (native, instant).
+    const lenis = useLenis();
+
     // Check if link is external
     const isExternal = href.startsWith("http") || href.startsWith("//");
     const isHash = href.startsWith("#");
@@ -55,7 +40,11 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         const targetId = href.substring(1);
         const element = document.getElementById(targetId);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (lenis) {
+            lenis.scrollTo(element);
+          } else {
+            element.scrollIntoView({ block: "start" });
+          }
           // Update URL without page reload
           window.history.pushState({}, "", href);
         }
@@ -65,23 +54,17 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
       if (!isExternal && !isHash && scroll && !e.defaultPrevented) {
         // Schedule scroll to top after navigation completes
         setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (lenis) {
+            lenis.scrollTo(0);
+          } else {
+            window.scrollTo(0, 0);
+          }
         }, 0);
       }
     };
 
     // Auto-set rel for external links
     const externalRel = isExternal && target === "_blank" ? rel || "noopener noreferrer" : rel;
-
-    // Prefetch logic (simulated - in real app you'd use React Router's prefetch or custom logic)
-    const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      onMouseEnter?.(e);
-      if (prefetch && !isExternal) {
-        // Prefetch logic here
-        // In production, you might use React Router's future.prefetch
-        console.log(`Prefetching: ${href}`);
-      }
-    };
 
     // External links or special protocols (mailto, tel)
     if (isExternal || isMailTo || isTel) {
@@ -93,7 +76,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
           target={target}
           rel={externalRel}
           onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
           {...restProps}
         >
           {children}
@@ -109,7 +91,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
           href={href}
           className={className}
           onClick={handleClick}
-          onMouseEnter={handleMouseEnter}
           {...restProps}
         >
           {children}
@@ -125,7 +106,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         className={className}
         replace={replace}
         onClick={handleClick as unknown as React.MouseEventHandler<HTMLAnchorElement>}
-        onMouseEnter={handleMouseEnter as unknown as React.MouseEventHandler<HTMLAnchorElement>}
         {...(restProps as unknown as Record<string, unknown>)}
       >
         {children}

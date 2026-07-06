@@ -125,7 +125,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
         />
 
         {/* Loading skeleton */}
-        {isLoading && placeholder === "empty" && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+        {isLoading && placeholder === "empty" && <div className="absolute inset-0 bg-raised animate-pulse" />}
       </div>
     );
   },

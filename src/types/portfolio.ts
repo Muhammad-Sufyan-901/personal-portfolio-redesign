@@ -44,6 +44,8 @@ export interface Profile {
   name: string;
   role: string;
   location: string;
+  /** One-line hero tagline — re-voiced from the bio (facts fixed). */
+  tagline: string;
   bio: string;
   stats: { label: string; value: string }[];
   cvUrl: string;

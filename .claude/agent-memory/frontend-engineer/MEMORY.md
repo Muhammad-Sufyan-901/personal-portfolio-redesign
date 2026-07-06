@@ -3,12 +3,13 @@
 ## Project
 Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (GSAP + Lenis). Reference feel `lukebaffait.fr` (motion only). Content source = `.agents/context/product_requirements.md`.
 
-## Actual repo layout (boilerplate removed 2026-07-06 — clean base)
-- Auth, dashboard, `_auth`/`_protected` routes, `middlewares/`, `store/`, `lib/axios.ts`, `config/env.ts`, `models/`, `types/api.type.ts` are **gone**. Routing is only `/` → `features/home/pages/HomePage.tsx` (via `routes/index.tsx`; `routes/__root.tsx` → `RootLayout`).
-- Home feature: `features/home/{pages,components,data,types}` — `data/` now holds PRD constants (see content-data-layer memory); `components/types` still empty (`.gitkeep`). HomePage is a minimal placeholder shell.
-- Global primitives in `src/components/common` (has a barrel `index.ts`); shadcn in `src/components/ui` — **only `button.tsx` + `tooltip.tsx` remain**; add others via `npx shadcn add` / `/add-shadcn`. Utils in `src/lib` (`cn()` in `src/lib/utils.ts`). Path alias `@/` → `src/`.
-- Providers: `main.tsx` → `ThemeProvider` → `TooltipProvider` → `RouterProvider`. No react-query. `routeTree.gen.ts` auto-regenerates via the router Vite plugin on dev/build — never hand-edit.
-- Deps removed with the boilerplate (reinstall only if actually needed): axios, js-cookie, zod, react-hook-form, @hookform/resolvers, zustand, @tanstack/react-query(+devtools), recharts, @tanstack/react-table, date-fns, embla-carousel-react, input-otp, cmdk, vaul, react-day-picker, react-resizable-panels, sonner, next-themes.
+## Actual repo layout (bootstrap landed 2026-07-07 — tokens + motion foundation IN)
+- Routing is only `/` → `features/home/pages/HomePage.tsx` (default export, re-exported by `features/home/index.ts`); `routes/__root.tsx` mounts `<Preloader /> <Cursor /> <RootLayout />`.
+- **Design tokens are applied** in `src/styles/globals.css` (`@theme inline`): palette (`ink/surface/raised/paper/muted/faint/line`), **accent = COBALT `#3B5BFF`** (decided; brass not used), fluid type scale (`text-display/chapter/statement/item/body/eyebrow/index/meta`), `spacing-page-x`, `spacing-section`, motion vars. Light mode exists via `.light` var flips; shadcn compat tokens remapped onto the palette (`text-foreground` ≡ paper). Fonts bundled: Fraunces Variable + JetBrains Mono (@fontsource), General Sans (local woff2).
+- **Motion stack installed**: gsap + @gsap/react, lenis, split-type, zustand. `src/store/useUIStore.ts` (`preloaderDone`, `menuOpen` + setters), hooks `useLenis`/`usePrefersReducedMotion`/`useIsomorphicLayoutEffect`, `src/lib/gsap.ts`.
+- Home feature: `features/home/{pages,sections,components,data,types}` — chapters go in `sections/` (HeroSection done); `data/` holds PRD constants (see content-data-layer memory).
+- Global primitives + motion components in `src/components/common` (barrel `index.tsx`): Box, Container, Text, Heading, Link, Image, ThemeToggle, ChapterEyebrow, Cursor, MagneticButton, Marquee, ParallaxImage, Preloader, RevealText. shadcn in `src/components/ui` (button, tooltip). Layout chrome in `src/components/layouts/` (RootLayout, Header, MobileMenu).
+- Providers: `main.tsx` → `ThemeProvider` → `TooltipProvider` → `RouterProvider`. `routeTree.gen.ts` auto-regenerates — never hand-edit.
 
 ## Custom primitives (USE THESE — never bare HTML)
 - `Box` — polymorphic; `<Box as="section" className=…>`. Replaces div/section/article/header/footer/nav/ul/li.
@@ -22,7 +23,9 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 
 ## Conventions / DRY
 - TS strict, no `any`. `cn()` for conditional classes, `cva` for variants. Functional components, named exports.
-- Design tokens only (Tailwind v4 `@theme`), no raw hex/px. (Tokens to be defined in `src/styles/globals.css` per design_system §9.)
+- Design tokens only (Tailwind v4 `@theme` in `src/styles/globals.css`), no raw hex/px. `h-18` = 72px header height (v4 dynamic spacing).
+- **`cn()` is an extended twMerge** (`src/lib/utils.ts`): custom `--text-*` tokens are registered as font-size class groups — plain twMerge classifies `text-body`/`text-meta` as *colors* and silently drops them next to `text-muted`. **Any new `--text-*` token must be added to that classGroups list.** Note: `Box`/`Link` pass className raw (no cn); `Text`/`Heading` cn against their variant classes.
+- `Heading variant="display"` = design-system display style (`font-display font-normal text-display`) — use it for hero/footer name, don't restyle by hand. Other Heading/Text variants still carry boilerplate sizes; override via className (cn merge now safe).
 - Reuse existing common components + data types before writing new ones. If you add a shared primitive/util, record it here.
 
 ## Tooling (installed 2026-07-06)
@@ -32,6 +35,7 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 
 ## Memories
 - [Content data layer](content-data-layer.md) — PRD constants: `features/home/data/*.data.ts`, `src/constants/{projects.data,navigation}.ts`, `src/config/{site,env}.ts`, typed vs `src/types/portfolio.ts`. Reuse, never re-transcribe.
+- [Site chrome](site-chrome.md) — Header/MobileMenu/RootLayout frame, z-scale 60/80/90/100, preloader-inert pattern, hero structure + section conventions for chapters 02–06.
 
 ## Decisions log (durable facts only)
 - shadcn `ui/` kept minimal (button, tooltip); `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**` (shadcn exports cva variants alongside components).

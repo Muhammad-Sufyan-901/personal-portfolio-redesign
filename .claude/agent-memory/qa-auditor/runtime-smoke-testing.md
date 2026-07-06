@@ -13,3 +13,8 @@ chrome-devtools MCP is configured in root `.mcp.json` but its tools are **not ex
 4. Capture `page.on("console"/"pageerror")`; assert DOM state with `page.evaluate`.
 5. Dev build runs StrictMode, so double-mount behavior is exercised for free.
 6. `pkill -f "vite.*--port 5199"` when done (background task reports exit 143 — expected).
+
+Gotchas found 2026-07-07 (ch.01):
+- While the site has few chapters the page can be exactly 100vh → nothing scrolls and `ScrollTrigger end:"max"` resolves to 0 at mount. To test scroll-linked UI: inject a tall spacer via `evaluate`, then do a REAL `page.setViewport` resize (fires ScrollTrigger autoRefresh), wait ~800ms (Lenis re-measures via ResizeObserver) before `page.mouse.wheel`. Wheeling immediately after DOM injection gets clamped to 0 by Lenis's stale limit — harness artifact, not an app bug.
+- `lenis-stopped` class on `<html>` is the tell for a stuck `lenis.stop()` lock.
+- Assert focus containment by Tab-looping and checking `dialog.contains(document.activeElement)` — note the TanStack devtools button sits outside any app wrapper and is a legit escape target in dev.
