@@ -3,10 +3,12 @@
 ## Project
 Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (GSAP + Lenis). Reference feel `lukebaffait.fr` (motion only). Content source = `.agents/context/product_requirements.md`.
 
-## Actual repo layout (don't blend with unrelated features)
-- `src/` is a React Enterprise Boilerplate (auth + dashboard demo). **Portfolio work lives in `src/features/home/` only** — do NOT modify `features/auth`, `features/dashboard`, `middlewares/`, or protected routes unless explicitly asked.
-- Home feature: `features/home/{pages,components,data,types}`. Content in `features/home/data/*.data.ts`; types in `features/home/types/*.type.ts`; components PascalCase (`HeroSection.tsx`).
-- Global primitives in `src/components/common`; shadcn in `src/components/ui`; utils in `src/lib` (`cn()` in `src/lib/utils.ts`). Path alias `@/` → `src/`.
+## Actual repo layout (boilerplate removed 2026-07-06 — clean base)
+- Auth, dashboard, `_auth`/`_protected` routes, `middlewares/`, `store/`, `lib/axios.ts`, `config/env.ts`, `models/`, `types/api.type.ts` are **gone**. Routing is only `/` → `features/home/pages/HomePage.tsx` (via `routes/index.tsx`; `routes/__root.tsx` → `RootLayout`).
+- Home feature: `features/home/{pages,components,data,types}` — `components/data/types` are empty (`.gitkeep`), ready for the rebuild. HomePage is a minimal placeholder shell.
+- Global primitives in `src/components/common` (has a barrel `index.ts`); shadcn in `src/components/ui` — **only `button.tsx` + `tooltip.tsx` remain**; add others via `npx shadcn add` / `/add-shadcn`. Utils in `src/lib` (`cn()` in `src/lib/utils.ts`). Path alias `@/` → `src/`.
+- Providers: `main.tsx` → `ThemeProvider` → `TooltipProvider` → `RouterProvider`. No react-query. `routeTree.gen.ts` auto-regenerates via the router Vite plugin on dev/build — never hand-edit.
+- Deps removed with the boilerplate (reinstall only if actually needed): axios, js-cookie, zod, react-hook-form, @hookform/resolvers, zustand, @tanstack/react-query(+devtools), recharts, @tanstack/react-table, date-fns, embla-carousel-react, input-otp, cmdk, vaul, react-day-picker, react-resizable-panels, sonner, next-themes.
 
 ## Custom primitives (USE THESE — never bare HTML)
 - `Box` — polymorphic; `<Box as="section" className=…>`. Replaces div/section/article/header/footer/nav/ul/li.
@@ -29,4 +31,5 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 - Prettier is a devDependency; PostToolUse hook auto-formats every Edit/Write (`.claude/hooks/format.sh`, respects `.prettierrc`).
 
 ## Decisions log (durable facts only)
-- (none yet — add design/architecture decisions as they're approved, e.g. chosen accent, single vs multi-page)
+- shadcn `ui/` kept minimal (button, tooltip); `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**` (shadcn exports cva variants alongside components).
+- Portfolio is static + EmailJS client-side — no axios/API layer; don't reintroduce an HTTP layer.
