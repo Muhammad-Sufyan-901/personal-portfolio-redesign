@@ -49,6 +49,8 @@ export interface Profile {
   bio: string;
   stats: { label: string; value: string }[];
   cvUrl: string;
+  /** Chapter 02 statements — re-voiced from the bio (facts fixed). */
+  manifesto: { lines: string[]; focalWord: string };
 }
 
 export interface ContactChannel {

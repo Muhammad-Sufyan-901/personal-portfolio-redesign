@@ -1,5 +1,6 @@
 import { Box } from "@/components/common";
 import { HeroSection } from "@/features/home/sections/HeroSection";
+import { ManifestoSection } from "@/features/home/sections/ManifestoSection";
 
 export default function HomePage() {
   return (
@@ -8,6 +9,7 @@ export default function HomePage() {
       id="main"
     >
       <HeroSection />
+      <ManifestoSection />
     </Box>
   );
 }

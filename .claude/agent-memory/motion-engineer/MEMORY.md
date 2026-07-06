@@ -28,7 +28,9 @@
 - **Header scroll state** (`src/components/layouts/Header.tsx`): `ScrollTrigger.create({ start: 40, end: "max", onToggle })` toggling `["bg-ink","border-line"]`; header base = `border-b border-transparent transition-colors`, NO `bg-transparent` class (class order can't beat CSS order). Reduced motion → solid always.
 - **MobileMenu reveal** (`src/components/layouts/MobileMenu.tsx`): renders null closed; useGSAP `dependencies: [menuOpen]` runs `gsap.from(".menu-link", { yPercent: 100, stagger: 0.06 })`; `li` wrappers `overflow-hidden`. Close is instant unmount — deliberate.
 - Header z-[60] < menu z-[80] (fits z-scale below).
-- TODO when chapters 02–06 exist: scroll-spy brass active-nav dot (needs section anchors; deliberately not built with Hero).
+- **Manifesto scroll-fill** (`src/features/home/sections/ManifestoSection.tsx`): words PRE-SPLIT IN JSX (`line.split(" ")` → spans) — static data needs no split-type, so no revert and no re-split-on-resize problem (React owns markup, natural reflow). One `gsap.fromTo(".manifesto-word", { opacity: 0.15 } → { opacity: 1, duration: 0.4, stagger: 0.2, ease: "none" })` with `scrollTrigger: { start: "top top", end: "+=175%", pin: true, scrub: true, invalidateOnRefresh: true }`. Opacity-only fill ≈ faint→paper color tween (one property). Focal word: `text-accent` + static `bg-accent-tint -mx-1 px-1 rounded` wash (negative margin cancels pad — no layout shift), fades in with word opacity. Data: `profile.manifesto { lines, focalWord }` typed on `Profile`.
+- **Pin + Lenis**: Lenis drives native window scroll (no transform mode), so ScrollTrigger pins/fixed positioning just work; no `anticipatePin`, no manual resize listener needed.
+- TODO when chapters 03–06 exist: scroll-spy brass active-nav dot (needs section anchors; deliberately not built with Hero).
 
 ## Motion tokens (design_system §7; live in src/styles/globals.css @theme)
 - `--ease-out` ≈ `power4.out` (the gsap default), `--ease-inout cubic-bezier(0.83,0,0.17,1)`; durations 0.4/0.8/1.2s; Lenis lerp 0.09.

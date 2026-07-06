@@ -13,4 +13,12 @@ export const profile: Profile = {
     { value: "10", label: "Successful Projects" },
   ],
   cvUrl: "/assets/pdf/Muhammad Sufyan CV.pdf",
+  manifesto: {
+    lines: [
+      "I'm a developer across frontend, mobile and the web.",
+      "Always learning something new, building digital applications that help many people.",
+      "I work independently or in a team.",
+    ],
+    focalWord: "people",
+  },
 };
