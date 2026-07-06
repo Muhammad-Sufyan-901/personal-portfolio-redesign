@@ -1,172 +1,64 @@
-# AI Agent Instruction Context
+# GEMINI.md — AI Agent Context
 
-## Project Overview
+Project context for Gemini CLI. This mirrors `CLAUDE.md`; deep specs live in `.agents/context/*` — summarize from here, read there for depth.
 
-- **Name:** React Enterprise Boilerplate
-- **Architecture:** Feature-Based Architecture
-- **Language:** TypeScript (Strict Mode)
-- **Build Tool:** Vite
+## Repo state
 
-## Tech Stack
+This is **Muhammad Sufyan's portfolio** — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish only, not its color or content). The old enterprise boilerplate (auth, dashboard, axios, Zustand) was removed; `src/` is now a minimal shell: a single `/` route rendering a placeholder `HomePage`, common-component primitives, a theme provider, and two shadcn primitives (button, tooltip). The redesign is built chapter by chapter per the spec in `.agents/`.
 
-- **Framework:** React 18 (Functional Components only)
-- **Routing:** TanStack Router (File-based, 100% type-safe)
-- **Server State:** TanStack Query v5 (React Query)
-- **Client State:** Zustand
-- **Styling:** Tailwind CSS + Shadcn UI
-- **Forms:** React Hook Form + Zod + @hookform/resolvers
-- **HTTP Client:** Axios
+## Tech stack
 
-## Strict Architecture Rules & Best Practices
+- **React 19** (functional components only) + **TypeScript strict** (no `any`) on **Vite 7**
+- **TanStack Router** — file-based routing, registry-only route files
+- **Tailwind CSS v4** (`@theme` design tokens, no config file) + **shadcn/ui**
+- Motion (installed at redesign bootstrap, not yet present): **GSAP** + ScrollTrigger · **Lenis** · **split-type** · `@gsap/react` (`useGSAP`)
+- Contact form via **EmailJS** — there is no backend
 
-### 1. Feature-Based Isolation
+## Commands
 
-- NEVER place domain-specific logic, pages, or complex UI in `src/components` or `src/routes`.
-- `src/components/ui/` is strictly reserved for "dumb" Shadcn UI generated components.
-- Group everything by business domain inside `src/features/[feature-name]/` (e.g., `auth`, `dashboard`). A feature folder should contain its own `api`, `layouts`, `pages`, `types`, and `components`.
+- `npm run dev` — Vite dev server
+- `npm run build` — typecheck (`tsc -b`) + production build
+- `npm run lint` — ESLint (flat config)
+- `npm run preview` — preview a production build
+- `npx tsc --noEmit` — typecheck only
+- No test framework is configured.
 
-### 2. STRICT Routing & Middleware Enforcement (The Registry Pattern)
+## Redesign context
 
-- **ZERO UI IN ROUTES:** Files inside `src/routes/` MUST NOT contain any component definitions (JSX/TSX blocks). They are strictly "Registry Files". They must only import and assign a `component` from `src/features/...`.
-- **ZERO MIDDLEWARE IN ROUTES:** Do not write inline authentication or validation logic inside the `beforeLoad` function in route files. All middleware logic must be extracted to standalone functions inside `src/middlewares/` and imported into the route files.
-- **Example of CORRECT route file (`src/routes/auth/login.tsx`):**
+- **Content source**: `.agents/context/product_requirements.md` is the *only* content source — transcribe, never invent; omit unknown fields.
+- **Design system**: `.agents/context/design_system.md` — warm ink `#0B0B0F` bg, warm paper `#ECE8E1` text, brass accent; tokens, typography, per-chapter motion choreography.
+- **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer`. Sections go in `src/features/home/sections/*`, content in `src/features/home/constants/*` typed against `src/types/portfolio.ts`.
+- **Non-negotiable motion rules**: one GSAP source (`src/lib/gsap.ts`), one Lenis owner (`src/providers/SmoothScrollProvider.tsx`) — no component imports `gsap/ScrollTrigger` directly; every animation runs in `useGSAP(() => {…}, { scope })` with a `prefers-reduced-motion` fallback; design tokens only — no raw hex or magic px; `cn()` for conditional classes, `cva` for variants; Lighthouse ≥ 90.
+- **Workflow**: plan (`PLAN.md`) → **stop for approval** → bootstrap tokens/motion → build one chapter at a time → QA audit per chapter and at the end. See `AGENTS.md` and `.agents/workflows/`.
 
-  ```tsx
-  import { createFileRoute } from "@tanstack/react-router";
-  import { LoginPage } from "@/features/auth/pages/LoginPage";
+## Architecture (current)
 
-  // Middleware should be imported, not written inline
-  import { requireGuest } from "@/middlewares/authMiddleware";
+Feature-based structure. Path alias `@/` → `src/`.
 
-  export const Route = createFileRoute("/auth/login")({
-    beforeLoad: () => requireGuest(),
-    component: LoginPage,
-  });
-  ```
+- **`src/routes/`**: registry files only — no JSX; they wire a `component` imported from `src/features/**`. `routeTree.gen.ts` is auto-generated — don't hand-edit.
+- **`src/features/home/`**: the only feature; it owns the whole page (`pages/HomePage.tsx` placeholder; `components/`, `data/`, `types/` empty until chapters are built). Features never import from other features; shared code goes to `components/common`, `lib`, `hooks`, or `types`.
+- **State**: static site — no server-state or global store. Theme via `src/providers/theme-provider.tsx` + `src/hooks/useTheme.ts`; otherwise local `useState`.
+- **`src/components/ui/`**: shadcn/ui generated primitives only (currently button, tooltip) — no business logic.
+- **`src/lib/utils.ts`**: `cn()` helper for class merging.
 
-### 3. STRICT State Management Rules
+## Component primitives (mandatory)
 
-- **Server State (API Data):** MUST use TanStack Query. NEVER use Zustand or React's `useState` to permanently store API fetch results. Let TanStack Query exclusively handle caching, data synchronization, and loading/error states.
-- **Client State (UI State):** MUST use Zustand. Use it exclusively for global UI state that needs to persist across renders (e.g., theme toggle, sidebar open/closed, multi-step form drafts). Store Zustand files inside `src/store/`. Do NOT put API fetching logic or server data here.
-- **Local State:** Use React's built-in `useState` ONLY for state that is strictly isolated and relevant to a single component.
+Never emit raw HTML elements in feature/page/section code — use the polymorphic primitives from `@/components/common`:
 
-### 4. STRICT API Layer (TanStack Query)
+| Raw element | Use instead |
+| --- | --- |
+| `div`, `section`, `article`, `header`, `footer`, `main`, `nav`, `ul`, `li` | `<Box as="section">` |
+| centered max-width wrapper | `<Container maxWidth="7xl">` |
+| `p`, `span` | `<Text as="p" variant="default">` |
+| `h1`–`h6` | `<Heading level={2}>` |
+| `a` / router link | `<Link href="/x">` |
+| `img` | `<Image src alt width height />` |
 
-- **Location:** `src/features/[feature-name]/api/`.
-- **Pattern:** Use standard TanStack Query hooks (like `useQuery`, `useMutation`) to define data fetching and mutations.
-- **Type Safety:** Ensure all API functions and fetchers return strictly typed data interfaces.
+Interactive controls (buttons, inputs, dialogs) → shadcn/ui, not raw elements. Full mapping and example: `.claude/output-styles/custom-components.md`.
 
-### 5. STRICT Form Handling & Typing
+## Working rules
 
-- **Separation of Types and Schemas:** - Put runtime validation schemas (Zod) inside `src/features/[feature-name]/schemas/`.
-  - Put compile-time static types and API response interfaces inside `src/features/[feature-name]/types/`.
-- **Resolver Usage:** All forms MUST use `react-hook-form` connected with `@hookform/resolvers/zod`.
-- **No Inline Validation:** Do not write manual validation logic inside the component JSX.
-
-### 6. STRICT Component Hierarchy
-
-- **`src/components/ui/`**: Only Shadcn generated components. No business logic, no state, no API calls.
-- **`src/components/common/`**: Common components used across the app. MUST replace standard HTML elements:
-  - `Box` -> `div`, `section`, `article`, `span`, etc
-  - `Text` -> `p` and `span`
-  - `Heading` -> `h1` - `h6`
-  - `Container` -> `div` but centered with max width
-  - `Image` -> `img`
-  - `Link` -> `a`
-- **`src/components/layouts/`**: Global layout wrappers (e.g., `RootLayout`, `AuthLayout`).
-- **`src/features/.../components/`**: Feature-specific presentational ("dumb") components.
-- **`src/features/.../pages/`**: "Smart" components that assemble feature pieces and connect directly to hooks/APIs.
-
-### 7. STRICT Middleware Pattern
-
-- **Location:** `src/middlewares/`.
-- **Purpose:** Handle cross-cutting concerns like authentication, authorization, and route guards (e.g., `requireAuth`, `requireGuest`).
-- **Usage:** Must be imported and executed inside the `beforeLoad` function of TanStack Router route files.
-
-### 8. TypeScript & React Best Practices
-
-- NO `any` types allowed. Use explicit types or infer them from Zod schemas (`z.infer<typeof schema>`).
-- Use custom hooks (`use...`) to abstract complex logic out of components. Components should ideally handle only JSX and simple wiring.
-- Use `cn()` from `src/lib/utils.ts` for conditional Tailwind class merging (Shadcn standard).
-
-### 9. STRICT Constants & Configuration
-
-- **Assets (`src/assets/`):** For static physical files (images, icons, fonts).
-- **Config (`src/config/`):** For dynamic, environment-driven configurations (e.g., API URLs from `.env`).
-- **Constants (`constants/`):** For hardcoded, immutable values (regex, pagination limits, enum arrays).
-  - Place feature-specific constants inside `src/features/[feature]/constants/`.
-  - Place app-wide constants inside `src/constants/`.
-
-## Base Features Included
-
-- **Authentication Module:** Login, Register, Forgot Password flows.
-- **Routing Middleware:** Protected & Guest route guards.
-- **Home Module:** Landing Page.
-
-## Directory Structure
-
-**Note:** The directory structure is subject to change based on the project requirements.
-
-```text
-react-enterprise-boilerplate/
-├── public/
-│   └── vite.svg
-├── src/
-│   ├── assets/                 # Static assets (images, fonts, icons)
-│   ├── components/             # Global UI components
-│   │   ├── layouts/            # Global layouts (e.g., RootLayout)
-│   │   └── ui/                 # 👈 Shadcn generated components (button, input, etc.)
-│   ├── common/                 # Common components used across the app
-│   ├── config/                 # App configuration (env variables, constants)
-│   │   └── env.ts
-│   ├── features/               # 📦 MAIN FEATURE MODULES (Feature-Based)
-│   │   ├── auth/               # Authentication Module
-│   │   │   ├── api/            # Login, register fetchers (TanStack Query)
-│   │   │   ├── layouts/        # AuthLayout.tsx
-│   │   │   ├── pages/          # LoginPage.tsx, RegisterPage.tsx, etc.
-│   │   │   └── types/          # auth.schema.ts (Zod schemas)
-│   │   ├── home/               # Home/Landing Page Module
-│   │   │   └── pages/          # HomePage.tsx
-│   │   └── dashboard/          # (Draft for future feature)
-│   │       ├── layouts/        # DashboardLayout.tsx (Sidebar, Navbar)
-│   │       └── pages/          # DashboardPage.tsx
-│   ├── hooks/                  # Global custom hooks (useDebounce, useMediaQuery)
-│   ├── lib/                    # Third-party setups
-│   │   ├── axios.ts            # Axios config & interceptors
-│   │   ├── react-query.ts      # QueryClient config
-│   │   └── utils.ts            # Shadcn helper (cn function)
-│   ├── middlewares/            # 🛡️ ROUTE PROTECTION LOGIC
-│   │   └── authMiddleware.ts   # requireAuth(), requireGuest()
-│   ├── providers/              # 📦 PROVIDERS
-│   │   └── theme-provider.tsx  # ThemeProvider
-│   ├── routes/                 # 📍 ROUTING REGISTRY (Extremely Clean)
-│   │   ├── __root.tsx          # Root layout provider
-│   │   ├── index.tsx           # '/' -> Renders HomePage
-│   │   ├── _protected.tsx      # Dashboard area layout -> requireAuth
-│   │   └── auth/               # '/auth' group
-│   │       ├── route.tsx       # '/auth' layout -> requireGuest
-│   │       ├── login.tsx       # '/auth/login' -> Renders LoginPage
-│   │       ├── register.tsx    # '/auth/register' -> Renders RegisterPage
-│   │       └── forgot-password.tsx # '/auth/forgot-password'
-│   ├── store/                  # 🧠 GLOBAL CLIENT STATE (Zustand)
-│   │   ├── useAuthStore.ts     # User session data (optional)
-│   │   └── useThemeStore.ts    # Theme state (dark/light)
-│   ├── types/                  # Global TypeScript types (e.g., ApiResponse<T>)
-│   ├── utils/                  # Pure helper functions (formatDate, formatCurrency)
-│   ├── App.css                 # Global CSS & Tailwind layers
-│   ├── main.tsx                # React Entry Point (Providers)
-│   ├── routeTree.gen.ts        # 🤖 TanStack auto-generated file (DO NOT EDIT)
-│   └── vite-env.d.ts
-├── .eslintrc.cjs
-├── .gitignore
-├── AGENT.md                    # 🤖 AI Agent Instructions
-├── components.json             # Shadcn UI Config
-├── package.json
-├── postcss.config.js
-├── README.md                   # Project Documentation
-├── tailwind.config.js
-├── tsconfig.app.json
-├── tsconfig.json
-├── tsconfig.node.json
-└── vite.config.ts              # Vite + TanStack Router Plugin Config
-```
+- **Logging**: after creating/changing any feature/section/component, write a log to `logs/feature-changes/YYYY-MM-DD-<slug>.md` (template in that folder) and commit it with the change. See `.agents/rules/logging.md`.
+- **Agent memory**: `.claude/agent-memory/<agent>/MEMORY.md` holds durable project knowledge (conventions, decisions, reusable patterns). Read before building, update after changes that introduce/revise a pattern. See `.agents/rules/memory-context.md`.
+- **Commits**: Conventional Commits per `.agents/rules/commit-rules.md`.
+- Full rule set: `.agents/rules/*` (a11y/perf, code quality, content integrity, motion safety, workflow discipline).

@@ -33,3 +33,4 @@ Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (
 ## Decisions log (durable facts only)
 - shadcn `ui/` kept minimal (button, tooltip); `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**` (shadcn exports cva variants alongside components).
 - Portfolio is static + EmailJS client-side — no axios/API layer; don't reintroduce an HTTP layer.
+- Root docs (2026-07-06): `AGENTS.md` is the committed cross-tool agents overview (gitignored `AGENT_README.md`/`AGENT_NOTES.md` are local scratch); README/CLAUDE.md/gemini.md summarize and point to `.agents/context/*` — never duplicate the deep specs into root docs. When conventions change, update all four together.
