@@ -23,6 +23,21 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
+# Env & Secrets
 .env
-.env.local
+.env.*
+!.env.example
+
+# Claude (Personal + Session State)
+.claude/settings.local.json
+.claude/projects/
+.claude/agent-memory/
+
+# Agent Artifacts
+.artifacts/
+
+# Raw Reference Capture (video/frames can be large; re-derivable, not source)
+reference/
+
+# Agent Markdown
+AGENT_README.md
