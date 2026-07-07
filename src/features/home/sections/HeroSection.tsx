@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import SplitType from "split-type";
 import { Box, Heading, Link, Text } from "@/components/common";
+import { AuroraBackground } from "@/features/home/components/AuroraBackground";
 import { profile } from "@/features/home/data/profile.data";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { gsap } from "@/lib/gsap";
@@ -82,8 +83,10 @@ export function HeroSection() {
       as="section"
       id="intro"
       ref={ref}
-      className="flex min-h-screen flex-col px-page-x pt-18"
+      className="relative isolate flex min-h-screen flex-col px-page-x pt-18"
     >
+      <AuroraBackground />
+
       <Box className="flex flex-1 flex-col justify-center gap-8">
         <Heading
           level={1}
