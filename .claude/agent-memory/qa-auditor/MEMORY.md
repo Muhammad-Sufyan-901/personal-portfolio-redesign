@@ -1,5 +1,7 @@
 # QA Auditor — Project Memory
 
+> **⚠️ HARD RESET (2026-07-07):** `src/` was reset to a single blank page (no primitives, tokens, data layer, or motion). The checks and recurring issues below stay valid as the audit playbook for the rebuild — but don't expect the referenced files/sections to exist until their chapters are rebuilt from the `.agents/context/` specs.
+
 ## Standard checks (Definition of Done — system_architecture §8)
 - `npx tsc --noEmit` + `npm run lint` clean; no `any`.
 - `grep -r "from '@/features/" src/features` → no cross-feature imports.

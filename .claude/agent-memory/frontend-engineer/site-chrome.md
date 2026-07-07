@@ -7,7 +7,9 @@ metadata:
 
 # Site chrome & chapter conventions (built 2026-07-07)
 
-**Why:** chapters 02–06 must slot into this frame without re-deciding z-order, header offset, or a11y patterns.
+> **⚠️ HARD RESET (2026-07-07):** the chrome files were deleted with the rest of `src/`; this doc is the spec-of-record for rebuilding them.
+
+**Why:** chapters must slot into this frame without re-deciding z-order, header offset, or a11y patterns.
 **How to apply:** new sections go in `features/home/sections/`, get an `id` matching [[content-data-layer]] navLinks anchors, and render inside HomePage's `<Box as="main" id="main">`.
 
 - **z-scale (arbitrary z-[] is the house style):** Header `z-[60]` < MobileMenu `z-[80]` < Preloader `z-[90]` < Cursor `z-[100]`.

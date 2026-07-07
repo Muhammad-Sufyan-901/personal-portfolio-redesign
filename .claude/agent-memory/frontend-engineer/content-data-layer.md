@@ -7,7 +7,9 @@ metadata:
 
 # Content data layer (transcribed 2026-07-07, tsc+lint clean)
 
-All PRD §2–§3 content is now in typed constants. **Reuse these — never re-transcribe or inline PRD facts in sections.**
+> **⚠️ HARD RESET (2026-07-07):** these data files were deleted with the rest of `src/`; they are re-transcribed from `product_requirements.md` during the rebuild. This doc records the shape/locations/decisions to rebuild to.
+
+All PRD §2–§3 content was in typed constants at this layout. **Rebuild to this shape — then reuse, never re-transcribe into sections.**
 
 **Why:** PRD is the single content source; typing constants against `src/types/portfolio.ts` makes bad edits fail compilation.
 **How to apply:** chapter sections import from these files; if a section needs a new content field, extend the type first, then the data file.

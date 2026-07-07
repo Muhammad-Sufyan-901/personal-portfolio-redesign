@@ -1,10 +1,12 @@
 # PLAN v2 — Portfolio Redesign on the measured "Void & Ember" design system (approved)
 
+> **⚠️ STATUS (2026-07-07, post hard-reset): src was hard-reset to a single blank page** — the foundation (design tokens, fonts, motion setup, primitives, data layer) and **all chapters 00→footer** are rebuilt from the `.agents/context/` specs during the redesign. The build order below assumed chapters 00–04 existed; treat it as scope/decision record, not as-built state. A fresh whole-site plan (`/plan-redesign`) precedes the rebuild.
+>
 > Supersedes the v1 plan (approved pre-bootstrap, executed through chapter 04 on the interim cobalt tokens). This v2 plan reconciles the remaining scope with the **measured** design system (`design_system.md` v2 — palette + techniques evidence-sampled from `reference/lukebaffait-scroll.mp4`, 47 frames + live-site cross-check). Whole-site planning; **per-section execution with an explicit user approval gate after every section**.
 
 ## Context
 
-Finish Muhammad Sufyan's scroll-telling portfolio. As-built: chapters `00 Preloader → 04 Journey` shipped (`fe849ff`…`b245c1e`), full motion foundation (`lib/gsap.ts`, `SmoothScrollProvider` lerp 0.09, 7 primitives), PRD data layer, site chrome, tokens in `src/styles/globals.css` (interim Warm Ink + Cobalt). Remaining: the **ember re-theme + grotesk display swap**, v2 technique upgrades on Hero + Journey, and fresh builds of Work (05), Contact (06), Footer.
+Finish Muhammad Sufyan's scroll-telling portfolio. ~~As-built: chapters `00 Preloader → 04 Journey` shipped~~ (**deleted in the hard reset** — `fe849ff`…`b245c1e` remain in git history), full motion foundation (`lib/gsap.ts`, `SmoothScrollProvider` lerp 0.09, 7 primitives), PRD data layer, site chrome, tokens in `src/styles/globals.css` (interim Warm Ink + Cobalt). All of it, plus the **ember re-theme + grotesk display swap**, v2 technique upgrades on Hero + Journey, and Work (05), Contact (06), Footer, is rebuilt from the specs.
 
 ## Decisions (all resolved — no open questions)
 

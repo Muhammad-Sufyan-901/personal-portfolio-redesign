@@ -1,6 +1,8 @@
 # Motion Engineer — Project Memory
 
-## Motion architecture (single sources) — BUILT 2026-07-07
+> **⚠️ HARD RESET (2026-07-07):** `src/` was reset to a single blank page; gsap/@gsap/react/lenis/split-type/zustand and every motion file (lib/gsap.ts, SmoothScrollProvider, hooks, store, all primitives, all section choreography) were **deleted/uninstalled**. Everything below is prior-build knowledge — the exact patterns and gotchas to re-apply when the motion foundation is rebuilt from the `.agents/context/` specs. Nothing described here currently exists in `src/`.
+
+## Motion architecture (single sources) — prior build 2026-07-07 (deleted in reset; rebuild to this spec)
 - GSAP registered ONLY in `src/lib/gsap.ts` (registers ScrollTrigger, defaults `ease: "power4.out", duration: 0.8`; exports `gsap`, `ScrollTrigger`). No other file imports `gsap` or `gsap/ScrollTrigger`.
 - Lenis instantiated ONLY in `src/providers/SmoothScrollProvider.tsx` (lerp 0.09, wheelMultiplier 1, smoothWheel, syncTouch false): `instance.on("scroll", () => ScrollTrigger.update())` (arrow wrapper — direct handoff fails strict TS), `gsap.ticker.add(t => lenis.raf(t*1000))`, `lagSmoothing(0)`; exports `LenisContext`; destroys + removes ticker on cleanup. Under reduced motion Lenis is NEVER created → `useLenis()` (in `src/hooks/useLenis.ts`) returns null.
 - No manual resize-refresh listener — ScrollTrigger auto-refreshes on resize. Route-change refresh not wired (single-page site); add only if multi-page ships.

@@ -1,5 +1,7 @@
 # Frontend Engineer — Project Memory
 
+> **⚠️ HARD RESET (2026-07-07):** `src/` was reset to a single blank page (6 files: `main.tsx`, `routes/{__root,index}.tsx`, `routeTree.gen.ts`, `styles/globals.css` = bare Tailwind import, `vite-env.d.ts`); all deps beyond the Vite/React/Router/Tailwind/TS shell were uninstalled. **Everything below describing built code (primitives, tokens, data layer, chrome, providers) is prior-build knowledge — the patterns/APIs/gotchas to re-apply when rebuilding from the `.agents/context/` specs, not the current tree.** General Sans woff2 was deleted too — re-download from Fontshare at rebuild.
+
 ## Project
 Muhammad Sufyan's portfolio redesign: motion-first, scroll-telling single page (GSAP + Lenis). Reference feel `lukebaffait.fr` (motion only). Content source = `.agents/context/product_requirements.md`.
 

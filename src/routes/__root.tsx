@@ -1,15 +1,5 @@
-import { createRootRoute } from "@tanstack/react-router";
-import { Cursor, Preloader } from "@/components/common";
-import { RootLayout } from "@/components/layouts/RootLayout";
-
-const RootComponent = () => (
-  <>
-    <Preloader />
-    <Cursor />
-    <RootLayout />
-  </>
-);
+import { Outlet, createRootRoute } from "@tanstack/react-router";
 
 export const Route = createRootRoute({
-  component: RootComponent,
+  component: () => <Outlet />,
 });

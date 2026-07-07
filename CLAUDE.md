@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo state (read this first)
 
-The old enterprise boilerplate (auth, dashboard, axios layer, Zustand store, route guards, ~50 shadcn components, and their deps) was removed in commit `9be4947`. Since then the redesign has **bootstrapped and shipped chapters 00–04** (2026-07-07, `chore(setup)` `2abbe94` → `feat(journey)` `b245c1e`). `src/` now holds:
+**`src/` was hard-reset to a single blank page (2026-07-07, `chore(reset)`).** The foundation (design tokens, fonts, motion setup, primitives, data layer) and all chapters 00→footer are rebuilt from the `.agents/context/` specs during the redesign. An earlier pass had shipped chapters 00–04; that code was deliberately deleted — its decisions and gotchas survive in `logs/feature-changes/*` and `.claude/agent-memory/*`, and everything regenerates from the specs (the one non-doc asset, the General Sans woff2 files, must be re-downloaded from Fontshare).
 
-- the `/` route rendering `HomePage`, which composes `sections/{Hero,Manifesto,Craft,Journey}Section.tsx`;
-- the full **motion foundation**: `src/lib/gsap.ts` (single GSAP source, defaults `power4.out`/0.8s), `src/providers/SmoothScrollProvider.tsx` (single Lenis, lerp 0.09), hooks (`useLenis`, `usePrefersReducedMotion`, `useIsomorphicLayoutEffect`), `src/store/useUIStore.ts` (zustand: `preloaderDone`, `menuOpen`), `src/types/motion.ts`;
-- the common primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`, `ThemeToggle`) **plus seven motion primitives** (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`);
-- the **PRD data layer**: `src/types/portfolio.ts` (`TechStack`, `Project`, `Skill`, `JourneyItem`, `Profile`, `ContactChannel`) + `src/features/home/data/*.data.ts` + `src/constants/{projects.data.ts,navigation.ts}` + `src/config/{site,env}.ts`;
-- applied design tokens in `src/styles/globals.css` (`src/index.css` was **deleted** at bootstrap);
-- site chrome: `Header` (z-60), `MobileMenu` (z-80), `RootLayout` in `src/components/layouts/`; two shadcn primitives (`button`, `tooltip`).
+`src/` now holds exactly six files:
 
-**Still pending — don't treat as present:**
-1. **Chapters 05 (Selected Work) and 06 (Contact)** + Footer, and `src/lib/emailjs.ts` (EmailJS submit helper — the `@emailjs/browser` dep IS installed).
-2. The **"Void & Ember" re-theme**: `design_system.md` v2 makes ember `#E8380F` the authoritative accent (bg `#0A0A0A`, paper `#E4E4E4`); the shipped `globals.css` still carries the interim Warm Ink + **Cobalt `#3B5BFF`** tokens. Components style by token *name*, so the migration is a globals.css-only change. Also pending from v2: the thick organic SVG "bold path draw" journey rail, the hero aurora glow, the optional footer ornament.
+- `src/main.tsx` — `StrictMode → RouterProvider` only (no providers);
+- `src/routes/__root.tsx` — bare `<Outlet/>`; `src/routes/index.tsx` — inline `BlankPage` (centered title placeholder);
+- `src/routeTree.gen.ts` (auto-generated), `src/vite-env.d.ts`;
+- `src/styles/globals.css` — just `@import "tailwindcss";` (no tokens yet).
+
+Installed deps are down to the shell: react, react-dom, @tanstack/react-router (+ router-plugin), tailwindcss (+ @tailwindcss/vite), vite, @vitejs/plugin-react, TS/ESLint/Prettier toolchain. GSAP, Lenis, split-type, zustand, react-hook-form, @emailjs/browser, fonts, shadcn, cva/clsx/tailwind-merge, lucide, radix — all uninstalled; reinstall them as the rebuild reaches each need. `vite.config.ts` (router plugin, Tailwind plugin, `@/` alias) and `index.html` are unchanged.
+
+**Nothing described elsewhere in this file or the rules as "built/shipped/installed" exists in `src/` right now** — sections referencing primitives, tokens, data files, chrome, or motion foundation describe the target architecture to rebuild, not the current tree.
 
 ## Redesign project context
 
