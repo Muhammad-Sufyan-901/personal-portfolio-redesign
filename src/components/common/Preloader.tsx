@@ -71,7 +71,7 @@ export function Preloader() {
           ease: "power4.inOut", // ≈ --ease-inout
         });
     },
-    { scope: ref, dependencies: [active] },
+    { scope: ref, dependencies: [active], revertOnUpdate: true },
   );
 
   if (!active || finished) return null;
@@ -80,19 +80,21 @@ export function Preloader() {
     <Box
       ref={ref}
       aria-hidden
-      className="fixed inset-0 z-[90] flex items-end justify-between bg-ink px-page-x pb-12"
+      className="fixed inset-0 z-[90] bg-ink"
     >
-      <Box className="overflow-hidden">
-        <Box
-          as="span"
-          className="preloader-name block font-display text-chapter text-paper"
-        >
-          {siteConfig.name}
+      <Box className="flex h-full items-center justify-center px-page-x">
+        <Box className="overflow-hidden">
+          <Box
+            as="span"
+            className="preloader-name block text-center font-display text-chapter text-paper"
+          >
+            {siteConfig.name}
+          </Box>
         </Box>
       </Box>
       <Box
         as="span"
-        className="preloader-counter font-mono text-index text-muted"
+        className="preloader-counter absolute right-page-x bottom-8 font-mono text-index text-muted"
       >
         0
       </Box>

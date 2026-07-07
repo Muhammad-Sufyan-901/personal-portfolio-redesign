@@ -32,14 +32,21 @@ export function Cursor() {
       if (!dot || !ring) return;
 
       // Center via gsap.set — Tailwind translate would stack oddly with x/y.
-      gsap.set([dot, ring], { xPercent: -50, yPercent: -50 });
+      // Hidden until the first pointermove so it never paints parked at 0,0.
+      gsap.set([dot, ring], { xPercent: -50, yPercent: -50, autoAlpha: 0 });
 
       const dotX = gsap.quickTo(dot, "x", { duration: 0.12, ease: "power3.out" });
       const dotY = gsap.quickTo(dot, "y", { duration: 0.12, ease: "power3.out" });
       const ringX = gsap.quickTo(ring, "x", { duration: 0.45, ease: "power3.out" });
       const ringY = gsap.quickTo(ring, "y", { duration: 0.45, ease: "power3.out" });
 
+      let seen = false;
       const onMove = (e: PointerEvent) => {
+        if (!seen) {
+          seen = true;
+          gsap.set([dot, ring], { x: e.clientX, y: e.clientY });
+          gsap.to([dot, ring], { autoAlpha: 1, duration: 0.3 });
+        }
         dotX(e.clientX);
         dotY(e.clientY);
         ringX(e.clientX);
@@ -53,14 +60,22 @@ export function Cursor() {
         gsap.to(ring, { scale: target ? (cursorLabel ? 2.4 : 1.6) : 1, duration: 0.3 });
       };
 
+      // Fade out when the pointer leaves the viewport; back on next move.
+      const onLeave = () => {
+        seen = false;
+        gsap.to([dot, ring], { autoAlpha: 0, duration: 0.3 });
+      };
+
       window.addEventListener("pointermove", onMove);
       window.addEventListener("pointerover", onOver);
+      document.documentElement.addEventListener("pointerleave", onLeave);
       return () => {
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("pointerover", onOver);
+        document.documentElement.removeEventListener("pointerleave", onLeave);
       };
     },
-    { scope: ref, dependencies: [active] },
+    { scope: ref, dependencies: [active], revertOnUpdate: true },
   );
 
   if (!active) return null;

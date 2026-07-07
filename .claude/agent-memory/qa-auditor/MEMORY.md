@@ -20,3 +20,5 @@
 - Hardcoded prose in section JSX — ch.01 hero tagline was paraphrased copy not in `profile.data`. Diff every string literal in sections against `data/*.data.ts` + PRD.
 - `Link` hash scroll: FIXED ch.01 — routes via `useLenis()`, native instant fallback when lenis null. Lesson stands: JS `behavior:"smooth"` is NOT overridden by reduced-motion CSS `scroll-behavior:auto`; check any new programmatic scroll.
 - Focus-containment probes: the TanStack devtools button is a legit Tab escape target in dev only (`react-router-devtools` renders null when `NODE_ENV !== "development"`) — don't count it as a containment failure.
+- `useGSAP` deps with `prefersReducedMotion`-derived values but no `revertOnUpdate: true` — 3rd recurrence in v3 ch.00 rebuild (Preloader/Cursor, 2026-07-08 F1). Without it the returned cleanup is deferred to unmount → never-unmounting components (Cursor) leak window listeners on a live RM toggle. Check FIRST on every animated component.
+- Rebuilt-chapter audits: check the `logs/feature-changes/` entry is for the CURRENT diff — v2-era logs (pre `chore(reset)` 118f5bc) describe wiped code and count as missing (ch.00 v3 F2, 2026-07-08).
