@@ -25,6 +25,10 @@ Scroll the reference site slowly and capture one screenshot at each meaningful s
 
 Prefer not to run ffmpeg yourself? Place the raw recording at `reference/lukebaffait-scroll.mp4` in the repo and tell Claude Code to run the Option B, step 2 command before starting `/plan-redesign`. It has local Bash access on your machine and can run the same command; it just can't watch the .mp4 directly afterward — the extracted .png frames are what it actually reads.
 
+## Already applied in this repo
+
+This procedure has run for real: `reference/lukebaffait-scroll.mp4` was extracted twice (19 frames at `fps=1/5`, then 47 frames at `fps=1/2`) and the frames were color-histogram-sampled to ground design_system.md v2 — the §3.0 evidence table, the §3.0b section-by-section map, and the "Void & Ember" palette all come from that pass. Re-run it only if a new reference video arrives.
+
 ## What visual reference is for (and isn't)
 
 Stills — however many — show layout, spacing, and typography at a moment; they don't convey exact easing curves or durations. Use them to judge composition and rhythm, not to reverse-engineer precise motion values. Exact motion values (durations, cubic-bezier eases, stagger amounts) are already specified in `context/design_system.md §7` — that document is authoritative for the numbers; the screenshots/frames are authoritative for the mood and per-section composition.

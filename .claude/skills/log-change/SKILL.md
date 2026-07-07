@@ -13,3 +13,5 @@ Create `logs/feature-changes/<YYYY-MM-DD>-$ARGUMENTS.md` from `logs/feature-chan
 - Commit the log together with the change it documents.
 
 If multiple related files changed in one unit of work, write ONE entry for that unit (not one per file).
+
+Existing entries (2026-07-06 → 2026-07-07, setup through the journey chapter) are the reference for tone and granularity — one entry per shipped unit, decisions captured inline (e.g. the cobalt-accent choice in `2026-07-07-bootstrap-deps-fonts-tokens.md`). Portable mirror: `.agents/skills/log-change` + `.agents/rules/logging.md`.

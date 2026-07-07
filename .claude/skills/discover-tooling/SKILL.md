@@ -23,3 +23,6 @@ Present a short ranked table: name · type (skill/MCP) · fit · how to add. On 
 - MCP → add to `.mcp.json` at repo root (see `.mcp.json.example`); note any required env/keys and never commit secrets.
 
 Then log the additions via `/log-change` and record durable tooling choices in the relevant agent's MEMORY.md.
+
+## Already adopted (don't re-propose)
+MCP servers in `.mcp.json`: context7 (library docs), chrome-devtools (visual/perf — note: not exposed inside qa-auditor subagent threads), shadcn (registry search). Installed design skills: `impeccable` (v3.9.1, with its PostToolUse detector hook in `.claude/settings.local.json`) and `design-taste-frontend` (see `logs/feature-changes/2026-07-06-setup-tooling.md`). Portable mirror of this skill: `.agents/skills/discover-tooling`.

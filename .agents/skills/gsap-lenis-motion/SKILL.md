@@ -30,3 +30,7 @@ Authoritative: `context/design_system.md §7`, `context/system_architecture.md �
 - Call `ScrollTrigger.refresh()` on resize and (multi-page) route change; use `invalidateOnRefresh: true` on pinned/scrubbed triggers.
 - Never import `gsap/ScrollTrigger` outside `lib/gsap.ts`.
 - Pair with the `accessibility-reduced-motion` skill: every effect needs an opacity-only fallback with Lenis disabled.
+
+## As built (foundation shipped 2026-07-07)
+
+Installed: gsap `^3.15.0`, `@gsap/react ^2.1.2`, lenis `^1.3.25`, split-type `^0.3.4`. Both single-source files exist exactly as sketched above; `useLenis()` returns `null` under `prefers-reduced-motion` so consumers fall back to native scroll. Reuse the seven shipped primitives in `src/components/common/` (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader` — exact APIs in `.claude/agent-memory/motion-engineer/MEMORY.md`) before writing new ScrollTrigger code. For borrowed component ideas, see the `animated-ui-references` skill (never install `framer-motion`). Claude Code enforcement mirror: `.claude/rules/motion.md`.

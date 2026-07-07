@@ -5,6 +5,8 @@
 **Pattern:** Feature-Based Architecture (Bulletproof React inspired) + dedicated Motion Layer
 **Base:** a fresh Vite React-TS app, organized to match `react-tanstack-typescript-boilerplate` conventions (React 19 · Vite 7 · TanStack Router · Tailwind v4 · shadcn/ui · TS strict)
 
+> **As-built status (2026-07-07):** the architecture below is implemented and verified through chapter 04 — `lib/gsap.ts`, `SmoothScrollProvider`, `useUIStore`, `types/{portfolio,motion}.ts`, the seven motion primitives, the full data layer, and `features/home/sections/{Hero,Manifesto,Craft,Journey}Section.tsx` all exist at the paths specified in §3 (with tokens in `src/styles/globals.css`). Still pending: `WorkSection`, `ContactSection`, `lib/emailjs.ts`. This note tracks reality; the spec itself is unchanged.
+
 ## 1. Communication Concept (No Backend, One Integration)
 
 Unlike a typical app, this is a **content-static portfolio**. There is no API to author; all content lives in typed constants transcribed from `.agents/context/product_requirements.md`. The only outbound integration is the **contact form via EmailJS** (client-side SDK).

@@ -15,3 +15,6 @@ Authoritative: `context/system_architecture.md §4.2`.
 
 ## On route change (multi-page only)
 Run a `PageTransition` overlay, then `ScrollTrigger.refresh()` + reset scroll via Lenis.
+
+## As built
+`@tanstack/react-router ^1.162.8` with `scrollRestoration: true` + `defaultPreload: "intent"`; `__root.tsx` mounts `AppProviders` + `Preloader` + `Cursor` + `RootLayout` exactly as above; `index.tsx` → `features/home/pages/HomePage.tsx`. Hash-anchor smooth scroll is handled inside the common `Link` primitive (`lenis.scrollTo` + `pushState`; native `scrollIntoView` under reduced motion). Routes stay registry-only — no JSX in `src/routes/`. Claude Code mirror: routing section of `.claude/rules/project.md`.

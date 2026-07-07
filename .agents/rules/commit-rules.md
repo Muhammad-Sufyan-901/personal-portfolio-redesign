@@ -7,3 +7,5 @@
 - **Body (optional):** why + notable decisions (e.g. "reduced-motion fallback: opacity-only").
 - **Never commit:** `.env*`, `node_modules`, `.artifacts/`, secrets, or generated `routeTree.gen.ts` conflicts left unresolved.
 - **Green before commit:** `tsc --noEmit` + `eslint` must pass; don't commit broken builds.
+
+**Why this matters here:** the real history already follows this shape — `feat(preloader)` `fe849ff` → `feat(hero)` `932415f` → `feat(manifesto)` `c45e937` → `feat(craft)` `fcf567a` → `feat(journey)` `b245c1e`, one commit per chapter, each carrying its `logs/feature-changes/` entry. Per-chapter commits are also what makes the one-section-per-approval-gate workflow (`workflows/section.md`) reviewable.

@@ -37,20 +37,38 @@ Before any task, every agent MUST read: `context/product_requirements.md` (conte
 
 ## System Commands (map to `.claude/skills/`)
 
-- `/plan-redesign` ➔ @pm planning stage → produces `PLAN.md`, then PAUSES.
-- `/build-section <chapter>` ➔ @frontend + @motion build one chapter per `design_system.md §11`.
-- `/qa-audit` ➔ @qa runs the Definition of Done from `system_architecture.md §8`.
+- `/plan-redesign` ➔ @pm planning stage → produces `PLAN.md` (whole-site), then PAUSES for approval.
+- `/build-section <chapter>` ➔ @frontend + @motion build one chapter per `design_system.md §11`, then **stop for user approval before the next chapter** (one gate per section — `workflows/section.md`).
+- `/qa-audit` ➔ @qa runs the Definition of Done from `system_architecture.md §8`, per section before its gate + once globally.
+
+**Build status:** chapters 00–04 (preloader → journey) are shipped (`feat(preloader)` `fe849ff` → `feat(journey)` `b245c1e`) on the interim cobalt tokens; remaining: Work (05), Contact (06), `lib/emailjs.ts`, the ember re-theme (design_system v2 §9), and the v2 motion upgrades (bold path draw, hero aurora, optional footer ornament).
 
 ## Skills (`.agents/skills/`) — activate by task
 
-- `reference-capture` — @pm, before Stage 1, to turn `lukebaffait.fr` screenshots or a screen-recording into usable stills (Claude's vision reads images only, not video).
-- `gsap-lenis-motion`, `scrollytelling` — @motion & @frontend for all motion work.
-- `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup` — @frontend for scaffolding + UI.
-- `accessibility-reduced-motion`, `seo-meta` — @frontend & @qa for final polish + audit.
+Convention knowledge (portable spec; each has a Claude Code enforcement mirror in `.claude/rules/` or an as-built note):
+
+- `reference-capture` — @pm, before Stage 1, to turn `lukebaffait.fr` screenshots or a screen-recording into usable stills (Claude's vision reads images only, not video). Already run once — it produced design_system v2's §3.0 evidence.
+- `gsap-lenis-motion`, `scrollytelling` — @motion & @frontend for all motion work (mirror: `.claude/rules/motion.md`).
+- `animated-ui-references` — @motion & @frontend when borrowing from React Bits / Magic UI / Aceternity UI / 21st.dev (design_system v2 §7.5): adapt to GSAP + primitives + tokens, **never install `framer-motion`**.
+- `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup` — @frontend for scaffolding + UI (mirrors: `.claude/rules/{tailwind-styling,react-typescript,project}.md`).
+- `accessibility-reduced-motion`, `seo-meta` — @frontend & @qa for final polish + audit (mirror: `.claude/rules/accessibility.md`).
+
+Process skills (portable mirrors of the invokable `.claude/skills/` slash-commands):
+
+- `plan-redesign` — @pm: whole-site `PLAN.md`, then hard STOP for approval.
+- `build-section` — @frontend + @motion: one chapter per invocation, stop-for-approval gate after every section.
+- `qa-audit` — @qa: Definition of Done per chapter + globally, findings to `.artifacts/qa-log.md`.
+- `log-change`, `update-memory` — all agents: post-change discipline (see below).
+- `discover-tooling` — propose (never auto-install) new skills/MCP servers.
+
+Installed third-party design toolkits (pointer stubs here; **implementation lives only in `.claude/skills/`**):
+
+- `impeccable` (v3.9.1) — design critique/polish/live-iteration toolkit + anti-slop detector hook.
+- `design-taste-frontend` — anti-slop design manual; apply with this repo's overrides (we're Vite+GSAP not Next+Motion; Fraunces is deliberate).
 
 ## Rules (`.agents/rules/`) — always in effect
 
-`commit-rules`, `content-integrity`, `code-quality`, `motion-safety`, `accessibility-performance`, `workflow-discipline`. All agents obey these.
+`commit-rules`, `content-integrity`, `code-quality`, `motion-safety`, `accessibility-performance`, `workflow-discipline`, plus the post-change pair `logging` + `memory-context` (detailed below). All agents obey these. Each carries a project-grounded "why this matters here" note.
 
 ## Native enforcement (`.claude/`)
 

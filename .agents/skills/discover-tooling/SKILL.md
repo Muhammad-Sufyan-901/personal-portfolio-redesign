@@ -12,4 +12,6 @@ Using web search/fetch, find community skills and MCP servers that fit this stac
 - Evaluate fit + maintenance/trust; discard unmaintained/redundant/opt-in-service ones.
 - **Propose, don't install:** present a ranked table (name · type · fit · how to add). On approval, skills → `.claude/skills/`, MCP → `.mcp.json`. Never commit secrets. Log additions and record durable choices in agent memory.
 
+Already adopted here (don't re-propose): MCP servers context7, chrome-devtools, shadcn (`.mcp.json`); installed design skills `impeccable` v3.9.1 and `design-taste-frontend` in `.claude/skills/` (pointer stubs for both live alongside this skill).
+
 (Claude Code users: `/discover-tooling`.)
