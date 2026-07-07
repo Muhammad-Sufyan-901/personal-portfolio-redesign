@@ -4,23 +4,24 @@ How AI agents work in this repo. This is the committed cross-tool overview; the 
 
 ## The two layers
 
-The setup is intentionally mirrored: a **portable spec** any agent can read, and a **Claude-native executable layer** that enforces it.
+The setup is intentionally mirrored: a **portable spec** any agent can read, and a **Claude-native executable layer** that enforces it. After the 2026-07-07 reconciliation, both skill rosters describe the same capability set (mirrors or explicit pointers).
 
 ### `.agents/` — portable, tool-agnostic spec
 
 ```text
 .agents/
-├── agents.md          # team overview, protocols, roster, execution flow
+├── agents.md          # team overview, protocols, roster, execution flow, build status
 ├── context/           # the authoritative deep specs (read these first)
-│   ├── product_requirements.md   # the ONLY content source
-│   ├── design_system.md          # palette, type, tokens, motion, §11 choreography
-│   └── system_architecture.md    # folder structure, golden rules, DoD
+│   ├── product_requirements.md   # the ONLY content source (§6.1 accent → resolved: ember)
+│   ├── design_system.md          # v2 "Void & Ember": palette (§3), motion (§7),
+│   │                             # reference libraries (§7.5), §11 choreography
+│   └── system_architecture.md    # folder structure, golden rules, DoD (+ as-built note)
 ├── roles/             # job descriptions: project_manager, motion_engineer,
-│                      #                    frontend_developer, quality_assurance
+│                      # frontend_developer, quality_assurance (as-built paths + discipline)
 ├── rules/             # always-on policies (see "Rules" below)
-├── skills/            # agent-agnostic SKILL.md procedures (motion, tailwind-v4,
-│                      # tanstack-router, ts-strict, a11y-reduced-motion, seo-meta, …)
-└── workflows/         # prose process docs: planning, design-system, section, qa
+├── skills/            # 18 agent-agnostic SKILL.md procedures (see inventory below)
+└── workflows/         # prose process docs: planning (whole-site), design-system (run),
+                       # section (one-per-approval-gate), qa (per-section + global)
 ```
 
 ### `.claude/` — Claude Code native, executable layer
@@ -29,12 +30,12 @@ The setup is intentionally mirrored: a **portable spec** any agent can read, and
 .claude/
 ├── settings.json      # outputStyle "custom-components", permissions, format hook
 ├── agents/            # subagents: frontend-engineer, motion-engineer, qa-auditor
-├── agent-memory/      # <agent>/MEMORY.md — durable, committed project knowledge
-├── skills/            # invocable /skills (see inventory below)
+├── agent-memory/      # <agent>/MEMORY.md (+ topic siblings) — durable, committed knowledge
+├── skills/            # 9 invocable /skills (see inventory below)
 ├── commands/          # /add-shadcn, /commit, /typecheck
-├── rules/             # path-scoped rules mirroring .agents/rules
+├── rules/             # path-scoped rules mirroring .agents (incl. accessibility.md)
 ├── hooks/             # format.sh (PostToolUse auto-format on Edit/Write)
-├── output-styles/     # custom-components.md (the house component style)
+├── output-styles/     # custom-components.md (house style, real prop surfaces)
 └── workflows/         # native /workflows JS scripts (home for feature-done, section-cycle)
 ```
 
@@ -48,27 +49,29 @@ The setup is intentionally mirrored: a **portable spec** any agent can read, and
 
 | Agent | Role | Owns / produces |
 | --- | --- | --- |
-| **@pm** | Project Manager / Lead Architect — reads the context docs, writes `PLAN.md` (file tree + chapter build order + technique per chapter + data-mapping table), surfaces the open design decisions, then **pauses for explicit approval** before any code. | `PLAN.md` |
-| **@frontend** | Frontend Engineer — builds chapter sections/components to the design system using tokens only, transcribes PRD content into typed constants, wires in @motion's primitives. Feature isolation, `cn()`/`cva`. | `features/home/sections/*`, `constants/*`, feature components |
-| **@motion** | Motion Engineer — owns the GSAP + Lenis subsystem (`src/lib/gsap.ts`, `SmoothScrollProvider`) and the reusable motion primitives (RevealText, ParallaxImage, Marquee, MagneticButton, Cursor, Preloader); guarantees Lenis↔ScrollTrigger sync + a reduced-motion fallback per effect. No layout decisions. | motion layer + primitives |
-| **@qa** | QA Auditor — runs the Definition of Done (TS strict/no `any`, no cross-feature imports, no raw hex, reduced-motion + Lenis↔ScrollTrigger refresh, a11y, Lighthouse ≥ 90, SEO/meta). Read-only on source; writes findings to a log. | QA log |
+| **@pm** | Project Manager / Lead Architect — reads the context docs + as-built state, writes `PLAN.md` (whole-site: file tree + chapter order + technique per chapter + data-mapping table), surfaces the open design decisions, then **pauses for explicit approval** before any code. | `PLAN.md` |
+| **@frontend** | Frontend Engineer — builds chapter sections/components to the design system using tokens only, transcribes PRD content into typed constants, wires in @motion's primitives. Feature isolation, `cn()`/`cva`. | `features/home/sections/*`, `data/*`, feature components |
+| **@motion** | Motion Engineer — owns the GSAP + Lenis subsystem (`src/lib/gsap.ts`, `SmoothScrollProvider`) and the seven motion primitives (RevealText, ParallaxImage, Marquee, MagneticButton, ChapterEyebrow, Cursor, Preloader); guarantees Lenis↔ScrollTrigger sync + a reduced-motion fallback per effect. No layout decisions. | motion layer + primitives |
+| **@qa** | QA Auditor — runs the Definition of Done (TS strict/no `any`, no cross-feature imports, no raw hex, no bare HTML tags, reduced-motion + Lenis↔ScrollTrigger refresh, a11y incl. overlay `inert`, Lighthouse ≥ 90, SEO/meta). Read-only on source; writes findings to `.artifacts/qa-log.md`. | QA log |
 
-Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-engineer,motion-engineer,qa-auditor}.md` (all `memory: project`).
+Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-engineer,motion-engineer,qa-auditor}.md` (all `memory: project`, with as-built path maps).
 
 ## Golden Rules (non-negotiable)
 
 1. **Content** is transcribed from `product_requirements.md`, never invented.
-2. **One GSAP source** (`src/lib/gsap.ts`) + **one Lenis owner** (`SmoothScrollProvider`); all animation runs in `useGSAP(() => {…}, { scope })`.
+2. **One GSAP source** (`src/lib/gsap.ts`) + **one Lenis owner** (`SmoothScrollProvider`); all animation runs in `useGSAP(() => {…}, { scope })`. Corollary: **never install `framer-motion`** — borrowed component ideas are adapted per the `animated-ui-references` skill.
 3. **Reduced motion** is first-class — every effect has an opacity-only fallback with Lenis/pins/parallax/cursor disabled.
 4. **No cross-feature imports** — promote shared code to `components/common`, `lib`, `hooks`, `types`.
 5. **TypeScript strict / no `any`**, **design tokens only** — no raw hex or magic px; `cn()` for classes, `cva` for variants.
 
 ## Workflow
 
-1. `/plan-redesign` → `PLAN.md` → **stop for human approval** (@pm pauses here)
-2. **Bootstrap** — design tokens + motion foundation (installs GSAP, Lenis, split-type, `@gsap/react`, EmailJS, fonts; adds `lib/gsap.ts` + `SmoothScrollProvider`)
-3. `/build-section <chapter>` per chapter, in order: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer` (Journey merges experience + education + awards)
-4. `/qa-audit` per chapter and at the end
+1. `/plan-redesign` → `PLAN.md` (**whole-site**) → **stop for human approval** (@pm pauses here)
+2. **Bootstrap** — design tokens + motion foundation. *(Done 2026-07-07: deps, fonts, tokens, `lib/gsap.ts`, `SmoothScrollProvider`, primitives, PRD data layer.)*
+3. `/build-section <chapter>` — **one section at a time, with a stop-for-approval gate after every section**, in order: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer` (Journey merges experience + education + awards)
+4. `/qa-audit` per section (before its gate) and once globally at the end
+
+**Build status:** chapters **00–04 shipped** (`feat(preloader)` `fe849ff` → `feat(journey)` `b245c1e`) on the interim cobalt tokens. Remaining: Work (05), Contact (06) + `lib/emailjs.ts`, Footer, the **ember re-theme** (design_system v2 §9), and the v2 motion upgrades (bold path draw, hero aurora, optional footer ornament).
 
 **Post-change discipline** (every feature create/change):
 
@@ -78,16 +81,18 @@ Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-e
 
 ## Skills, commands, MCP
 
-**Skills** (`.claude/skills/`): `plan-redesign` (plan + stop for approval) · `build-section` (build one chapter, needs an approved plan) · `qa-audit` (run the Definition of Done + write a log) · `log-change` (feature-change log entry) · `update-memory` (durable project knowledge) · `discover-tooling` (web-search for skills/MCP, proposes only — never installs). Plus design skills `design-taste-frontend` and `impeccable`.
+**Invokable skills** (`.claude/skills/`, 9): `plan-redesign` (whole-site plan + stop for approval) · `build-section` (one chapter per approval gate, needs an approved plan) · `qa-audit` (Definition of Done + log) · `log-change` · `update-memory` · `discover-tooling` (proposes only — never installs) · `animated-ui-references` (adapt React Bits / Magic UI / Aceternity UI / 21st.dev ideas to GSAP + primitives + tokens) · installed design toolkits `impeccable` (v3.9.1, ~25 subcommands + detector hook) and `design-taste-frontend` (anti-slop manual; apply with this repo's Vite/GSAP/Fraunces overrides).
+
+**Portable skills** (`.agents/skills/`, 18): the 10 convention skills (`gsap-lenis-motion`, `scrollytelling`, `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup`, `accessibility-reduced-motion`, `seo-meta`, `reference-capture`, `discover-tooling`) + `animated-ui-references` + concise mirrors of the 5 in-house process skills (`plan-redesign`, `build-section`, `qa-audit`, `log-change`, `update-memory`) + pointer stubs for `impeccable` and `design-taste-frontend` (implementations live only in `.claude/skills/`).
 
 **Commands** (`.claude/commands/`): `/add-shadcn` (add + restyle a shadcn component with tokens) · `/commit` (Conventional Commit) · `/typecheck` (`tsc --noEmit` + `eslint`).
 
-**MCP servers** (`.mcp.json`): `context7` (live library docs — GSAP/TanStack/Tailwind v4/shadcn) · `chrome-devtools` (Lighthouse/perf/screenshots for the QA gate) · `shadcn` (component registry, pairs with `/add-shadcn`).
+**MCP servers** (`.mcp.json`): `context7` (live library docs — GSAP/TanStack/Tailwind v4/shadcn) · `chrome-devtools` (Lighthouse/perf/screenshots — note: not exposed inside qa-auditor subagent threads; it uses a documented puppeteer fallback) · `shadcn` (component registry, pairs with `/add-shadcn`).
 
-**Rules** (`.agents/rules/` — always on): `commit-rules`, `content-integrity`, `code-quality`, `motion-safety`, `accessibility-performance`, `workflow-discipline`, `logging`, `memory-context`. Mirrored path-scoped in `.claude/rules/`.
+**Rules** (`.agents/rules/` — always on): `commit-rules`, `content-integrity`, `code-quality`, `motion-safety`, `accessibility-performance`, `workflow-discipline`, `logging`, `memory-context` — each with a project-grounded "why this matters here" note. Mirrored path-scoped in `.claude/rules/` (incl. the added `accessibility.md`).
 
 ## Where depth lives
 
-For anything beyond this overview, read the source of truth in `.agents/context/*` — `product_requirements.md` (content), `design_system.md` (look + motion, per-chapter choreography), `system_architecture.md` (structure + Definition of Done).
+For anything beyond this overview, read the source of truth in `.agents/context/*` — `product_requirements.md` (content), `design_system.md` (v2: look + motion + reference libraries + per-chapter choreography), `system_architecture.md` (structure + Definition of Done). Live implementation knowledge (exact primitive APIs, chrome z-scale, recurring QA findings) lives in `.claude/agent-memory/`.
 
 > `AGENTS.md` is the committed cross-tool convention file. `AGENT_README.md` and `AGENT_NOTES.md` are gitignored, local-only scratch docs — don't rely on them being present.

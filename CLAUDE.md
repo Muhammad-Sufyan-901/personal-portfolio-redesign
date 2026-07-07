@@ -4,31 +4,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repo state (read this first)
 
-The old enterprise boilerplate (auth, dashboard, axios layer, Zustand store, route guards, ~50 shadcn components, and their deps) was removed in commit `9be4947`. `src/` is now a **minimal portfolio shell**:
+The old enterprise boilerplate (auth, dashboard, axios layer, Zustand store, route guards, ~50 shadcn components, and their deps) was removed in commit `9be4947`. Since then the redesign has **bootstrapped and shipped chapters 00–04** (2026-07-07, `chore(setup)` `2abbe94` → `feat(journey)` `b245c1e`). `src/` now holds:
 
-- a single `/` route rendering a placeholder `HomePage`;
-- the common-component primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`, `ThemeToggle`);
-- a theme provider + `useTheme` hook;
-- two shadcn primitives (`button`, `tooltip`).
+- the `/` route rendering `HomePage`, which composes `sections/{Hero,Manifesto,Craft,Journey}Section.tsx`;
+- the full **motion foundation**: `src/lib/gsap.ts` (single GSAP source, defaults `power4.out`/0.8s), `src/providers/SmoothScrollProvider.tsx` (single Lenis, lerp 0.09), hooks (`useLenis`, `usePrefersReducedMotion`, `useIsomorphicLayoutEffect`), `src/store/useUIStore.ts` (zustand: `preloaderDone`, `menuOpen`), `src/types/motion.ts`;
+- the common primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`, `ThemeToggle`) **plus seven motion primitives** (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`);
+- the **PRD data layer**: `src/types/portfolio.ts` (`TechStack`, `Project`, `Skill`, `JourneyItem`, `Profile`, `ContactChannel`) + `src/features/home/data/*.data.ts` + `src/constants/{projects.data.ts,navigation.ts}` + `src/config/{site,env}.ts`;
+- applied design tokens in `src/styles/globals.css` (`src/index.css` was **deleted** at bootstrap);
+- site chrome: `Header` (z-60), `MobileMenu` (z-80), `RootLayout` in `src/components/layouts/`; two shadcn primitives (`button`, `tooltip`).
 
-The portfolio redesign itself is specified in the root `.agents/` (portable, tool-agnostic spec: context, roles, workflows, skills, rules) and `.claude/` (Claude Code native config: skills, commands, agents, rules, hooks) folders — a motion-first (GSAP/Lenis) single-page portfolio built per `.agents/context/product_requirements.md`, starting with `/plan-redesign` → approval.
-
-**Two things are specified but not yet in the code — don't treat them as present:**
-1. The **motion stack** (GSAP, Lenis, split-type, `@gsap/react`, EmailJS, the display/body fonts) is not installed — it lands at the redesign bootstrap.
-2. The **redesign design tokens** are not applied. `src/index.css` currently holds the **default shadcn oklch (blue/neutral) palette** with `--font-sans: Inter`; the warm ink/paper/brass tokens and Fraunces/General Sans fonts from the design system are the target, not the current state.
+**Still pending — don't treat as present:**
+1. **Chapters 05 (Selected Work) and 06 (Contact)** + Footer, and `src/lib/emailjs.ts` (EmailJS submit helper — the `@emailjs/browser` dep IS installed).
+2. The **"Void & Ember" re-theme**: `design_system.md` v2 makes ember `#E8380F` the authoritative accent (bg `#0A0A0A`, paper `#E4E4E4`); the shipped `globals.css` still carries the interim Warm Ink + **Cobalt `#3B5BFF`** tokens. Components style by token *name*, so the migration is a globals.css-only change. Also pending from v2: the thick organic SVG "bold path draw" journey rail, the hero aurora glow, the optional footer ornament.
 
 ## Redesign project context
 
-This becomes **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) working across web and mobile — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish only, not its color or content). Persona headline: "Software Engineer · Web & Mobile"; stats 3 years experience · 7 stacks · 10 projects.
+This is **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) working across web and mobile — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish, not its content). Persona headline: "Software Engineer · Web & Mobile"; stats 3 years experience · 7 stacks · 10 projects.
 
-- **Content source**: `.agents/context/product_requirements.md` is the _only_ content source (profile, skills, tools, work, education, awards, projects, contact) — content is transcribed from it, never invented; unknown fields are omitted, not fabricated. The old repo's content does not exist here.
-- **Design system** (`.agents/context/design_system.md`): palette, typography, tokens, motion system, per-chapter choreography (§11). Target palette — warm ink `#0B0B0F` bg, surface `#14141A`/raised `#1C1C24`, warm paper `#ECE8E1` text, muted `#8A8A94`, hairline `#26262E`, surgical **brass** accent `#C8A46A` (deep `#A8823E`; a cobalt `#3B5BFF` alternate is an open decision). Motion tokens: `--ease-out: cubic-bezier(0.16,1,0.3,1)`, `--dur-base 0.8s`; Lenis `lerp 0.09`.
-- **Fonts**: **Fraunces** (display — name, chapter titles) · **General Sans**/Satoshi (body, UI) · **JetBrains Mono** (chapter numbers, eyebrows, labels) — self-hosted/bundled.
-- **Stack additions over the current shell**: motion via **GSAP** (+ ScrollTrigger) · **Lenis** · **split-type** · `@gsap/react` (`useGSAP`); contact form via EmailJS (`@emailjs/browser`). Already in place: Tailwind **v4**, TypeScript **strict**.
+- **Content source**: `.agents/context/product_requirements.md` is the _only_ content source (profile, skills, tools, work, education, awards, projects, contact) — content is transcribed from it, never invented; unknown fields are omitted, not fabricated. The full dataset is already transcribed (21 skills, 9 journey items, 6 projects, 3 contact channels) — reuse the data layer, never re-transcribe.
+- **Design system** (`.agents/context/design_system.md`, **v2 "Void & Ember"** — palette evidence-sampled from 47 reference-video frames, §3.0): bg `#0A0A0A`, surface `#141414`/raised `#1C1C1C`, paper `#E4E4E4`, muted `#9A9A9A`, hairline `#242424`, surgical **ember** accent `#E8380F` (deep `#B32C0B`; brass `#C8A46A` and cobalt `#3B5BFF` are documented alternates — cobalt is what's currently shipped). Motion tokens: `--ease-out: cubic-bezier(0.16,1,0.3,1)`, `--dur-base 0.8s`; Lenis `lerp 0.09`. §7.5 lists the vetted reference component libraries (React Bits, Magic UI, Aceternity UI, 21st.dev) with a mandatory GSAP-adaptation rule.
+- **Fonts**: **Fraunces** (display) · **General Sans** (body, UI) · **JetBrains Mono** (labels) — bundled/self-hosted, live today (`@fontsource-variable/fraunces`, `@fontsource/jetbrains-mono`, General Sans woff2 in `src/assets/fonts/`).
+- **Stack (all installed)**: React `^19.2.0` · Vite `^7.3.1` · TanStack Router `^1.162.8` · Tailwind **v4** (`^4.2.1`) · TS `~5.9.3` strict · gsap `^3.15.0` + `@gsap/react` (`useGSAP`) · lenis `^1.3.25` · split-type · zustand · react-hook-form · `@emailjs/browser`.
 - **Three Golden Rules** (from `system_architecture.md`): (1) **feature isolation** — no `src/features/*` imports another feature; (2) **one GSAP source** — `src/lib/gsap.ts` registers ScrollTrigger + sets defaults, nothing else imports `gsap/ScrollTrigger`; (3) **one Lenis owner** — `src/providers/SmoothScrollProvider.tsx` instantiates Lenis once, synced to `gsap.ticker`.
-- **Other non-negotiables**: every animation runs in `useGSAP(() => {…}, { scope })` with a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden); design tokens only, no raw hex / magic px; `cn()` for conditional classes, `cva` for variants; no `any`; Lighthouse ≥ 90.
-- **Workflow**: `/plan-redesign` → `PLAN.md` → **stop for approval** → bootstrap tokens/motion foundation → `/build-section <chapter>` per chapter → `/qa-audit` per chapter and at the end.
-- **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer`. Note **Journey (04)** merges work experience + education + awards into one timeline — don't drop awards. Sections live in `src/features/home/sections/*`, content in `src/features/home/constants/*` typed against `src/types/portfolio.ts`.
+- **Other non-negotiables**: every animation runs in `useGSAP(() => {…}, { scope })` with a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden); design tokens only, no raw hex / magic px; `cn()` for conditional classes, `cva` for variants; no `any`; Lighthouse ≥ 90. Borrowed animated-component ideas go through the `animated-ui-references` skill — never install `framer-motion`.
+- **Workflow**: `/plan-redesign` → `PLAN.md` (whole-site) → **stop for approval** → `/build-section <chapter>` one section at a time with a **stop-for-approval gate after every section** → `/qa-audit` per section and at the end. Chapters 00–04 shipped this way, one `feat(<chapter>):` commit each.
+- **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer` (00–04 built). **Journey (04)** merges work experience + education + awards into one timeline — don't drop awards. Sections live in `src/features/home/sections/*`, content in `src/features/home/data/*` typed against `src/types/portfolio.ts`.
 
 ## Commands
 
@@ -39,26 +39,26 @@ This becomes **Muhammad Sufyan's portfolio** — a software engineer (Indonesia)
 - `npx tsc --noEmit` — typecheck only, no build
 - No test framework is configured — there are no tests and no test command.
 
-There is no backend. The contact form uses EmailJS; its keys (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`) live in `.env` (gitignored).
+There is no backend. The contact form uses EmailJS; its keys (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`) live in `.env` (gitignored), read via `src/config/env.ts`.
 
 ## Architecture
 
 Feature-based structure with TanStack Router file-based routing. Path alias `@/` → `src/` (set in both `tsconfig` and `vite.config.ts`).
 
 ### Routing (`src/routes/`)
-Registry-only files — no JSX/component definitions here, just `createFileRoute`/`createRootRoute` wiring a `component` imported from `src/features/**`. Currently `__root.tsx` (`createRootRoute({ component: RootLayout })`) and `index.tsx` (`/` → `HomePage`) — the portfolio is a single page. The router plugin runs with `autoCodeSplitting: true` and regenerates `src/routeTree.gen.ts` on dev/build — **never hand-edit it**. Default single-page navigation is by anchor/smooth-scroll; there are no `beforeLoad` guards.
+Registry-only files — no JSX/component definitions here, just `createFileRoute`/`createRootRoute` wiring a `component` imported from `src/features/**`. `__root.tsx` mounts `AppProviders` + `Preloader` + `Cursor` + `RootLayout`; `index.tsx` (`/` → `HomePage`) — the portfolio is a single page. The router plugin runs with `autoCodeSplitting: true` and regenerates `src/routeTree.gen.ts` on dev/build — **never hand-edit it**. Navigation is by anchor/smooth-scroll (the common `Link` uses `lenis.scrollTo` + `pushState`); there are no `beforeLoad` guards.
 
 ### Features (`src/features/<name>/`)
-Only `home` exists — it owns the whole portfolio page. `pages/HomePage.tsx` is a placeholder; `components/`, `data/`, `types/` are empty `.gitkeep` placeholders awaiting the chapter builds. Per the redesign spec, chapters go in `sections/` (numbered `HeroSection`…`ContactSection`), reusable feature parts (WorkCard, JourneyItem, PillarBlock) in `components/`, and transcribed PRD data in `constants/` typed against the global models. Features must not import from each other; shared code is promoted to `components/common`, `lib`, `hooks`, or `types`.
+Only `home` exists — it owns the whole portfolio page. `pages/HomePage.tsx` composes the built chapters from `sections/` (`HeroSection`, `ManifestoSection`, `CraftSection`, `JourneySection` — `WorkSection`/`ContactSection` to come); reusable feature parts live in `components/` (`JourneyEntry`, `PillarBlock`); transcribed PRD data in `data/*.data.ts`. Features must not import from each other; shared code is promoted to `components/common`, `lib`, `hooks`, or `types`.
 
 ### Providers & entry (`src/main.tsx`)
-Provider nesting, outermost → innermost: `StrictMode → ThemeProvider(defaultTheme="system", storageKey="vite-ui-theme") → TooltipProvider → RouterProvider`. The router is created with `scrollRestoration: true` and `defaultPreload: "intent"`. TanStack Router devtools live inside `RootLayout` (`src/components/layouts/RootLayout.tsx`), which wraps the router `<Outlet />`. At the redesign bootstrap, `SmoothScrollProvider` (Lenis owner) joins the provider stack and `Cursor`/`Preloader` mount in `__root.tsx`.
+`StrictMode → AppProviders → RouterProvider` where `AppProviders` = `ThemeProvider(defaultTheme="dark", storageKey="vite-ui-theme") → TooltipProvider → SmoothScrollProvider`. The router is created with `scrollRestoration: true` and `defaultPreload: "intent"`. Router devtools live inside `RootLayout`.
 
 ### Theme
-`src/providers/theme-provider.tsx` exposes `ThemeProvider` (props `defaultTheme`, `storageKey`) and `useTheme()` → `{ theme, setTheme }` with `Theme = "dark" | "light" | "system"`. State persists to `localStorage["vite-ui-theme"]` and toggles `.light`/`.dark` on `<html>`. Note: `index.html` ships `<html class="dark">`, so the site is effectively dark by default; `ThemeToggle` flips light/dark. Whether the final portfolio keeps a toggle or goes dark-only is an open design decision.
+`src/providers/theme-provider.tsx` exposes `ThemeProvider` and `useTheme()` → `{ theme, setTheme }` with `Theme = "dark" | "light" | "system"`. State persists to `localStorage["vite-ui-theme"]`, toggles `.light`/`.dark` on `<html>`; default is **dark** (dark-first identity). Whether the final portfolio keeps a light toggle is an open design decision (design_system §10 note 8).
 
 ### Common components (`src/components/common/`)
-Polymorphic primitives that replace raw HTML tags in feature/page/section code. Import from the barrel: `import { Box, Heading, Text } from "@/components/common";`.
+Polymorphic primitives that replace raw HTML tags in feature/page/section code, **plus the motion primitives**. Import from the barrel: `import { Box, Heading, Text } from "@/components/common";`.
 
 | Component | Renders | Key props (defaults) |
 | --- | --- | --- |
@@ -66,23 +66,29 @@ Polymorphic primitives that replace raw HTML tags in feature/page/section code. 
 | `Container` | any element | `as` (`"div"`), `maxWidth` sm…7xl\|full (`"7xl"`), `centerContent` (`false`); always adds `mx-auto px-4 sm:px-6 lg:px-8` |
 | `Text` | `p`\|`span`\|`div` | `as` (`"p"`), `variant` default\|lead\|large\|small\|muted (`"default"`) |
 | `Heading` | `h1`–`h6` | `level` 1–6 (`1`) or `as`, `variant` default\|display\|title\|subtitle\|section (`"default"`) |
-| `Link` | `a` / router link | `href` (required); auto-routes internal (TanStack), hash (smooth-scroll + `pushState`), external/`mailto:`/`tel:` (auto `rel`) |
+| `Link` | `a` / router link | `href` (required); auto-routes internal (TanStack), hash (Lenis smooth-scroll + `pushState`), external/`mailto:`/`tel:` (auto `rel`) |
 | `Image` | `img` (skeleton wrapper) | `src`, `alt` (required), `width`/`height`, `objectFit`, `priority` eager\|lazy (`"lazy"`), `quality` (`75`), `fallback`; builds a `srcset`, preloads, swaps to fallback on error |
-| `ThemeToggle` | shadcn `Button` | none — reads `useTheme`, toggles light/dark |
+| `ThemeToggle` | shadcn `Button` | none — note: not re-exported from the barrel (known follow-up) |
+| `RevealText` | split-type reveal | `mode` lines\|words\|chars (`"lines"`), `as`, `delay`, `stagger` (.08/.04/.025) |
+| `ParallaxImage` | clip-reveal figure | `aspect`, `parallax` (−8→8), `withScrim` (`false`) |
+| `Marquee` / `MagneticButton` / `ChapterEyebrow` | motion utilities | `speed` (30) / `strength` (12) / `index`+`label` |
+| `Cursor` / `Preloader` | overlays (z-100 / z-90) | none — mounted once in `__root.tsx` |
 
-The house rule (bare `<div>`/`<p>`/etc. banned in favor of these) is a **documented convention, not lint-enforced**: the legacy `.eslintrc` describing `react/forbid-elements` is not wired into the ESLint 9 flat config (`eslint.config.js` has no such rule). Enforcement is via the output style + `.claude/rules/custom-components.md` + subagent instructions. `Image` internally emits raw `<div>`/`<img>` and is exempt.
+Gotcha: `Heading`'s default-variant responsive sizes survive `twMerge` over fluid `--text-*` tokens — sections use `Box as="h3"` + token classes instead (see `.claude/rules/custom-components.md`).
+
+The house rule (bare `<div>`/`<p>`/etc. banned in favor of these) is a **documented convention, not lint-enforced**: the legacy `.eslintrc` describing `react/forbid-elements` is not wired into the ESLint 9 flat config. Enforcement is via the output style + `.claude/rules/custom-components.md` + subagent instructions. `Image`/`ParallaxImage` internally emit raw elements and are exempt.
 
 ### shadcn primitives (`src/components/ui/`)
-shadcn/ui-generated primitives only (config in `components.json`: style "new-york", base color "neutral", icons "lucide", css `src/index.css`) — no business logic. Currently just `button` and `tooltip`; add more via `/add-shadcn` (or `npx shadcn add`). `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**` because shadcn files export `cva` variants alongside components.
+shadcn/ui-generated primitives only (config in `components.json`: style "new-york", base color "neutral", icons "lucide") — no business logic. Currently just `button` and `tooltip`; add more via `/add-shadcn` (or `npx shadcn add`). `eslint.config.js` scopes `react-refresh/only-export-components: off` to `src/components/ui/**`.
 
 ### Styling & tokens
-Tailwind **v4**, CSS-first: `src/index.css` does `@import "tailwindcss"`, declares `@custom-variant dark (&:is(.dark *))` for class-based dark mode, defines shadcn tokens as **oklch** CSS vars in `:root`/`.dark`, and maps them into Tailwind theme tokens via `@theme inline { … }`. Use `cn()` (from `src/lib/utils.ts`, `twMerge(clsx(...))`) for conditional classes and `cva` for variants. The redesign replaces the default shadcn palette with the design-system tokens (ink/paper/brass, Fraunces/General Sans/JetBrains Mono) via `@theme` — not yet done.
+Tailwind **v4**, CSS-first: `src/styles/globals.css` (the only stylesheet — `src/index.css` no longer exists) imports Tailwind + fonts, defines the design tokens on `:root`/`.light` and maps them via `@theme inline` into Tailwind utilities (`bg-ink`, `text-paper`, `text-accent`, `font-display`, fluid `--text-*` scale, motion eases/durations, `--radius: 4px`). Use `cn()` (from `src/lib/utils.ts` — an **extended** twMerge that registers the `--text-*` tokens as font-size class groups) and `cva` for variants. Current values are the interim cobalt set; the ember re-theme (design_system v2 §9) is pending — always style by token name.
 
 ### State & data
-The site is static — **no server-state layer, no TanStack Query, and currently no global store**. Theme is the only cross-cutting client state today (via `ThemeProvider`); everything else is local `useState`. Per `system_architecture.md`, the redesign plans a *minimal* Zustand `useUIStore` (only `preloaderDone`, `menuOpen`, `theme`) and a react-hook-form contact form that submits through `src/lib/emailjs.ts` — neither is installed yet; add them at build time, don't reintroduce an HTTP/API layer.
+The site is static — **no server-state layer, no HTTP/API layer**. Cross-tree UI state is the minimal zustand store `src/store/useUIStore.ts` (`preloaderDone` — the hero timeline's start cue — and `menuOpen`); theme lives in `ThemeProvider`; everything else is local `useState`. The contact form (chapter 06) will use react-hook-form + `src/lib/emailjs.ts` (not yet created). Don't reintroduce an HTTP/API layer.
 
 ### Types
-Static/compile-time types live in `src/types/` (currently empty). The redesign adds `src/types/portfolio.ts` (`Project`, `Skill`, `JourneyItem`, `Profile`, `TechStack`) as the content contract and `src/types/motion.ts` (`RevealMode`, `ParallaxConfig`); PRD constants are typed against these so bad edits fail compilation. `src/lib/` holds `utils.ts` (`cn()`); the redesign adds `gsap.ts` (single GSAP source) and `emailjs.ts` there.
+`src/types/portfolio.ts` (`TechStack`, `Project`, `Skill`, `JourneyItem`, `Profile`, `ContactChannel`) is the live content contract — all PRD constants are typed against it so bad edits fail compilation. `src/types/motion.ts` holds `RevealMode`, `ParallaxConfig`. `src/lib/` holds `gsap.ts` (single GSAP source) and `utils.ts` (`cn()`); `emailjs.ts` joins at chapter 06.
 
 ### Build & config
 TypeScript **strict** (`tsconfig.app.json`: `strict`, `noUnusedLocals`, `noUnusedParameters`, `moduleResolution: bundler`, `verbatimModuleSyntax`, `jsx: react-jsx`, `noEmit`; alias `@/* → ./src/*`). Vite plugin order in `vite.config.ts`: `tanstackRouter({ autoCodeSplitting: true }) → react() → tailwindcss()`. ESLint is a flat config (`eslint.config.js`) extending JS/TS-ESLint recommended + react-hooks + react-refresh; `dist` ignored.
@@ -91,17 +97,20 @@ TypeScript **strict** (`tsconfig.app.json`: `strict`, `noUnusedLocals`, `noUnuse
 
 These apply to Claude Code and any AI agent working in this repo:
 
-- **Custom component primitives:** in feature/page/section TSX, never emit bare `div`/`p`/`span`/`h1`–`h6`/`a`/`img` — use `Box`/`Container`/`Text`/`Heading`/`Link`/`Image` from `@/components/common` (full mapping + example in `.claude/output-styles/custom-components.md`, also enforced via `.claude/rules/custom-components.md` and the subagents). Interactive controls → shadcn/ui. The `custom-components` output style is the project default (`outputStyle` in `.claude/settings.json`); note output styles don't reach subagents, so the rule + subagent instructions are the durable enforcement. This is a convention, not a lint rule (see Architecture → Common components).
+- **Custom component primitives:** in feature/page/section TSX, never emit bare `div`/`p`/`span`/`h1`–`h6`/`a`/`img` — use `Box`/`Container`/`Text`/`Heading`/`Link`/`Image` from `@/components/common` (full real prop surfaces + motion primitives + gotchas in `.claude/output-styles/custom-components.md` and `.claude/rules/custom-components.md`). Interactive controls → shadcn/ui. The `custom-components` output style is the project default; output styles don't reach subagents, so the rule + subagent instructions are the durable enforcement.
 - **Feature-change logs:** after creating/changing any feature/section/component, write a log to `logs/feature-changes/` (via `/log-change`) before reporting done, and commit it with the change. Logs are history only. See `.claude/rules/logging.md`.
-- **Agent memory = project knowledge:** `.claude/agent-memory/<agent>/MEMORY.md` (project scope, committed) holds durable knowledge (layout, custom-component API, conventions, decisions, DRY patterns). Read it before building; update it after any change that introduces/revises a pattern, decision, location, or reusable util (via `/update-memory`). Memory is knowledge, not a changelog. See `.claude/rules/memory-context.md`.
-- **Discover tooling:** use `/discover-tooling` to web-search for relevant Claude Code skills and MCP servers for this stack and propose the best fits (propose only; skills → `.claude/skills/`, MCP → `.mcp.json`).
+- **Agent memory = project knowledge:** `.claude/agent-memory/<agent>/MEMORY.md` (project scope, committed) holds durable knowledge; overflow lives in linked siblings (`content-data-layer.md`, `site-chrome.md`, `runtime-smoke-testing.md`). Read it before building; update it after any change that introduces/revises a pattern, decision, location, or reusable util (via `/update-memory`). See `.claude/rules/memory-context.md`.
+- **Borrowed animated components:** React Bits / Magic UI / Aceternity UI / 21st.dev ideas go through the `animated-ui-references` skill (both sides) — never install `framer-motion`; reimplement in `useGSAP`, swap raw tags for primitives, re-express styles as tokens.
+- **Discover tooling:** use `/discover-tooling` to web-search for relevant Claude Code skills and MCP servers and propose the best fits (propose only). Already adopted: context7, chrome-devtools, shadcn MCP; impeccable + design-taste-frontend skills.
 
 ## .claude directory additions (per official docs)
 
 - `output-styles/custom-components.md` — house style forcing the common-component primitives (`keep-coding-instructions: true`).
 - `agent-memory/<agent>/MEMORY.md` — per-subagent durable project knowledge (committed).
 - `workflows/` — home for native `/workflows` JS scripts (see its README; generate `feature-done` + `section-cycle`).
-- `agents/` — subagents (`frontend-engineer`, `motion-engineer`, `qa-auditor`) set `memory: project` and are instructed to read/update memory + write logs.
-- Rules: `custom-components.md` (path-scoped), `logging.md`, `memory-context.md`, plus `motion.md`, `project.md`, `react-typescript.md`, `tailwind-styling.md`. Skills: `plan-redesign`, `build-section`, `qa-audit`, `log-change`, `update-memory`, `discover-tooling` (+ design skills). Commands: `add-shadcn`, `commit`, `typecheck`. MCP (`.mcp.json`): context7, chrome-devtools, shadcn.
+- `agents/` — subagents (`frontend-engineer`, `motion-engineer`, `qa-auditor`) set `memory: project`, carry as-built path maps, and are instructed to read/update memory + write logs.
+- Rules: `custom-components.md`, `accessibility.md` (both path-scoped), `logging.md`, `memory-context.md`, plus `motion.md`, `project.md`, `react-typescript.md`, `tailwind-styling.md` — each grounded with a "why this matters here" note.
+- Skills (`.claude/skills/`, 9): `plan-redesign`, `build-section`, `qa-audit`, `log-change`, `update-memory`, `discover-tooling`, `animated-ui-references`, + installed design skills `impeccable`, `design-taste-frontend`. Every in-house skill has a portable mirror in `.agents/skills/` (18 total there); the two design skills have pointer stubs.
+- Commands: `add-shadcn`, `commit`, `typecheck`. MCP (`.mcp.json`): context7, chrome-devtools, shadcn.
 
 See **AGENTS.md** for the full agent roster, workflow, and tooling inventory.
