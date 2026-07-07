@@ -30,11 +30,11 @@
 - Header z-[60] < menu z-[80] (fits z-scale below).
 - **Manifesto scroll-fill** (`src/features/home/sections/ManifestoSection.tsx`): words PRE-SPLIT IN JSX (`line.split(" ")` → spans) — static data needs no split-type, so no revert and no re-split-on-resize problem (React owns markup, natural reflow). One `gsap.fromTo(".manifesto-word", { opacity: 0.15 } → { opacity: 1, duration: 0.4, stagger: 0.2, ease: "none" })` with `scrollTrigger: { start: "top top", end: "+=175%", pin: true, scrub: true, invalidateOnRefresh: true }`. Opacity-only fill ≈ faint→paper color tween (one property). Focal word: `text-accent` + static `bg-accent-tint -mx-1 px-1 rounded` wash (negative margin cancels pad — no layout shift), fades in with word opacity. Data: `profile.manifesto { lines, focalWord }` typed on `Profile`.
 - **Pin + Lenis**: Lenis drives native window scroll (no transform mode), so ScrollTrigger pins/fixed positioning just work; no `anticipatePin`, no manual resize listener needed.
-- TODO when chapters 03–06 exist: scroll-spy brass active-nav dot (needs section anchors; deliberately not built with Hero).
+- TODO when chapters 03–06 exist: scroll-spy accent active-nav dot (needs section anchors; deliberately not built with Hero).
 
 ## Motion tokens (design_system §7; live in src/styles/globals.css @theme)
 - `--ease-out` ≈ `power4.out` (the gsap default), `--ease-inout cubic-bezier(0.83,0,0.17,1)`; durations 0.4/0.8/1.2s; Lenis lerp 0.09.
-- Type-scale utilities carry size+leading+tracking: `text-display/chapter/statement/item/body/eyebrow/index/meta`. Accent is currently COBALT (documented alternate to brass) — token still named `accent`, primitives don't care.
+- Type-scale utilities carry size+leading+tracking: `text-display/chapter/statement/item/body/eyebrow/index/meta`. Accent is currently the pre-migration COBALT (ember `#E8380F` is authoritative per design_system v2) — token still named `accent`, primitives don't care.
 - Avoid the `Text` component for token type styles: its variant baseline (`text-base leading-relaxed text-foreground`) collides with custom `text-*` tokens in twMerge (unknown token classes get misclassified). Use `Box` + explicit classes.
 
 ## State & types

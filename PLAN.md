@@ -1,6 +1,8 @@
 # PLAN — Portfolio Redesign (approved)
 
 > Approved at planning review. Stage B executes this plan section by section.
+>
+> **Palette supersession note (2026-07-07):** this plan was approved under the v1 palette (accent then resolved to cobalt at bootstrap). `design_system.md` v2 has since made **ember `#E8380F`** the authoritative accent (measured from the reference video, §3.0/§3.2); "brass/accent" wording below reads as *the accent token*. Remaining scope (chapters 05–06, ember re-theme, v2 motion upgrades) is re-planned at the next `/plan-redesign`.
 
 ## Context
 
@@ -60,12 +62,12 @@ Bootstrap first (deps → tokens/fonts → motion foundation → typed data), th
 | # | Chapter | GSAP/Lenis technique (design_system §7 & §11) |
 |---|---------|-----------------------------------------------|
 | 00 | **Preloader** | Mono counter 0→100 + name mask-reveal; curtain wipe up (`--ease-inout`, `--dur-slow`); once per session (Zustand + `sessionStorage`); unmount → hero timeline |
-| 01 | **Hero** | split-type **char reveal** on the name (stagger 0.02–0.03s, plays after preloader); tagline + Mono role line; subtle mouse-parallax (~10px max); brass scroll-cue bob |
-| 02 | **Manifesto** | ScrollTrigger **pin + scrub**; bio words fill `--color-faint` → `--color-paper` (opacity 0.15→1) across the pin range; one focal word brass-tinted |
+| 01 | **Hero** | split-type **char reveal** on the name (stagger 0.02–0.03s, plays after preloader); tagline + Mono role line; subtle mouse-parallax (~10px max); accent (ember) scroll-cue bob |
+| 02 | **Manifesto** | ScrollTrigger **pin + scrub**; bio words fill `--color-faint` → `--color-paper` (opacity 0.15→1) across the pin range; one focal word accent-tinted (`--color-accent-tint`) |
 | 03 | **Craft** | **Line reveals** (split-type lines in `overflow-hidden`, `yPercent 100→0`, stagger 0.08s) on the Web/Mobile pillar blocks; keyword **Marquee** (hover-pause, `aria-hidden` dupe) |
 | 04 | **Journey** | Timeline **rail draw** (`scaleY 0→1`, scrub) + per-entry reveal on enter; merged Experience + Education + **Awards**, most recent first |
 | 05 | **Selected Work** | **Clip-path reveal** (`inset(100% 0 0 0)→inset(0)`, `--dur-slow`) + **parallax scrub** (`yPercent -8→8`) on media; hover scale 1.03 + cursor label "View"; cards link to `/work/$slug` through `PageTransition`; optional pinned horizontal feature row (desktop only) |
-| 06 | **Contact** | Line reveal on the oversized "Let's build something." + **MagneticButton** CTA; react-hook-form → `lib/emailjs.ts`; underlined inputs, brass focus; success/error in functional tokens |
+| 06 | **Contact** | Line reveal on the oversized "Let's build something." + **MagneticButton** CTA; react-hook-form → `lib/emailjs.ts`; underlined inputs, accent (ember) focus underline; success/error in functional tokens |
 | — | **Footer** | Giant name **Marquee** (Fraunces display, slow, muted); Mono copyright/built-with; magnetic back-to-top |
 
 `/work/$slug` (WorkDetailPage + PageTransition) is built **inside chapter 05's cycle** — the section and its destination ship together.

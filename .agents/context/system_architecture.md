@@ -235,7 +235,7 @@ Before a chapter is "done":
 - [ ] A working `prefers-reduced-motion` branch exists (opacity-only, Lenis disabled, cursor hidden).
 - [ ] Lenis ↔ ScrollTrigger stays in sync on resize + (if multi-page) route change (`ScrollTrigger.refresh()` called).
 - [ ] `cn()` used for conditional classes; `cva` for variants; shadcn restyled via tokens.
-- [ ] Keyboard-navigable, visible focus (brass ring), semantic landmarks + alt text.
+- [ ] Keyboard-navigable, visible focus (accent ring — ember `#E8380F` per design_system v2 §3.3, token-driven via `:focus-visible`), semantic landmarks + alt text.
 - [ ] Media optimized (`.avif`/`.webp`, explicit dimensions, lazy below fold).
 - [ ] `tsc` + `eslint` clean; Lighthouse ≥ 90 (Perf / A11y / Best Practices / SEO).
 - [ ] Meta / OG tags + `theme-color` set (via `config/site.ts` + route `head`).
