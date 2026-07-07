@@ -16,7 +16,8 @@
 
 ## Recurring issues (append as found)
 - Off-token default-Tailwind palette classes (`bg-slate-50` etc.) evade the hex grep — also run `grep -rnE "(bg|text|border)-(slate|gray|zinc|neutral|stone)-" src/components src/features` (found in RootLayout.tsx, 2026-07-07 ch.00 audit).
-- Overlay/modal chapters: check background is `inert`/focus-trapped, not just aria attrs — recurred twice: preloader (ch.00, fixed) and MobileMenu `aria-modal` with Tab escape (ch.01 F1). Check first on any new overlay.
+- Overlay/modal chapters: check background is `inert`/focus-trapped AND focus is moved into the dialog on open + restored on close — recurred 3×: preloader (v2 ch.00), MobileMenu Tab escape (v2 ch.01), MobileMenu focus dropped to body on open (v3 ch.01 F2, 2026-07-08: making the trigger `inert` blurs it; nothing focuses the dialog). Check first on any new overlay.
+- Overlays that `lenis.stop()`: any `lenis.scrollTo` issued while stopped is SILENTLY dropped — `lenis.mjs:747` `if ((this.isStopped || this.isLocked) && !force) return`. MobileMenu link clicks never scrolled (v3 ch.01 F1); fix is `{ force: true }` in the shared `Link` hash branch. Re-check whenever an overlay owns nav links or a scroll-lock pattern changes.
 - Hardcoded prose in section JSX — ch.01 hero tagline was paraphrased copy not in `profile.data`. Diff every string literal in sections against `data/*.data.ts` + PRD.
 - `Link` hash scroll: FIXED ch.01 — routes via `useLenis()`, native instant fallback when lenis null. Lesson stands: JS `behavior:"smooth"` is NOT overridden by reduced-motion CSS `scroll-behavior:auto`; check any new programmatic scroll.
 - Focus-containment probes: the TanStack devtools button is a legit Tab escape target in dev only (`react-router-devtools` renders null when `NODE_ENV !== "development"`) — don't count it as a containment failure.

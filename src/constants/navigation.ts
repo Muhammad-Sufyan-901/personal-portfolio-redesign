@@ -14,3 +14,9 @@ export const navLinks: NavLink[] = [
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];
+
+/** Curated subset for the desktop header (full list lives in MobileMenu +
+ *  footer) — 8 links crowd a 72px bar. */
+export const headerLinks: NavLink[] = navLinks.filter((l) =>
+  ["About", "Journey", "Gallery", "Contact"].includes(l.label),
+);
