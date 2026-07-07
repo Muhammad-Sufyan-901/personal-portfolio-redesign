@@ -39,8 +39,11 @@ dist-ssr
 .artifacts/
 
 # Raw Reference Capture (video/frames can be large; re-derivable, not source)
-reference/
-# ...but the impeccable skill's reference docs are part of the skill, not captures
+# — but the capture tooling + notes ARE source and are committed:
+reference/*
+!reference/scripts/
+!reference/REFERENCE-NOTES.md
+# ...and the impeccable skill's reference docs are part of the skill, not captures
 !.claude/skills/impeccable/reference/
 
 # Agent Markdown
