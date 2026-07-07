@@ -1,6 +1,6 @@
 # QA Auditor — Project Memory
 
-> **⚠️ HARD RESET (2026-07-07):** `src/` was reset to a single blank page (no primitives, tokens, data layer, or motion). The checks and recurring issues below stay valid as the audit playbook for the rebuild — but don't expect the referenced files/sections to exist until their chapters are rebuilt from the `.agents/context/` specs.
+> **STATUS (2026-07-08, post B0 re-bootstrap):** foundation rebuilt (tokens ember/dark-only, 14 primitives, data layer, providers) — the checks below are live again. Sections 00→Footer build one gate at a time on the 10-chapter map (`00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer`); audit each as it lands.
 
 ## Standard checks (Definition of Done — system_architecture §8)
 - `npx tsc --noEmit` + `npm run lint` clean; no `any`.

@@ -1,1 +1,142 @@
 @import "tailwindcss";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@font-face {
+  font-family: "General Sans";
+  src: url("../assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("../assets/fonts/GeneralSans-VariableItalic.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* "Void & Ember" system (design_system.md v2 §3 — palette evidence-sampled from
+   the reference video §3.0; live site cross-checked: bg is exactly #0A0A0A).
+   Dark-only identity (PLAN v3 decision #2) — values live directly in @theme. */
+@theme {
+  /* === Palette (§3.1–3.4) === */
+  --color-ink: #0a0a0a;
+  --color-surface: #141414;
+  --color-raised: #1c1c1c;
+  --color-paper: #e4e4e4;
+  --color-muted: #9a9a9a;
+  --color-faint: #4d4d4d;
+  --color-line: #242424;
+
+  --color-invert-bg: #e8e8e8;
+  --color-invert-text: #0a0a0a;
+
+  --color-accent: #e8380f;
+  --color-accent-deep: #b32c0b;
+  --color-accent-tint: rgba(232, 56, 15, 0.12);
+
+  --color-success: #5bae7c;
+  --color-error: #d8735e;
+  --color-overlay-scrim: rgba(10, 10, 10, 0.72);
+
+  /* === shadcn compatibility (restyled onto our palette) === */
+  --color-background: var(--color-ink);
+  --color-foreground: var(--color-paper);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-paper);
+  --color-popover: var(--color-raised);
+  --color-popover-foreground: var(--color-paper);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-raised);
+  --color-secondary-foreground: var(--color-paper);
+  --color-muted-foreground: var(--color-muted);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #d8735e;
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--color-line);
+  --color-input: var(--color-line);
+  --color-ring: var(--color-accent);
+
+  /* === Typography (§4) — Fraunces display (PLAN v3 decision #5) === */
+  --font-display: "Fraunces Variable", "Fraunces", serif;
+  --font-sans: "General Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Fluid type scale (§4.3) */
+  --text-display: clamp(3.5rem, 12vw, 11rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.03em;
+  --text-chapter: clamp(2.5rem, 7vw, 6rem);
+  --text-chapter--line-height: 1;
+  --text-chapter--letter-spacing: -0.02em;
+  --text-statement: clamp(1.75rem, 4vw, 3.25rem);
+  --text-statement--line-height: 1.15;
+  --text-statement--letter-spacing: -0.01em;
+  --text-item: clamp(1.25rem, 2.4vw, 1.75rem);
+  --text-item--line-height: 1.2;
+  --text-item--letter-spacing: -0.01em;
+  --text-body: clamp(1rem, 1.05vw, 1.15rem);
+  --text-body--line-height: 1.6;
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-index: 0.875rem;
+  --text-index--line-height: 1;
+  --text-index--letter-spacing: 0.05em;
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.04em;
+
+  /* === Layout (§5.2) === */
+  --spacing-page-x: clamp(1.25rem, 5vw, 6rem);
+  --spacing-section: clamp(6rem, 14vh, 12rem);
+
+  /* === Radius (§6 — elegant ≠ round) === */
+  --radius: 4px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+
+  /* === Motion (§7.1) === */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.83, 0, 0.17, 1);
+  --dur-fast: 0.4s;
+  --dur-base: 0.8s;
+  --dur-slow: 1.2s;
+}
+
+/* Base */
+::selection {
+  background: rgba(232, 56, 15, 0.25);
+}
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+html {
+  scrollbar-width: none; /* Lenis handles scroll; hide native bar */
+}
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+  body {
+    @apply bg-ink font-sans text-paper antialiased;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scrollbar-width: auto;
+  }
+}

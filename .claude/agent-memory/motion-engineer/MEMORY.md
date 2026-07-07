@@ -1,6 +1,6 @@
 # Motion Engineer — Project Memory
 
-> **⚠️ HARD RESET (2026-07-07):** `src/` was reset to a single blank page; gsap/@gsap/react/lenis/split-type/zustand and every motion file (lib/gsap.ts, SmoothScrollProvider, hooks, store, all primitives, all section choreography) were **deleted/uninstalled**. Everything below is prior-build knowledge — the exact patterns and gotchas to re-apply when the motion foundation is rebuilt from the `.agents/context/` specs. Nothing described here currently exists in `src/`.
+> **STATUS (2026-07-08, post B0 re-bootstrap):** the motion foundation was **rebuilt** per PLAN v3: `lib/gsap.ts`, `SmoothScrollProvider`, hooks, store, and all 8 motion primitives (RevealText, ParallaxImage, Marquee, MagneticButton, ChapterEyebrow, Cursor, Preloader, PathDraw) exist again at the documented paths with the documented APIs. **Section choreography does NOT exist yet** (Hero gating, aurora, manifesto scroll-fill, header scroll state, MobileMenu — all still to rebuild, chapters 00→Footer on the 10-chapter map). Preloader/Cursor are built but unmounted until chapter 00. Display face is **Fraunces again** (grotesk swap reverted, PLAN v3 #5); accent is ember, applied.
 
 ## Motion architecture (single sources) — prior build 2026-07-07 (deleted in reset; rebuild to this spec)
 - GSAP registered ONLY in `src/lib/gsap.ts` (registers ScrollTrigger, defaults `ease: "power4.out", duration: 0.8`; exports `gsap`, `ScrollTrigger`). No other file imports `gsap` or `gsap/ScrollTrigger`.
