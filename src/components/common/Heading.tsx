@@ -20,8 +20,9 @@ interface HeadingOwnProps {
 // Variant styles
 const headingVariants: Record<HeadingVariant, string> = {
   default: "font-semibold text-foreground",
-  // design_system §4.3 "Display / Name" — Fraunces 400, fluid clamp scale
-  display: "font-display font-normal text-display text-foreground",
+  // design_system §4.3 "Display / Name" — grotesk display (General Sans,
+  // §4.1 option B); medium weight so large sizes read like the reference
+  display: "font-display font-medium text-display text-foreground",
   title: "text-3xl md:text-4xl font-bold text-foreground",
   subtitle: "text-xl md:text-2xl font-semibold text-muted-foreground",
   section: "text-2xl font-semibold text-foreground",

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 
@@ -20,23 +19,29 @@
   font-display: swap;
 }
 
-/* Warm Ink + Cobalt system (design_system.md §3, accent = documented cobalt alternate).
-   Dark is the default identity; `.light` flips the documented light values
-   (ink→#F4F1EA, paper→#1A1A1F, accent→#2E48D6) with derived neutrals. */
+/* "Void & Ember" system (design_system.md v2 §3 — palette measured from the
+   reference video, §3.0). Dark is the default identity; `.light` flips the
+   documented light values (ink→#F4F1EA, paper→#1A1A1F, accent→#B32C0B) with
+   derived neutrals. Display face is the grotesk (General Sans) per §4.1
+   option B — Fraunces retired at the v2 re-theme. */
 :root {
-  --ink: #0b0b0f;
-  --surface: #14141a;
-  --raised: #1c1c24;
-  --paper: #ece8e1;
-  --muted: #8a8a94;
-  --faint: #55555f;
-  --line: #26262e;
+  --ink: #0a0a0a;
+  --surface: #141414;
+  --raised: #1c1c1c;
+  --paper: #e4e4e4;
+  --muted: #9a9a9a;
+  --faint: #4d4d4d;
+  --line: #242424;
 
-  --accent: #3b5bff;
-  --accent-deep: #2e48d6;
-  --accent-tint: rgba(59, 91, 255, 0.12);
+  --accent: #e8380f;
+  --accent-deep: #b32c0b;
+  --accent-tint: rgba(232, 56, 15, 0.12);
 
-  --overlay-scrim: rgba(11, 11, 15, 0.72);
+  --invert-bg: #e8e8e8;
+  --invert-text: #0a0a0a;
+
+  --selection-bg: rgba(232, 56, 15, 0.25);
+  --overlay-scrim: rgba(10, 10, 10, 0.72);
 }
 
 .light {
@@ -48,10 +53,15 @@
   --faint: #9c9ca6;
   --line: #dad5cc;
 
-  --accent: #2e48d6;
-  --accent-deep: #2338ab;
-  --accent-tint: rgba(46, 72, 214, 0.12);
+  --accent: #b32c0b;
+  --accent-deep: #8f2309;
+  --accent-tint: rgba(179, 44, 11, 0.12);
 
+  /* invert band flips dark in light mode so the contrast beat survives */
+  --invert-bg: #1a1a1a;
+  --invert-text: #e4e4e4;
+
+  --selection-bg: rgba(179, 44, 11, 0.25);
   --overlay-scrim: rgba(244, 241, 234, 0.72);
 }
 
@@ -67,6 +77,8 @@
   --color-accent: var(--accent);
   --color-accent-deep: var(--accent-deep);
   --color-accent-tint: var(--accent-tint);
+  --color-invert-bg: var(--invert-bg);
+  --color-invert-text: var(--invert-text);
   --color-success: #5bae7c;
   --color-error: #d8735e;
   --color-overlay-scrim: var(--overlay-scrim);
@@ -91,7 +103,7 @@
   --color-ring: var(--accent);
 
   /* === Typography === */
-  --font-display: "Fraunces Variable", "Fraunces", serif;
+  --font-display: "General Sans", system-ui, sans-serif;
   --font-sans: "General Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
@@ -141,7 +153,7 @@
 
 /* Base */
 ::selection {
-  background: var(--accent-tint);
+  background: var(--selection-bg);
 }
 :focus-visible {
   outline: 2px solid var(--accent);
