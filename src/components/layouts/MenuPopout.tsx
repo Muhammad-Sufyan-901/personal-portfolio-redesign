@@ -53,7 +53,7 @@ export function MenuPopout() {
   return (
     <Box
       ref={ref}
-      className="fixed top-6 right-page-x z-[60]"
+      className="fixed top-6 right-page-x z-60"
     >
       <MenuButton />
     </Box>

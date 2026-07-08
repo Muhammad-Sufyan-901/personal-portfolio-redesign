@@ -84,7 +84,7 @@ export function Cursor() {
     <Box
       ref={ref}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[100]"
+      className="pointer-events-none fixed inset-0 z-100"
     >
       <Box className="cursor-dot fixed top-0 left-0 h-2 w-2 rounded-full bg-paper" />
       <Box className="cursor-ring fixed top-0 left-0 flex h-10 w-10 items-center justify-center rounded-full border border-paper/50 mix-blend-difference">
