@@ -1,6 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 import { Box } from "@/components/common";
-import { Header } from "@/components/layouts/Header";
+import { MenuPopout } from "@/components/layouts/MenuPopout";
 import { SiteMenu } from "@/components/layouts/SiteMenu";
 import { useUIStore } from "@/store/useUIStore";
 
@@ -19,7 +19,7 @@ export function RootLayout() {
     >
       <SiteMenu />
       <Box inert={menuOpen}>
-        <Header />
+        <MenuPopout />
         <Outlet />
       </Box>
     </Box>

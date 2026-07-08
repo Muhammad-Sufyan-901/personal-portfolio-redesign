@@ -9,6 +9,7 @@ import { socialLinks } from "@/features/home/data/contact.data";
 import { navLinks } from "@/constants/navigation";
 import { AuroraBackground } from "@/features/home/components/AuroraBackground";
 import { Box, Link } from "@/components/common";
+import { MenuButton } from "@/components/layouts/MenuButton";
 
 const [firstName, ...restName] = profile.name.split(" ");
 const surname = restName.join(" ");
@@ -88,21 +89,28 @@ export function HeroSection() {
     >
       <AuroraBackground />
 
-      {/* Top-left tagline, below the 72px header */}
-      <Box
-        as="p"
-        className="hero-item mt-28 max-w-[34ch] text-body text-paper"
-      >
-        {taglinePre}
-        {profile.taglineEmphasis && (
-          <Box
-            as="span"
-            className="font-display italic"
-          >
-            {profile.taglineEmphasis}
-          </Box>
-        )}
-        {taglinePost}
+      {/* Top row: tagline left, Menu right (navbar removed — this scrolls
+          away with the hero; MenuPopout takes over past 100vh) */}
+      <Box className="mt-10 flex items-start justify-between gap-6">
+        <Box
+          as="p"
+          className="hero-item max-w-[34ch] text-body text-paper"
+        >
+          {taglinePre}
+          {profile.taglineEmphasis && (
+            <Box
+              as="span"
+              className="font-display italic"
+            >
+              {profile.taglineEmphasis}
+            </Box>
+          )}
+          {taglinePost}
+        </Box>
+
+        <Box className="hero-item shrink-0">
+          <MenuButton />
+        </Box>
       </Box>
 
       <Box className="flex-1" />
