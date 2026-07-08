@@ -21,10 +21,10 @@ const [taglinePre, taglinePost] = profile.taglineEmphasis
 const heroAnchors = navLinks.filter((l) => ["Journey", "Gallery", "Contact"].includes(l.label));
 
 /** 01 — Hero (reference-exact revision): bold ogl aurora curtain from the
- *  top, tagline top-left with italic emphasis, name spread edge-to-edge at
- *  the bottom (grotesk first name left / Fraunces-italic surname right),
- *  hairline bottom bar (role · social links · chapter anchors). Char reveal
- *  gated on the preloader cue. */
+ *  top, tagline top-left with italic emphasis, name stacked in two giant
+ *  rows at the bottom (grotesk first name left / Fraunces-italic surname
+ *  right), hairline bottom bar (role · social links · chapter anchors).
+ *  Char reveal gated on the preloader cue. */
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -107,21 +107,21 @@ export function HeroSection() {
 
       <Box className="flex-1" />
 
-      {/* Name spread edge-to-edge at the bottom */}
+      {/* Name stacked in two giant rows: first name left, surname right */}
       <Box
         as="h1"
         aria-label={profile.name}
-        className="hero-name flex flex-col gap-2 text-hero text-paper md:flex-row md:items-end md:justify-between md:gap-8"
+        className="hero-name flex flex-col text-hero text-paper"
       >
         <Box
           as="span"
-          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-sans font-medium whitespace-nowrap"
+          className="block self-start overflow-hidden pb-[0.12em] -mb-[0.12em] font-sans font-medium whitespace-nowrap"
         >
           {firstName}
         </Box>
         <Box
           as="span"
-          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-display italic whitespace-nowrap"
+          className="block self-end overflow-hidden pb-[0.12em] -mb-[0.12em] font-display italic whitespace-nowrap"
         >
           {surname}.
         </Box>

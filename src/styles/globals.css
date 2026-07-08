@@ -70,8 +70,9 @@
   --text-display: clamp(3.5rem, 12vw, 11rem);
   --text-display--line-height: 0.95;
   --text-display--letter-spacing: -0.03em;
-  /* hero split-name size: both words share one line at >=md (16 glyphs) */
-  --text-hero: clamp(3rem, 9vw, 9.5rem);
+  /* hero split-name size: words stack in two rows — a shared line caps at
+     ~10vw (15 glyphs ≈ 8.6em); ceiling is "Muhammad" ≈ 5.33em vs 100vw − 2·page-x */
+  --text-hero: clamp(3.5rem, 16vw, 19rem);
   --text-hero--line-height: 0.95;
   --text-hero--letter-spacing: -0.03em;
   --text-chapter: clamp(2.5rem, 7vw, 6rem);
