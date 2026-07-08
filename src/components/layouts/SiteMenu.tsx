@@ -82,9 +82,9 @@ export function SiteMenu() {
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="fixed inset-0 z-80 flex flex-col bg-primary px-page-x"
+      className="fixed inset-0 z-80 flex flex-col bg-primary"
     >
-      <Box className="flex h-18 items-center justify-end">
+      <Box className="flex h-18 items-center justify-end px-page-x">
         <Button
           variant="ghost"
           size="icon"
@@ -103,28 +103,33 @@ export function SiteMenu() {
       >
         <Box
           as="ul"
-          className="flex flex-col gap-2"
+          className="flex w-full flex-col gap-2"
         >
           {navLinks.map((link, i) => (
             <Box
               as="li"
               key={link.href}
-              className="overflow-hidden"
+              className="group overflow-hidden"
             >
               <Link
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="menu-link flex items-baseline gap-4 py-1"
+                className="menu-link relative flex items-baseline gap-4 px-page-x py-1"
               >
                 <Box
                   as="span"
-                  className="font-mono text-index text-primary-foreground/60"
+                  aria-hidden
+                  className="absolute inset-0 -z-10 translate-x-full bg-primary-foreground transition-transform duration-300 ease-out group-hover:translate-x-0"
+                />
+                <Box
+                  as="span"
+                  className="font-mono text-index text-primary-foreground/60 transition-colors duration-300 ease-out group-hover:text-ink"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </Box>
                 <Box
                   as="span"
-                  className="font-display text-statement text-primary-foreground"
+                  className="font-display text-statement text-primary-foreground transition-[transform,color] duration-300 ease-out group-hover:translate-x-3 group-hover:text-ink"
                 >
                   {link.label}
                 </Box>
