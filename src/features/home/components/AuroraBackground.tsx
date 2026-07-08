@@ -1,130 +1,231 @@
 import { useRef } from "react";
+import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
+import { useState } from "react";
 import { Box } from "@/components/common";
 
-/** Buffer scale vs CSS px — single perf knob (covers the DPR cap too). */
-const RESOLUTION = 0.5;
+// React Bits <Aurora/> (ogl variant), adapted per design_system §7.5 +
+// .agents/skills/animated-ui-references: uTime driven by gsap.ticker (no own
+// rAF loop — arch RULE 3), colors from @theme tokens at mount, Box wrapper,
+// perf pauses (hidden/offscreen/scroll-faded) + ScrollTrigger hero fade,
+// reduced-motion/no-WebGL = static token gradient. Shaders verbatim.
 
-interface Blob {
-  /** center as fraction of canvas size */
-  cx: number;
-  cy: number;
-  /** radius as fraction of canvas width */
-  r: number;
-  /** drift amplitude (fraction of size) and speed (rad/s) */
-  amp: number;
-  speed: number;
-  phase: number;
-  color: string;
+const VERT = `#version 300 es
+in vec2 position;
+void main() {
+  gl_Position = vec4(position, 0.0, 1.0);
+}
+`;
+
+const FRAG = `#version 300 es
+precision highp float;
+
+uniform float uTime;
+uniform float uAmplitude;
+uniform vec3 uColorStops[3];
+uniform vec2 uResolution;
+uniform float uBlend;
+
+out vec4 fragColor;
+
+vec3 permute(vec3 x) {
+  return mod(((x * 34.0) + 1.0) * x, 289.0);
 }
 
-function hexToRgba(hex: string, alpha: number): string {
-  const h = hex.replace("#", "");
-  const n = parseInt(
-    h.length === 3
-      ? h
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : h,
-    16,
+float snoise(vec2 v){
+  const vec4 C = vec4(
+      0.211324865405187, 0.366025403784439,
+      -0.577350269189626, 0.024390243902439
   );
-  // Token in a non-hex format (oklch/rgb): use it as-is rather than crash.
-  if (Number.isNaN(n)) return hex;
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+  vec2 i  = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod(i, 289.0);
+
+  vec3 p = permute(
+      permute(i.y + vec3(0.0, i1.y, 1.0))
+    + i.x + vec3(0.0, i1.x, 1.0)
+  );
+
+  vec3 m = max(
+      0.5 - vec3(
+          dot(x0, x0),
+          dot(x12.xy, x12.xy),
+          dot(x12.zw, x12.zw)
+      ),
+      0.0
+  );
+  m = m * m;
+  m = m * m;
+
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+
+  vec3 g;
+  g.x  = a0.x  * x0.x  + h.x  * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
 }
 
-/** Hero aurora (design_system §11.1, reference beat 2): 2D-canvas additive
- *  radial blobs, upper-right weighted, drifting on gsap.ticker time; fades out
- *  as the hero scrolls past. Pauses when hidden/offscreen/faded. Reduced
- *  motion: static CSS radial gradient, no canvas, zero JS. */
+struct ColorStop {
+  vec3 color;
+  float position;
+};
+
+#define COLOR_RAMP(colors, factor, finalColor) {              \\
+  int index = 0;                                            \\
+  for (int i = 0; i < 2; i++) {                               \\
+     ColorStop currentColor = colors[i];                    \\
+     bool isInBetween = currentColor.position <= factor;    \\
+     index = int(mix(float(index), float(i), float(isInBetween))); \\
+  }                                                         \\
+  ColorStop currentColor = colors[index];                   \\
+  ColorStop nextColor = colors[index + 1];                  \\
+  float range = nextColor.position - currentColor.position; \\
+  float lerpFactor = (factor - currentColor.position) / range; \\
+  finalColor = mix(currentColor.color, nextColor.color, lerpFactor); \\
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / uResolution;
+
+  ColorStop colors[3];
+  colors[0] = ColorStop(uColorStops[0], 0.0);
+  colors[1] = ColorStop(uColorStops[1], 0.5);
+  colors[2] = ColorStop(uColorStops[2], 1.0);
+
+  vec3 rampColor;
+  COLOR_RAMP(colors, uv.x, rampColor);
+
+  float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
+  height = exp(height);
+  height = (uv.y * 2.0 - height + 0.2);
+  float intensity = 0.6 * height;
+
+  float midPoint = 0.20;
+  float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
+
+  vec3 auroraColor = intensity * rampColor;
+
+  fragColor = vec4(auroraColor * auroraAlpha, auroraAlpha);
+}
+`;
+
+const AMPLITUDE = 1.0;
+const BLEND = 0.6;
+const SPEED = 0.6;
+
 export function AuroraBackground() {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const [webglFailed, setWebglFailed] = useState(false);
 
-  useGSAP(
-    () => {
-      const wrapper = ref.current;
-      const canvas = wrapper?.querySelector("canvas");
-      if (prefersReducedMotion || !wrapper || !canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+  const active = !prefersReducedMotion && !webglFailed;
 
-      // Colors read once from the live tokens (re-theme-safe by name).
-      const styles = getComputedStyle(document.documentElement);
-      const accent = styles.getPropertyValue("--color-accent").trim();
-      const deep = styles.getPropertyValue("--color-accent-deep").trim();
+  // WebGL setup lives in a layout effect (DOM + GL resources), animations in
+  // the same closure via gsap.ticker; useGSAP only owns the ScrollTrigger fade.
+  useIsomorphicLayoutEffect(() => {
+    const ctn = ref.current;
+    if (!active || !ctn) return;
 
-      const blobs: Blob[] = [
-        { cx: 0.74, cy: 0.22, r: 0.34, amp: 0.1, speed: 0.22, phase: 0, color: hexToRgba(accent, 0.5) },
-        { cx: 0.9, cy: 0.42, r: 0.26, amp: 0.13, speed: 0.16, phase: 2.1, color: hexToRgba(deep, 0.45) },
-        { cx: 0.58, cy: 0.1, r: 0.2, amp: 0.08, speed: 0.28, phase: 4.4, color: hexToRgba(accent, 0.3) },
-      ];
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true });
+    } catch {
+      setWebglFailed(true);
+      return;
+    }
+    const gl = renderer.gl;
+    gl.clearColor(0, 0, 0, 0);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.canvas.style.backgroundColor = "transparent";
+    gl.canvas.style.width = "100%";
+    gl.canvas.style.height = "100%";
 
-      let offscreen = false;
-      let faded = false;
+    // Colors from the live tokens (re-theme-safe by name); ogl Color parses hex.
+    const styles = getComputedStyle(document.documentElement);
+    const accent = styles.getPropertyValue("--color-accent").trim();
+    const deep = styles.getPropertyValue("--color-accent-deep").trim();
+    const stops = [deep, accent, deep].map((hex) => {
+      const c = new Color(hex);
+      return [c.r, c.g, c.b];
+    });
 
-      const io = new IntersectionObserver(([entry]) => {
-        offscreen = !entry.isIntersecting;
-      });
-      io.observe(wrapper);
+    const geometry = new Triangle(gl);
+    if (geometry.attributes.uv) delete geometry.attributes.uv;
 
-      const ro = new ResizeObserver(() => {
-        canvas.width = Math.max(1, Math.round(wrapper.clientWidth * RESOLUTION));
-        canvas.height = Math.max(1, Math.round(wrapper.clientHeight * RESOLUTION));
-      });
-      ro.observe(wrapper);
+    const program = new Program(gl, {
+      vertex: VERT,
+      fragment: FRAG,
+      uniforms: {
+        uTime: { value: 0 },
+        uAmplitude: { value: AMPLITUDE },
+        uColorStops: { value: stops },
+        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uBlend: { value: BLEND },
+      },
+    });
+    const mesh = new Mesh(gl, { geometry, program });
+    ctn.appendChild(gl.canvas);
 
-      // Fade the wrapper out as the hero section scrolls past.
-      const section = wrapper.closest("section");
-      const fade = gsap.to(wrapper, {
-        autoAlpha: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section ?? wrapper,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            faded = self.progress === 1;
-          },
+    const ro = new ResizeObserver(() => {
+      renderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
+      program.uniforms.uResolution.value = [ctn.offsetWidth, ctn.offsetHeight];
+    });
+    ro.observe(ctn);
+
+    let offscreen = false;
+    const io = new IntersectionObserver(([entry]) => {
+      offscreen = !entry.isIntersecting;
+    });
+    io.observe(ctn);
+
+    // gsap.ticker time is seconds — matches the original's ms*0.01*0.1 scaling.
+    const tick = (time: number) => {
+      if (document.hidden || offscreen || fadedRef.faded) return;
+      program.uniforms.uTime.value = time * SPEED;
+      renderer.render({ scene: mesh });
+    };
+    const fadedRef = { faded: false };
+    gsap.ticker.add(tick);
+
+    // Scrub-fade over the hero (shares the faded flag with the ticker).
+    const fade = gsap.to(ctn, {
+      autoAlpha: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ctn.closest("section") ?? ctn,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          fadedRef.faded = self.progress === 1;
         },
-      });
+      },
+    });
 
-      const tick = (time: number) => {
-        if (document.hidden || offscreen || faded) return;
-        const { width: w, height: h } = canvas;
-        ctx.clearRect(0, 0, w, h);
-        ctx.globalCompositeOperation = "lighter";
-        for (const b of blobs) {
-          const x = (b.cx + Math.sin(time * b.speed + b.phase) * b.amp) * w;
-          const y = (b.cy + Math.cos(time * b.speed * 0.8 + b.phase) * b.amp) * h;
-          const r = b.r * w;
-          const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-          g.addColorStop(0, b.color);
-          g.addColorStop(1, "rgba(0,0,0,0)");
-          ctx.fillStyle = g;
-          ctx.fillRect(0, 0, w, h);
-        }
-      };
-      gsap.ticker.add(tick);
+    return () => {
+      gsap.ticker.remove(tick);
+      ro.disconnect();
+      io.disconnect();
+      fade.scrollTrigger?.kill();
+      fade.kill();
+      if (gl.canvas.parentNode === ctn) ctn.removeChild(gl.canvas);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+    };
+  }, [active]);
 
-      return () => {
-        gsap.ticker.remove(tick);
-        io.disconnect();
-        ro.disconnect();
-        fade.scrollTrigger?.kill();
-        fade.kill();
-        ScrollTrigger.refresh();
-      };
-    },
-    { scope: ref, dependencies: [prefersReducedMotion], revertOnUpdate: true },
-  );
-
-  if (prefersReducedMotion) {
+  if (!active) {
     return (
       <Box
         aria-hidden
@@ -138,8 +239,6 @@ export function AuroraBackground() {
       ref={ref}
       aria-hidden
       className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-    >
-      <canvas className="h-full w-full scale-110 blur-3xl" />
-    </Box>
+    />
   );
 }

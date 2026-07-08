@@ -48,6 +48,9 @@ export interface Profile {
   name: string;
   role: string;
   tagline: string;
+  /** Substring of `tagline` rendered italic-serif in the hero (the
+   *  reference's focal-phrase device). */
+  taglineEmphasis?: string;
   location: string;
   roles: string[];
   bio: string;

@@ -6,6 +6,7 @@ export const profile: Profile = {
   name: "Muhammad Sufyan",
   role: "Software Engineer · Web & Mobile",
   tagline: "Building digital applications that help many people.",
+  taglineEmphasis: "help many people",
   location: "Indonesia",
   roles: ["Frontend Developer", "Backend Developer", "Mobile Developer", "Software Tester"],
   bio: "Hello everyone! I am Muhammad Sufyan, a frontend, mobile and website developer. I have intermediate experience and I hope to always keep learning something new, to build digital applications that can help many people in the future. I can work independently or in a team.",

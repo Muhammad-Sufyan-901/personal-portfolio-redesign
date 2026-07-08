@@ -70,6 +70,10 @@
   --text-display: clamp(3.5rem, 12vw, 11rem);
   --text-display--line-height: 0.95;
   --text-display--letter-spacing: -0.03em;
+  /* hero split-name size: both words share one line at >=md (16 glyphs) */
+  --text-hero: clamp(3rem, 9vw, 9.5rem);
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.03em;
   --text-chapter: clamp(2.5rem, 7vw, 6rem);
   --text-chapter--line-height: 1;
   --text-chapter--letter-spacing: -0.02em;

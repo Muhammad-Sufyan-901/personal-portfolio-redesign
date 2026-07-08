@@ -1,20 +1,30 @@
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import SplitType from "split-type";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useUIStore } from "@/store/useUIStore";
 import { profile } from "@/features/home/data/profile.data";
+import { socialLinks } from "@/features/home/data/contact.data";
+import { navLinks } from "@/constants/navigation";
 import { AuroraBackground } from "@/features/home/components/AuroraBackground";
-import { Box } from "@/components/common";
+import { Box, Link } from "@/components/common";
 
 const [firstName, ...restName] = profile.name.split(" ");
 const surname = restName.join(" ");
 
-/** 01 — Hero (design_system §11.1 + PLAN v3): full-viewport name with the
- *  reference's mixed-pairing device (first name grotesk, surname Fraunces
- *  italic + period), tagline + role, ember scroll cue, canvas aurora behind.
- *  Entrance char reveal is gated on the preloader's completion cue. */
+/** Tagline split around the italic-serif emphasis phrase. */
+const [taglinePre, taglinePost] = profile.taglineEmphasis
+  ? profile.tagline.split(profile.taglineEmphasis)
+  : [profile.tagline, undefined];
+
+const heroAnchors = navLinks.filter((l) => ["Journey", "Gallery", "Contact"].includes(l.label));
+
+/** 01 — Hero (reference-exact revision): bold ogl aurora curtain from the
+ *  top, tagline top-left with italic emphasis, name spread edge-to-edge at
+ *  the bottom (grotesk first name left / Fraunces-italic surname right),
+ *  hairline bottom bar (role · social links · chapter anchors). Char reveal
+ *  gated on the preloader cue. */
 export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -46,15 +56,6 @@ export function HeroSection() {
         "-=0.55",
       );
 
-      // Scroll-cue bob.
-      gsap.to(".hero-cue-icon", {
-        y: 6,
-        duration: 1.2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
       // ±10px pointer parallax on the name (hover-capable pointers only).
       if (window.matchMedia("(hover: hover)").matches) {
         const name = section.querySelector(".hero-name");
@@ -83,56 +84,95 @@ export function HeroSection() {
       as="section"
       id="hero"
       ref={ref}
-      className="relative isolate flex min-h-svh flex-col items-center justify-center px-page-x"
+      className="relative isolate flex min-h-svh flex-col px-page-x pb-6"
     >
       <AuroraBackground />
 
+      {/* Top-left tagline, below the 72px header */}
+      <Box
+        as="p"
+        className="hero-item mt-28 max-w-[34ch] text-body text-paper"
+      >
+        {taglinePre}
+        {profile.taglineEmphasis && (
+          <Box
+            as="span"
+            className="font-display italic"
+          >
+            {profile.taglineEmphasis}
+          </Box>
+        )}
+        {taglinePost}
+      </Box>
+
+      <Box className="flex-1" />
+
+      {/* Name spread edge-to-edge at the bottom */}
       <Box
         as="h1"
         aria-label={profile.name}
-        className="hero-name text-center text-display text-paper"
+        className="hero-name flex flex-col gap-2 text-hero text-paper md:flex-row md:items-end md:justify-between md:gap-8"
       >
         <Box
           as="span"
-          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-sans font-medium sm:inline-block"
+          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-sans font-medium whitespace-nowrap"
         >
           {firstName}
-        </Box>{" "}
+        </Box>
         <Box
           as="span"
-          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-display italic sm:inline-block"
+          className="block overflow-hidden pb-[0.12em] -mb-[0.12em] font-display italic whitespace-nowrap"
         >
           {surname}.
         </Box>
       </Box>
 
-      <Box
-        as="p"
-        className="hero-item mt-8 max-w-xl text-center text-body text-muted"
-      >
-        {profile.tagline}
-      </Box>
-      <Box
-        as="p"
-        className="hero-item mt-4 font-mono text-eyebrow tracking-widest text-paper uppercase"
-      >
-        {profile.role}
-      </Box>
-
-      <Box
-        aria-hidden
-        className="hero-item absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
-      >
+      {/* Hairline bottom bar: role · socials · anchors */}
+      <Box className="mt-10 flex flex-col gap-4 border-t border-line pt-5 font-mono text-eyebrow md:flex-row md:items-center md:justify-between">
         <Box
-          as="span"
-          className="font-mono text-meta text-muted uppercase"
+          as="p"
+          className="hero-item text-muted uppercase"
         >
-          Scroll
+          {profile.role}
         </Box>
+
+        <Box className="hero-item flex items-center gap-3">
+          {socialLinks.map((social, i) => (
+            <Fragment key={social.href}>
+              {i > 0 && (
+                <Box
+                  as="span"
+                  aria-hidden
+                  className="text-faint"
+                >
+                  /
+                </Box>
+              )}
+              <Link
+                href={social.href}
+                className="text-paper uppercase transition-colors hover:text-accent"
+              >
+                {social.label}
+              </Link>
+            </Fragment>
+          ))}
+        </Box>
+
         <Box
-          as="span"
-          className="hero-cue-icon block h-6 w-px bg-accent"
-        />
+          as="nav"
+          aria-label="Hero shortcuts"
+          className="hero-item flex items-center gap-6"
+        >
+          {heroAnchors.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-muted uppercase transition-colors hover:text-paper"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </Box>
       </Box>
     </Box>
   );
