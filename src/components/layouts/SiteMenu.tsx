@@ -82,7 +82,7 @@ export function SiteMenu() {
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="fixed inset-0 z-[80] flex flex-col bg-ink px-page-x"
+      className="fixed inset-0 z-80 flex flex-col bg-ink px-page-x"
     >
       <Box className="flex h-18 items-center justify-end">
         <Button

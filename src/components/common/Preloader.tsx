@@ -8,21 +8,19 @@ import { useUIStore } from "@/store/useUIStore";
 import { siteConfig } from "@/config/site";
 import { Box } from "@/components/common/Box";
 
-const SESSION_KEY = "preloader-done";
-
 /** Full-screen ink overlay, z-90 (design_system §11.0): Mono counter 0→100 +
- *  name mask-reveal → curtain wipe up. Runs once per session; signals
- *  useUIStore.preloaderDone (the Hero timeline's start cue). Reduced motion /
- *  repeat visit: renders null and signals done immediately. */
+ *  name mask-reveal → ember flash → split-curtain parts to reveal the hero.
+ *  Runs on every load/refresh; signals useUIStore.preloaderDone (the Hero
+ *  timeline's start cue). Reduced motion: renders null and signals done
+ *  immediately. */
 export function Preloader() {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const lenis = useLenis();
   const setPreloaderDone = useUIStore((s) => s.setPreloaderDone);
-  const [skipped] = useState(() => typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1");
   const [finished, setFinished] = useState(false);
 
-  const active = !skipped && !prefersReducedMotion;
+  const active = !prefersReducedMotion;
 
   // Skipped or reduced-motion path: signal done in a layout effect.
   useIsomorphicLayoutEffect(() => {
@@ -44,9 +42,12 @@ export function Preloader() {
       const name = ref.current.querySelector(".preloader-name");
       const proxy = { value: 0 };
 
+      const content = ref.current.querySelector(".preloader-content");
+      const panelLeft = ref.current.querySelector(".preloader-panel-l");
+      const panelRight = ref.current.querySelector(".preloader-panel-r");
+
       const tl = gsap.timeline({
         onComplete: () => {
-          sessionStorage.setItem(SESSION_KEY, "1");
           setPreloaderDone(true);
           setFinished(true);
         },
@@ -65,11 +66,10 @@ export function Preloader() {
           },
           "<",
         )
-        .to(ref.current, {
-          yPercent: -100,
-          duration: 1.2,
-          ease: "power4.inOut", // ≈ --ease-inout
-        });
+        .to(counter, { color: "var(--color-accent)", duration: 0.2 })
+        .to([content, counter], { autoAlpha: 0, duration: 0.4 }, "+=0.1")
+        .to(panelLeft, { xPercent: -100, duration: 1.1, ease: "power4.inOut" }, "<0.1")
+        .to(panelRight, { xPercent: 100, duration: 1.1, ease: "power4.inOut" }, "<");
     },
     { scope: ref, dependencies: [active], revertOnUpdate: true },
   );
@@ -80,9 +80,11 @@ export function Preloader() {
     <Box
       ref={ref}
       aria-hidden
-      className="fixed inset-0 z-[90] bg-ink"
+      className="fixed inset-0 z-90"
     >
-      <Box className="flex h-full items-center justify-center px-page-x">
+      <Box className="preloader-panel-l absolute inset-y-0 left-0 w-1/2 bg-ink" />
+      <Box className="preloader-panel-r absolute inset-y-0 right-0 w-1/2 bg-ink" />
+      <Box className="preloader-content absolute inset-0 flex items-center justify-center px-page-x">
         <Box className="overflow-hidden">
           <Box
             as="span"

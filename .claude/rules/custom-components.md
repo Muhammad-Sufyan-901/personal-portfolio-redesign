@@ -31,7 +31,7 @@ All import GSAP only from `@/lib/gsap` and ship a `prefers-reduced-motion` branc
 - **`MagneticButton`** — `strength` (default `12` px max translate); inner `.magnetic-label` counter-moves ×−0.35.
 - **`ChapterEyebrow`** — `index`, `label` (`"01 — WHO I AM"` pattern, mono, accent index). Static.
 - **`Cursor`** — no props; dot 8px + ring 40px, `z-[100]`; returns `null` on coarse pointer / reduced motion.
-- **`Preloader`** — no props; `z-[90]`, runs once per session (`sessionStorage["preloader-done"]`), signals `useUIStore.setPreloaderDone`.
+- **`Preloader`** — no props; `z-[90]`, runs on every load/refresh (split-curtain reveal — name/counter fade, two ink panels part), signals `useUIStore.setPreloaderDone`.
 
 ## Known gotchas
 
