@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
-import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
