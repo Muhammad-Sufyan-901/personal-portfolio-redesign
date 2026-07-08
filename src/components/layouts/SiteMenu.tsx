@@ -82,14 +82,14 @@ export function SiteMenu() {
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="fixed inset-0 z-80 flex flex-col bg-ink px-page-x"
+      className="fixed inset-0 z-80 flex flex-col bg-primary px-page-x"
     >
       <Box className="flex h-18 items-center justify-end">
         <Button
           variant="ghost"
           size="icon"
           aria-label="Close menu"
-          className="rounded-full border border-paper/15 bg-paper/10 text-paper backdrop-blur-md hover:bg-paper/20 hover:text-paper dark:hover:bg-paper/20"
+          className="rounded-full border border-primary-foreground/15 bg-primary-foreground/10 text-primary-foreground backdrop-blur-md hover:bg-primary-foreground/20 hover:text-primary-foreground dark:hover:bg-primary-foreground/20"
           onClick={() => setMenuOpen(false)}
         >
           <X aria-hidden />
@@ -118,13 +118,13 @@ export function SiteMenu() {
               >
                 <Box
                   as="span"
-                  className="font-mono text-index text-accent"
+                  className="font-mono text-index text-primary-foreground/60"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </Box>
                 <Box
                   as="span"
-                  className="font-display text-statement text-paper"
+                  className="font-display text-statement text-primary-foreground"
                 >
                   {link.label}
                 </Box>
