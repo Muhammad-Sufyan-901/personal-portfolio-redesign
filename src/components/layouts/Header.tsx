@@ -1,16 +1,15 @@
 import { useRef } from "react";
-import { Menu } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useUIStore } from "@/store/useUIStore";
-import { headerLinks } from "@/constants/navigation";
-import { Box, Link } from "@/components/common";
+import { Box, Link, MagneticButton } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
 /** Fixed 72px header (design_system §8A), z-60: transparent over the hero →
  *  ink + hairline after 40px of scroll (class toggle, not a re-render).
- *  Reduced motion: solid always. */
+ *  Reduced motion: solid always. Nav lives entirely in the fullscreen
+ *  SiteMenu, opened by the glass "Menu" pill (all viewports). */
 export function Header() {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -53,31 +52,21 @@ export function Header() {
         MS
       </Link>
 
-      <Box
-        as="nav"
-        aria-label="Chapters"
-        className="hidden items-center gap-8 md:flex"
-      >
-        {headerLinks.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="font-mono text-eyebrow text-muted uppercase transition-colors hover:text-paper"
+      <MagneticButton>
+        <Button
+          variant="ghost"
+          aria-label="Open menu"
+          className="h-10 rounded-full border border-paper/15 bg-paper/10 px-6 font-mono text-eyebrow text-paper uppercase backdrop-blur-md hover:bg-paper/20 hover:text-paper dark:hover:bg-paper/20"
+          onClick={() => setMenuOpen(true)}
+        >
+          <Box
+            as="span"
+            className="magnetic-label"
           >
-            {link.label}
-          </Link>
-        ))}
-      </Box>
-
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Open menu"
-        className="text-paper md:hidden"
-        onClick={() => setMenuOpen(true)}
-      >
-        <Menu aria-hidden />
-      </Button>
+            Menu
+          </Box>
+        </Button>
+      </MagneticButton>
     </Box>
   );
 }

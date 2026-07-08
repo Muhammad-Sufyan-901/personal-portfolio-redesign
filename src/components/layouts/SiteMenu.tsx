@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
@@ -9,15 +9,23 @@ import { navLinks } from "@/constants/navigation";
 import { Box, Link } from "@/components/common";
 import { Button } from "@/components/ui/button";
 
-/** Full-screen overlay menu (design_system §8A), z-80. Renders null closed;
- *  staggered link reveal on open; close is instant unmount (deliberate).
- *  Background content is `inert` while open (RootLayout owns that). */
-export function MobileMenu() {
+/** Full-screen overlay menu (design_system §8A), z-80 — all viewports, opened
+ *  by the header's glass "Menu" pill. Curtain wipes down (preloader language),
+ *  links stagger in; close reverses (links drop, curtain wipes up) before
+ *  unmount. Reduced motion: instant mount/unmount, no transforms. Background
+ *  content is `inert` while open (RootLayout owns that). */
+export function SiteMenu() {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
   const lenis = useLenis();
   const menuOpen = useUIStore((s) => s.menuOpen);
   const setMenuOpen = useUIStore((s) => s.setMenuOpen);
+  // Stays mounted through the exit animation; the exit timeline unmounts it.
+  // Adjusted during render (react.dev "storing information from previous
+  // renders") — reduced motion skips the exit tween, so unmount is instant.
+  const [rendered, setRendered] = useState(menuOpen);
+  if (menuOpen && !rendered) setRendered(true);
+  if (!menuOpen && rendered && prefersReducedMotion) setRendered(false);
 
   // Scroll-lock + Escape-to-close + focus move/restore while open.
   useEffect(() => {
@@ -40,13 +48,33 @@ export function MobileMenu() {
 
   useGSAP(
     () => {
-      if (!menuOpen || prefersReducedMotion) return;
-      gsap.from(".menu-link", { yPercent: 100, stagger: 0.06 });
+      const el = ref.current;
+      if (!rendered || prefersReducedMotion || !el) return;
+
+      const tl = gsap.timeline();
+      if (menuOpen) {
+        tl.fromTo(el, { yPercent: -100 }, { yPercent: 0, duration: 0.8, ease: "power4.inOut" }).from(
+          ".menu-link",
+          { yPercent: 100, stagger: 0.06 },
+          "-=0.25",
+        );
+      } else {
+        tl.to(".menu-link", { yPercent: 100, duration: 0.4, stagger: 0.04 }).to(
+          el,
+          {
+            yPercent: -100,
+            duration: 0.8,
+            ease: "power4.inOut",
+            onComplete: () => setRendered(false),
+          },
+          "-=0.15",
+        );
+      }
     },
-    { scope: ref, dependencies: [menuOpen, prefersReducedMotion], revertOnUpdate: true },
+    { scope: ref, dependencies: [menuOpen, rendered, prefersReducedMotion], revertOnUpdate: true },
   );
 
-  if (!menuOpen) return null;
+  if (!rendered) return null;
 
   return (
     <Box
@@ -61,7 +89,7 @@ export function MobileMenu() {
           variant="ghost"
           size="icon"
           aria-label="Close menu"
-          className="text-paper"
+          className="rounded-full border border-paper/15 bg-paper/10 text-paper backdrop-blur-md hover:bg-paper/20 hover:text-paper dark:hover:bg-paper/20"
           onClick={() => setMenuOpen(false)}
         >
           <X aria-hidden />

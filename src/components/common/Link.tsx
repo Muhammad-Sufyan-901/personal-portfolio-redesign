@@ -25,7 +25,7 @@ export function Link({ href, replace = false, scroll = true, target, rel, onClic
       const el = document.querySelector(href);
       if (el) {
         if (lenis && scroll) {
-          // force: survive a stopped Lenis (MobileMenu stops it while open)
+          // force: survive a stopped Lenis (SiteMenu stops it while open)
           lenis.scrollTo(el as HTMLElement, { force: true });
         } else {
           (el as HTMLElement).scrollIntoView();
