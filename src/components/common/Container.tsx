@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ElementType } from "react";
+import type { ComponentPropsWithRef, ComponentType, ElementType } from "react";
 import { cn } from "@/lib/utils";
 
 const MAX_WIDTHS = {
@@ -29,7 +29,8 @@ export function Container<T extends ElementType = "div">({
   className,
   ...props
 }: ContainerProps<T>) {
-  const Component = (as ?? "div") as ElementType;
+  // See Box.tsx — R3F's JSX augmentation breaks a bare `ElementType` spread.
+  const Component = (as ?? "div") as ComponentType<Record<string, unknown>>;
   return (
     <Component
       className={cn(
@@ -38,7 +39,7 @@ export function Container<T extends ElementType = "div">({
         centerContent && "flex flex-col items-center",
         className,
       )}
-      {...props}
+      {...(props as Record<string, unknown>)}
     />
   );
 }

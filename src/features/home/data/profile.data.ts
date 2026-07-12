@@ -12,12 +12,8 @@ export const profile: Profile = {
   bio: "Hello everyone! I am Muhammad Sufyan, a frontend, mobile and website developer. I have intermediate experience and I hope to always keep learning something new, to build digital applications that can help many people in the future. I can work independently or in a team.",
   aboutStatement: "A software engineer from Indonesia, crafting web and mobile applications with precision and care.",
   manifesto: {
-    lines: [
-      "I build for the web and for mobile —",
-      "always learning something new,",
-      "to craft digital applications that help many people.",
-    ],
-    focalWord: "learning",
+    lines: ["Basically, I write code."],
+    focalWord: "code",
   },
   stats: [
     { value: 3, label: "Years of Experience" },
