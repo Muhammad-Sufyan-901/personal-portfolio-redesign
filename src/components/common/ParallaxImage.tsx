@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -32,6 +32,7 @@ export function ParallaxImage({
 }: ParallaxImageProps) {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const [errored, setErrored] = useState(false);
   const from = parallax?.from ?? -8;
   const to = parallax?.to ?? 8;
 
@@ -68,7 +69,7 @@ export function ParallaxImage({
     <Box
       as="figure"
       ref={ref}
-      className={cn("relative overflow-hidden", aspect, className)}
+      className={cn("bg-raised relative overflow-hidden", aspect, className)}
     >
       <img
         src={src}
@@ -76,10 +77,14 @@ export function ParallaxImage({
         width={width}
         height={height}
         loading="lazy"
+        onError={() => setErrored(true)}
         className={cn(
           "h-full w-full object-cover",
           // scale headroom so the parallax never exposes edges
           !prefersReducedMotion && "scale-[1.2]",
+          // not-yet-supplied asset: hide the broken glyph, keep the raised
+          // figure block (PLAN §8 externalities ship on this fallback)
+          errored && "opacity-0",
         )}
       />
       {withScrim && (
