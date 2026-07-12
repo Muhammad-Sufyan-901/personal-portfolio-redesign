@@ -30,10 +30,19 @@ function FrameDriver() {
   return null;
 }
 
-/** Product-shot camera. The look target tracks the machine's visual center
- *  (closed slab → open lid, damped from the lid channel) so the MacBook sits
- *  centered on screen through the whole arc; the seam's `sceneIntro` adds a
- *  small dolly-in + exposure lift as the window grows to fullscreen. */
+/** Aim the camera for a given lid/intro state — the machine's visual center
+ *  (closed slab → open lid) stays at screen center for any scroll position. */
+function aimCamera(camera: THREE.Camera, gl: THREE.WebGLRenderer, lid: number, intro: number) {
+  const center = CAM.centerClosed + (CAM.centerOpen - CAM.centerClosed) * lid;
+  camera.position.set(0, center + CAM.rise, CAM.z * (1 + 0.06 * (1 - intro)));
+  camera.lookAt(0, center, 0);
+  gl.toneMappingExposure = 0.72 + 0.28 * intro;
+}
+
+/** Product-shot camera. Aimed synchronously from the CURRENT channel state on
+ *  mount (no un-aimed default frame can ever render, wherever in the scroll
+ *  the canvas arrives), then the look target damps along the lid channel;
+ *  the seam's `sceneIntro` adds a small dolly-in + exposure lift. */
 function CameraRig() {
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
@@ -41,14 +50,12 @@ function CameraRig() {
   useEffect(() => {
     let intro = channels.sceneIntro;
     let lid = channels.lidProgress;
+    aimCamera(camera, gl, lid, intro);
     const tick = (_: number, deltaMS: number) => {
       const dt = Math.min(deltaMS / 1000, 1 / 30);
       intro = THREE.MathUtils.damp(intro, channels.sceneIntro, DAMP_LAMBDA, dt);
       lid = THREE.MathUtils.damp(lid, channels.lidProgress, DAMP_LAMBDA, dt);
-      const center = CAM.centerClosed + (CAM.centerOpen - CAM.centerClosed) * lid;
-      camera.position.set(0, center + CAM.rise, CAM.z * (1 + 0.06 * (1 - intro)));
-      camera.lookAt(0, center, 0);
-      gl.toneMappingExposure = 0.72 + 0.28 * intro;
+      aimCamera(camera, gl, lid, intro);
     };
     gsap.ticker.add(tick);
     return () => {
@@ -75,6 +82,11 @@ export function ManifestoCanvas() {
         position: [0, CAM.centerClosed + CAM.rise, CAM.z],
         near: 0.1,
         far: 60,
+      }}
+      onCreated={({ camera, gl }) => {
+        // Aim before anything can render — a default-orientation camera must
+        // never produce the first frame, even mid-scroll on a slow load.
+        aimCamera(camera, gl, channels.lidProgress, channels.sceneIntro);
       }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
     >

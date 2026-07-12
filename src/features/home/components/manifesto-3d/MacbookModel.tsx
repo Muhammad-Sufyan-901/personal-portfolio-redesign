@@ -31,13 +31,25 @@ export function MacbookModel() {
   const rig = useMemo(() => buildMacbookRig(scene), [scene]);
   // Portrait phones: the horizontal frustum is narrower than FIT_SIZE —
   // clamp the whole object so the closed footprint always fits the width.
-  const viewportWidth = useThree((state) => state.viewport.width);
-  const fitClamp = Math.min(1, (viewportWidth * 0.92) / (FIT_SIZE + 0.001));
+  // Derived from the canvas size + camera constants (deterministic), not
+  // state.viewport (whose value depends on when R3F last recomputed it).
+  const size = useThree((state) => state.size);
+  const frustumWidth = 2 * CAM.z * Math.tan(THREE.MathUtils.degToRad(CAM.fov / 2)) * (size.width / size.height);
+  const fitClamp = Math.min(1, (frustumWidth * 0.92) / FIT_SIZE);
 
   const recedeRef = useRef<THREE.Group>(null);
   const yawRef = useRef<THREE.Group>(null);
   const spillRef = useRef<THREE.PointLight>(null);
-  const rendered = useRef({ lid: 0, yaw: 0, recede: 0, screen: 0, logo: 0 });
+  // Primed from the CURRENT channel state: a model that finishes loading
+  // mid-scroll (slow network, deep link, upward entry from About) appears
+  // already in the correct pose instead of damp-animating from closed/rear.
+  const rendered = useRef({
+    lid: channels.lidProgress,
+    yaw: channels.yawProgress,
+    recede: channels.recede,
+    screen: channels.screenGlow,
+    logo: channels.logoGlow,
+  });
 
   useFrame((_, delta) => {
     // Clamp the first delta after a pause (clock keeps counting while the
