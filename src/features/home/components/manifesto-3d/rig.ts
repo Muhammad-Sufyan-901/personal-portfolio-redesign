@@ -5,8 +5,16 @@ import * as THREE from "three";
 export const FIT_SIZE = 3.2;
 /** Channel smoothing — λ for MathUtils.damp (per-frame catch-up weight). */
 export const DAMP_LAMBDA = 6;
-/** Product-shot camera (fixed; the object does the acting). */
-export const CAM = { fov: 34, pos: [0, 1.0, 6.2] as const, lookY: 0.35 };
+/** Product-shot camera. The look target tracks the machine's visual center
+ *  (closed slab → open lid) so the MacBook stays centered on screen through
+ *  the lid arc; `rise` keeps the slight top-down product pitch. */
+export const CAM = {
+  fov: 34,
+  z: 6.2,
+  rise: 0.6,
+  centerClosed: 0.1,
+  centerOpen: 1.05,
+};
 /** P1 rest pose: rear-quarter, logo side to camera (π = dead-rear). */
 export const YAW_START = Math.PI - 0.35;
 /** Slight closed over-rotation so the lid's front edge kisses the deck (the

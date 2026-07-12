@@ -9,15 +9,17 @@ import { StudioRig } from "@/features/home/components/manifesto-3d/StudioRig";
 
 /** RULE 3 — no second RAF. `frameloop="never"`; frames advance from the one
  *  gsap.ticker heartbeat (Lenis → ScrollTrigger → render, same tick).
- *  fiber's advance() wants ms timestamps, ticker time is seconds — ×1000,
- *  same convention as SmoothScrollProvider's `raf(t * 1000)`. */
+ *  fiber v9's advance() timestamp feeds state.clock directly and is in
+ *  SECONDS — gsap ticker time passes through unchanged. (Passing ms here
+ *  turns clock.elapsedTime/delta into ms-as-seconds — verified live: it made
+ *  every clock-driven value thrash at ~2,750 rad/s, the "violent shake".) */
 function FrameDriver() {
   const advance = useThree((state) => state.advance);
 
   useEffect(() => {
     const tick = (time: number) => {
       if (document.hidden || !stageState.active) return;
-      advance(time * 1000);
+      advance(time);
     };
     gsap.ticker.add(tick);
     return () => {
@@ -28,18 +30,24 @@ function FrameDriver() {
   return null;
 }
 
-/** Fixed product-shot camera with the seam's `sceneIntro` settle: a small
- *  dolly-in + exposure lift as the strip grows to fullscreen. */
+/** Product-shot camera. The look target tracks the machine's visual center
+ *  (closed slab → open lid, damped from the lid channel) so the MacBook sits
+ *  centered on screen through the whole arc; the seam's `sceneIntro` adds a
+ *  small dolly-in + exposure lift as the window grows to fullscreen. */
 function CameraRig() {
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
 
   useEffect(() => {
     let intro = channels.sceneIntro;
+    let lid = channels.lidProgress;
     const tick = (_: number, deltaMS: number) => {
-      intro = THREE.MathUtils.damp(intro, channels.sceneIntro, DAMP_LAMBDA, deltaMS / 1000);
-      camera.position.z = CAM.pos[2] * (1 + 0.06 * (1 - intro));
-      camera.lookAt(0, CAM.lookY, 0);
+      const dt = Math.min(deltaMS / 1000, 1 / 30);
+      intro = THREE.MathUtils.damp(intro, channels.sceneIntro, DAMP_LAMBDA, dt);
+      lid = THREE.MathUtils.damp(lid, channels.lidProgress, DAMP_LAMBDA, dt);
+      const center = CAM.centerClosed + (CAM.centerOpen - CAM.centerClosed) * lid;
+      camera.position.set(0, center + CAM.rise, CAM.z * (1 + 0.06 * (1 - intro)));
+      camera.lookAt(0, center, 0);
       gl.toneMappingExposure = 0.72 + 0.28 * intro;
     };
     gsap.ticker.add(tick);
@@ -62,7 +70,12 @@ export function ManifestoCanvas() {
     <Canvas
       frameloop="never"
       dpr={isMobile ? [1, 1.25] : [1, 1.75]}
-      camera={{ fov: CAM.fov, position: [...CAM.pos], near: 0.1, far: 60 }}
+      camera={{
+        fov: CAM.fov,
+        position: [0, CAM.centerClosed + CAM.rise, CAM.z],
+        near: 0.1,
+        far: 60,
+      }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
     >
       <FrameDriver />

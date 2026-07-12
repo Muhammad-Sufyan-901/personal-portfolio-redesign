@@ -20,7 +20,7 @@ const DRACO_PATH = "/draco/"; // self-hosted decoder — no runtime CDN fetches
 useGLTF.preload(MODEL_URL, DRACO_PATH);
 
 /** Viewport height in world units at the model plane (for %-of-viewport moves). */
-const FRUSTUM_H = 2 * CAM.pos[2] * Math.tan(THREE.MathUtils.degToRad(CAM.fov / 2));
+const FRUSTUM_H = 2 * CAM.z * Math.tan(THREE.MathUtils.degToRad(CAM.fov / 2));
 
 /** The MacBook + its hinge rig + the per-frame damped application of the
  *  choreography channels. GSAP never touches three objects directly — the
@@ -39,7 +39,7 @@ export function MacbookModel() {
   const spillRef = useRef<THREE.PointLight>(null);
   const rendered = useRef({ lid: 0, yaw: 0, recede: 0, screen: 0, logo: 0 });
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     // Clamp the first delta after a pause (clock keeps counting while the
     // FrameDriver skips frames) so damp never teleports.
     const dt = Math.min(delta, 1 / 30);
@@ -55,18 +55,15 @@ export function MacbookModel() {
     // under).
     rig.lidPivot.rotation.x = rig.openAngle * CLOSED_TUCK * (1 - r.lid);
 
-    // Idle life: never frozen mid-hold; independent of scroll.
-    const t = state.clock.elapsedTime;
-    const sway = Math.sin(t * 0.5) * 0.006; // ±0.35°
-    const float = Math.sin(t * 0.7) * 0.005 * FRUSTUM_H; // ±0.5% viewport
-
+    // The object holds perfectly still between beats — every visible move is
+    // a damped channel transition (idle sway/float removed by request).
     const yaw = yawRef.current;
     const recede = recedeRef.current;
-    if (yaw) yaw.rotation.y = YAW_START * (1 - r.yaw) + sway + RECEDE_DRIFT * r.recede;
+    if (yaw) yaw.rotation.y = YAW_START * (1 - r.yaw) + RECEDE_DRIFT * r.recede;
     if (recede) {
       const s = fitClamp * (1 - RECEDE_SCALE * r.recede);
       recede.scale.setScalar(s);
-      recede.position.y = float - 0.04 * FRUSTUM_H * r.recede;
+      recede.position.y = -0.04 * FRUSTUM_H * r.recede;
     }
 
     rig.setScreenGlow(r.screen);

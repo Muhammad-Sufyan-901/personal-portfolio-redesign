@@ -18,6 +18,11 @@ const ManifestoCanvas = lazy(() =>
 /** ============ Tunables (spec §13) ============ */
 /** Hero pin distance — the seam's scroll runway. */
 const SEAM_LENGTH = "+=120%";
+/** Seam progress where the hidden window appears (0.42 × 120% ≈ half a
+ *  viewport of scroll — "halfway down the screen"). */
+const SEAM_APPEAR = 0.42;
+/** The window is born as a small centered box and zooms to full-bleed. */
+const SEAM_BOX_SCALE = 0.14;
 /** Manifesto root height (the stage pin length) — set in the JSX class. */
 const MANIFESTO_HEIGHT = "h-[520vh]";
 /** Exit-veil max backdrop blur. */
@@ -113,53 +118,78 @@ export function ManifestoSection() {
       if (!section || !hero || !stage || !glow || !veil || !copy) return;
 
       const words = gsap.utils.toArray<HTMLElement>(".manifesto-word", section);
-      const nameRows = gsap.utils.toArray<HTMLElement>(".hero-name > span:not(.hero-window-slot)", hero);
+      const nameRows = gsap.utils.toArray<HTMLElement>(".hero-name > span", hero);
       const heroItems = gsap.utils.toArray<HTMLElement>(".hero-item, .hero-bar", hero);
       const heroName = hero.querySelector<HTMLElement>(".hero-name");
       if (import.meta.env.DEV && nameRows.length !== 2) {
         console.warn("manifesto seam: hero name rows not found — row choreography skipped");
       }
 
-      const radius = getComputedStyle(document.documentElement).getPropertyValue("--radius-lg").trim() || "8px";
-
-      // Slot geometry via offsets, never getBoundingClientRect: offsets are
+      // Row exit distances via accumulated offsets, never gBCR: offsets are
       // transform-independent (pointer parallax, pin park position after a
-      // mid-page refresh), with the hero's pinned offset folded in. The chain
-      // is accumulated because the parallax transform on .hero-name makes the
-      // h1 an offsetParent — a single hop would measure against it.
-      const slotRect = () => {
-        const slot = hero.querySelector<HTMLElement>(".hero-window-slot");
-        if (!slot) return null;
+      // mid-page refresh). Accumulated because the parallax transform on
+      // .hero-name makes the h1 an offsetParent — a single hop would measure
+      // against it.
+      const rowTop = (row: HTMLElement) => {
         let top = 0;
-        let left = 0;
-        for (let el: HTMLElement | null = slot; el && el !== hero; el = el.offsetParent as HTMLElement | null) {
+        for (let el: HTMLElement | null = row; el && el !== hero; el = el.offsetParent as HTMLElement | null) {
           top += el.offsetTop;
-          left += el.offsetLeft;
         }
-        top += Math.min(0, window.innerHeight - hero.offsetHeight);
-        return {
-          top,
-          left,
-          right: window.innerWidth - left - slot.offsetWidth,
-          bottom: window.innerHeight - top - slot.offsetHeight,
-        };
+        return top + Math.min(0, window.innerHeight - hero.offsetHeight);
       };
-      const slotClip = () => {
-        const r = slotRect();
-        if (!r) return "inset(40% 0% 40% 0% round 8px)";
-        return `inset(${r.top}px ${r.right}px ${r.bottom}px ${r.left}px round ${radius})`;
-      };
+
+      // The window is born as a small centered box: the border radius is
+      // pre-divided by the scale so its VISUAL rounding equals the radius
+      // token while small, then relaxes to square as it reaches full-bleed.
+      const radiusToken = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--radius-lg"));
+      const boxRadius = `${((Number.isNaN(radiusToken) ? 8 : radiusToken) / SEAM_BOX_SCALE).toFixed(0)}px`;
 
       // Initial states via gsap.set (the CSS classes only carry safe pre-JS
-      // defaults: collapsed clip, veil transparent).
-      gsap.set(stage, { clipPath: slotClip() });
+      // defaults: stage transparent, veil transparent). Hidden at load —
+      // the window only exists once the seam summons it.
+      gsap.set(stage, {
+        autoAlpha: 0,
+        scale: SEAM_BOX_SCALE,
+        borderRadius: boxRadius,
+        transformOrigin: "50% 50%",
+      });
       gsap.set(glow, { opacity: 0.35 });
       gsap.set(copy, { autoAlpha: 0 });
       gsap.set(words, { opacity: 0.15 });
       gsap.set(veil, { opacity: 0 });
 
-      // T1 — the seam: hero pinned from scroll 0; the window's edges push the
-      // name rows off-screen; chrome fades early; the horizon brightens.
+      // Stage lifecycle: hidden at rest (T1's scrub owns the appearance),
+      // alive from just before the zoom-in through P5, hidden past the
+      // manifesto. The render loop only runs while the stage could be seen;
+      // derived from progress on update AND refresh so a mid-page load
+      // (scrollRestoration) lands correct without crossing edges. Declared
+      // before both triggers — their onRefresh can fire during creation.
+      let seamStarted = false;
+      let stageVisible = true;
+      const syncActive = () => {
+        stageState.active = seamStarted && stageVisible;
+      };
+      const syncStageActive = (seamProgress: number) => {
+        // pre-warm slightly before the box appears so the first visible
+        // frame isn't also the first rendered one
+        seamStarted = seamProgress > SEAM_APPEAR - 0.1;
+        syncActive();
+      };
+      const applyStageState = (self: ScrollTrigger) => {
+        const visible = !(self.progress >= 1 && !self.isActive);
+        if (visible !== stageVisible) {
+          stageVisible = visible;
+          // T1's scrub owns visibility before the stage region — only manage
+          // the alpha here when inside/past the manifesto runway.
+          if (!visible || self.progress > 0) gsap.set(stage, { autoAlpha: visible ? 1 : 0 });
+        }
+        syncActive();
+      };
+
+      // T1 — the seam: hero pinned from scroll 0. Nothing shows for the first
+      // half-viewport of scroll; then the window zooms in as a small centered
+      // box and expands to full-bleed while the name rows exit and the chrome
+      // fades.
       const seam = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
@@ -169,34 +199,29 @@ export function ManifestoSection() {
           pin: true,
           scrub: true,
           invalidateOnRefresh: true,
+          onUpdate: (self) => syncStageActive(self.progress),
+          onRefresh: (self) => syncStageActive(self.progress),
         },
       });
       seam
-        .fromTo(stage, { clipPath: slotClip }, { clipPath: () => `inset(0px 0px 0px 0px round 0px)`, duration: 1 }, 0)
-        .fromTo(channels, { sceneIntro: 0 }, { sceneIntro: 1, duration: 1 }, 0)
-        .to(glow, { opacity: 1, duration: 0.8 }, 0.2);
-      if (heroName) seam.to(heroName, { x: 0, y: 0, duration: 0.05 }, 0);
+        .fromTo(stage, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, SEAM_APPEAR)
+        .fromTo(stage, { scale: SEAM_BOX_SCALE }, { scale: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+        .fromTo(stage, { borderRadius: boxRadius }, { borderRadius: "0px", duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+        .fromTo(channels, { sceneIntro: 0 }, { sceneIntro: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+        .to(glow, { opacity: 1, duration: 0.5 }, 0.5);
+      if (heroName) seam.to(heroName, { x: 0, y: 0, duration: 0.05 }, SEAM_APPEAR - 0.07);
       if (nameRows.length === 2) {
         seam
-          .to(nameRows[0], { y: () => -((slotRect()?.top ?? 0) + nameRows[0].offsetHeight), duration: 0.9 }, 0)
-          .to(nameRows[1], { y: () => (slotRect()?.bottom ?? 0) + nameRows[1].offsetHeight, duration: 0.9 }, 0);
+          .to(nameRows[0], { y: () => -(rowTop(nameRows[0]) + nameRows[0].offsetHeight), duration: 0.45 }, 0.5)
+          .to(
+            nameRows[1],
+            { y: () => window.innerHeight - rowTop(nameRows[1]) + nameRows[1].offsetHeight, duration: 0.45 },
+            0.5,
+          );
       }
       if (heroItems.length) {
-        seam.to(heroItems, { autoAlpha: 0, duration: 0.35, immediateRender: false }, 0);
+        seam.to(heroItems, { autoAlpha: 0, duration: 0.25, immediateRender: false }, 0.4);
       }
-
-      // Stage lifecycle: visible from rest through P5; hidden (and the render
-      // loop paused) only once scrolled past the manifesto. Derived from
-      // progress on update AND refresh so a mid-page load (scrollRestoration)
-      // lands correct without ever crossing the leave edge.
-      let stageVisible = true;
-      const applyStageState = (self: ScrollTrigger) => {
-        const visible = !(self.progress >= 1 && !self.isActive);
-        if (visible === stageVisible) return;
-        stageVisible = visible;
-        stageState.active = visible;
-        gsap.set(stage, { autoAlpha: visible ? 1 : 0 });
-      };
 
       // T2 — master scrub across the 520vh runway. No invalidateOnRefresh:
       // every value here is a resolution-independent 0→1 abstraction, and
@@ -296,14 +321,14 @@ export function ManifestoSection() {
       ref={sectionRef}
       className={cn("relative", MANIFESTO_HEIGHT, "-mt-[100svh]")}
     >
-      {/* Fixed stage (z-20): ember horizon + transparent WebGL canvas, clipped
-          to the hero slot at rest. Class carries a collapsed pre-JS clip so
-          the first paint never flashes a fullscreen canvas. Purely visual —
-          pointer-events pass through to the page. */}
+      {/* Fixed stage (z-20): ember horizon + transparent WebGL canvas.
+          Hidden at load (opacity-0 pre-JS default) — the seam summons it as
+          a small centered box that zooms to full-bleed at half a viewport of
+          scroll. Purely visual — pointer-events pass through to the page. */}
       <Box
         aria-hidden
         role="presentation"
-        className="manifesto-stage bg-ink pointer-events-none fixed inset-0 z-20 [clip-path:inset(50%_round_8px)]"
+        className="manifesto-stage bg-ink pointer-events-none fixed inset-0 z-20 overflow-hidden opacity-0"
       >
         <Box className="manifesto-glow absolute inset-0 bg-[radial-gradient(ellipse_75%_50%_at_50%_95%,var(--color-accent-deep),transparent_65%)] blur-2xl" />
         <Box className="absolute inset-0">

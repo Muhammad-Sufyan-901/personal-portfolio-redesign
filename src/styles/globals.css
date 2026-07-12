@@ -100,10 +100,6 @@
   --spacing-page-x: clamp(1.25rem, 5vw, 6rem);
   --spacing-section: clamp(6rem, 14vh, 12rem);
 
-  /* Manifesto window: rest-state height of the live WebGL strip that sits
-     between the two hero name rows (the seam's clip origin). */
-  --spacing-manifesto-slot: clamp(6rem, 18vh, 14rem);
-
   /* === Radius (§6 — elegant ≠ round) === */
   --radius: 4px;
   --radius-sm: 2px;

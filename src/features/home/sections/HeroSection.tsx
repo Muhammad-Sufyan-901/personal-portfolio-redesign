@@ -8,9 +8,8 @@ import { profile } from "@/features/home/data/profile.data";
 import { socialLinks } from "@/features/home/data/contact.data";
 import { navLinks } from "@/constants/navigation";
 import { AuroraBackground } from "@/features/home/components/AuroraBackground";
-import { Box, Image, Link } from "@/components/common";
+import { Box, Link } from "@/components/common";
 import { MenuButton } from "@/components/layouts/MenuButton";
-import macbookPoster from "@/assets/images/macbook-poster.webp";
 
 const [firstName, ...restName] = profile.name.split(" ");
 const surname = restName.join(" ");
@@ -38,10 +37,10 @@ export function HeroSection() {
       if (prefersReducedMotion || !section) return;
 
       // The name word spans are the clip wrappers (block overflow-hidden in
-      // JSX) — split chars only; split-type ≥0.3 handles nested spans. Split
-      // the two row spans individually (never the h1): a revert on the h1
-      // would replace the manifesto window slot that now sits between them.
-      const rows = Array.from(section.querySelectorAll<HTMLElement>(".hero-name > span:not(.hero-window-slot)"));
+      // JSX) — split chars only; split-type ≥0.3 handles nested spans. The
+      // rows are split individually so the h1 itself is never rebuilt by a
+      // revert (the manifesto seam animates these row spans).
+      const rows = Array.from(section.querySelectorAll<HTMLElement>(".hero-name > span"));
       const split = new SplitType(rows, { types: "chars" });
 
       // Hide via gsap.set, never CSS — JS-dead/reduced-motion must stay visible.
@@ -131,23 +130,6 @@ export function HeroSection() {
           className="block self-start overflow-hidden pb-[0.12em] -mb-[0.12em] font-sans font-medium whitespace-nowrap"
         >
           {firstName}
-        </Box>
-        {/* Manifesto window slot: the live WebGL strip's rest-state rect is
-            measured from this element (the seam clip origin). Renders nothing
-            itself; under reduced motion it carries the static poster. */}
-        <Box
-          as="span"
-          aria-hidden
-          className="hero-window-slot block h-manifesto-slot w-full"
-        >
-          {prefersReducedMotion && (
-            <Image
-              src={macbookPoster}
-              alt=""
-              priority="eager"
-              className="h-full w-full rounded-lg"
-            />
-          )}
         </Box>
         <Box
           as="span"
