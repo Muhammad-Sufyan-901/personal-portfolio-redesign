@@ -12,8 +12,12 @@ import { MenuButton } from "@/components/layouts/MenuButton";
 const POPOUT_END = 100_000;
 
 /** Fixed top-right Menu trigger (replaces the old navbar). Hidden over the
- *  hero; pops out with a scale-overshoot once the user scrolls past 100vh,
- *  retracts back above it. Reduced motion: plain show/hide, no scale. */
+ *  hero; pops out with a scale-overshoot once the manifesto seam has consumed
+ *  the hero's inline MenuButton (it fades ~0.42·vh into the pinned seam — a
+ *  1.0·vh start would leave a no-menu gap), retracts back above that point.
+ *  Reduced motion: plain show/hide, no scale. */
+const POPOUT_START = 0.45;
+
 export function MenuPopout() {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -26,7 +30,7 @@ export function MenuPopout() {
       if (prefersReducedMotion) {
         gsap.set(el, { autoAlpha: 0 });
         const trigger = ScrollTrigger.create({
-          start: () => window.innerHeight,
+          start: () => window.innerHeight * POPOUT_START,
           end: POPOUT_END,
           onToggle: (self) => gsap.set(el, { autoAlpha: self.isActive ? 1 : 0 }),
         });

@@ -34,10 +34,10 @@ Every remaining chapter carries these forward; deviations need a reason at its g
 
 ### 02 Manifesto — `id="manifesto"`, eyebrow `02 — WHO I AM`
 
-- **Layout:** standard shell; the 3 statement lines from `profile.manifesto.lines` (focal word `profile.manifesto.focalWord` = "learning") at `font-display text-statement text-paper`, left-aligned narrative spine, generous dead space.
-- **Motion** (recipe preserved in memory from the pre-reset build): words **pre-split in JSX** (static data — no split-type, no revert cost); ONE pinned scrub `start:"top top", end:"+=175%", pin, scrub` filling words `opacity 0.15→1` sequentially; the focal word gets `text-accent` + `bg-accent-tint` wash. Reduced motion: no pin, full opacity, single `opacity 0→1` fade.
-- **Wire-in:** remove HomePage's 150vh runway in the same commit.
-- **Data:** exists (`profile.manifesto`) — no delta.
+**SHIPPED ✅ (2026-07-13) as the PROMPT #4 WebGL MacBook scroll-story** — supersedes both this spec's pinned scroll-fill (`c14474e`) and the 3D keyboard disintegration (`376f4c0`), and explicitly reopens open-decision 9 ("skip the hero→manifesto media reveal" — now built).
+
+- **As built:** a live WebGL strip sits between the hero's two name rows (`--spacing-manifesto-slot` slot span in the h1); T1 pins `#hero` (`clamp(bottom bottom)`, `+=120%`) and expands the fixed stage's clip-path from the slot rect to full-bleed while the name rows ride the edges off-screen; T2 scrubs a channels-object master across a 520vh runway (`-mt-[100svh]` swallows the pin-spacer dead zone): closed MacBook (runtime hinge rig on `macbook.rigged.glb`) → lid opens facing away (Apple-logo beat) → 180° yaw onto the lit wallpaper → `profile.manifesto` statement (pre-split words, focal `bg-accent-tint` wash) → backdrop-blur ember veil handing off to 03. Reduced motion: static statement + poster figure (the hero slot carries the poster strip). WebGL/GLB failure: poster inside the still-working seam. Details: `logs/feature-changes/2026-07-13-macbook-3d-pipeline.md` + `2026-07-13-manifesto-macbook-story.md`.
+- **Data:** `profile.manifesto` verbatim (one line, focal word "code").
 
 ### 03 About — `id="about"`, eyebrow `03 — ABOUT` (reference beat 4)
 

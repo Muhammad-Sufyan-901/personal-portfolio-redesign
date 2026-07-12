@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import { channels } from "@/features/home/components/manifesto-3d/channels";
 import {
@@ -8,6 +8,7 @@ import {
   CAM,
   CLOSED_TUCK,
   DAMP_LAMBDA,
+  FIT_SIZE,
   RECEDE_DRIFT,
   RECEDE_SCALE,
   YAW_START,
@@ -28,6 +29,10 @@ const FRUSTUM_H = 2 * CAM.pos[2] * Math.tan(THREE.MathUtils.degToRad(CAM.fov / 2
 export function MacbookModel() {
   const { scene } = useGLTF(MODEL_URL, DRACO_PATH);
   const rig = useMemo(() => buildMacbookRig(scene), [scene]);
+  // Portrait phones: the horizontal frustum is narrower than FIT_SIZE —
+  // clamp the whole object so the closed footprint always fits the width.
+  const viewportWidth = useThree((state) => state.viewport.width);
+  const fitClamp = Math.min(1, (viewportWidth * 0.92) / (FIT_SIZE + 0.001));
 
   const recedeRef = useRef<THREE.Group>(null);
   const yawRef = useRef<THREE.Group>(null);
@@ -59,7 +64,7 @@ export function MacbookModel() {
     const recede = recedeRef.current;
     if (yaw) yaw.rotation.y = YAW_START * (1 - r.yaw) + sway + RECEDE_DRIFT * r.recede;
     if (recede) {
-      const s = 1 - RECEDE_SCALE * r.recede;
+      const s = fitClamp * (1 - RECEDE_SCALE * r.recede);
       recede.scale.setScalar(s);
       recede.position.y = float - 0.04 * FRUSTUM_H * r.recede;
     }
