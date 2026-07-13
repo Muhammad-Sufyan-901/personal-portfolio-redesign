@@ -77,6 +77,12 @@ export function ManifestoCanvas() {
     <Canvas
       frameloop="never"
       dpr={isMobile ? [1, 1.25] : [1, 1.75]}
+      // offsetSize: measure the container's LAYOUT size, not its
+      // getBoundingClientRect — the seam scales the stage (0.14 → 1) and
+      // gBCR includes transforms, so the default sized the canvas to ~14%
+      // of the viewport at load (scene stuck top-left until scroll events
+      // re-measured it up). Offset dimensions ignore ancestor transforms.
+      resize={{ scroll: true, debounce: { scroll: 50, resize: 0 }, offsetSize: true }}
       camera={{
         fov: CAM.fov,
         position: [0, CAM.centerClosed + CAM.rise, CAM.z],
