@@ -55,6 +55,9 @@ export interface Profile {
   roles: string[];
   bio: string;
   aboutStatement: string;
+  /** Substrings of `aboutStatement` rendered italic-serif in the About
+   *  chapter (the same focal-phrase device as `taglineEmphasis`). */
+  aboutStatementEmphasis?: string[];
   manifesto: {
     lines: string[];
     focalWord: string;

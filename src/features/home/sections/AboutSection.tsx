@@ -1,8 +1,7 @@
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { cn } from "@/lib/utils";
-import { Box, ChapterEyebrow, Link, MagneticButton, ParallaxImage, RevealText } from "@/components/common";
+import { Box, ChapterEyebrow, Link, MagneticButton, ParallaxImage } from "@/components/common";
 import { profile } from "@/features/home/data/profile.data";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
@@ -10,22 +9,33 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
  *  graceful-hide until the real photo lands in public/assets/images/. */
 const PORTRAIT_SRC = "/assets/images/portrait.webp";
 
-/** `aboutStatement` verbatim, split at the clause break into the two
- *  hard-aligned tiers of the reference layout (presentation only). */
-const [tierOne, tierTwo] = (() => {
-  const words = profile.aboutStatement.split(" ");
-  const breakAt =
-    profile.aboutStatement.indexOf(",") !== -1
-      ? profile.aboutStatement.split(",")[0].split(" ").length
-      : Math.ceil(words.length / 2);
-  return [words.slice(0, breakAt).join(" "), words.slice(breakAt).join(" ")];
-})();
+/** Split `text` into segments, marking every occurrence of `phrases` — the
+ *  hero `taglineEmphasis` device generalized to multiple focal phrases. */
+function emphasize(text: string, phrases: string[] = []): { text: string; emphasized: boolean }[] {
+  let segments = [{ text, emphasized: false }];
+  for (const phrase of phrases) {
+    segments = segments.flatMap((segment) => {
+      if (segment.emphasized || !segment.text.includes(phrase)) return [segment];
+      const parts = segment.text.split(phrase);
+      return parts.flatMap((part, i) => [
+        ...(part ? [{ text: part, emphasized: false }] : []),
+        ...(i < parts.length - 1 ? [{ text: phrase, emphasized: true }] : []),
+      ]);
+    });
+  }
+  return segments;
+}
 
-/** 03 — About: the factual persona block (reference beat 4) and the veil's
- *  landing target. The whole inner wrapper condenses in crisp out of the
- *  manifesto's blur (autoAlpha/y/blur clear, once), then children stagger.
- *  Sparse hard-aligned grid: two-tier statement → bio + portrait → stats
- *  count-up → CV link. */
+const statementSegments = emphasize(profile.aboutStatement, profile.aboutStatementEmphasis);
+const yearsStat = profile.stats[0];
+
+/** 03 — About: the factual persona block, relaid to the reference's About
+ *  beat (full-viewport composition): sans statement with Fraunces-italic
+ *  focal phrases top-left, indented bio, the CV link in the "INFO" spot, a
+ *  small "(3+)" marker in the left gutter, and a large portrait panel
+ *  filling the right ~40% — rounded left corners, bleeding flush to the
+ *  right and bottom edges. Still the manifesto veil's landing target: the
+ *  inner wrapper condenses in crisp out of the blur, then children stagger. */
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -36,7 +46,6 @@ export function AboutSection() {
       if (prefersReducedMotion || !section) return;
       const inner = section.querySelector<HTMLElement>(".about-inner");
       const items = gsap.utils.toArray<HTMLElement>(".about-item", section);
-      const values = gsap.utils.toArray<HTMLElement>(".about-stat-value", section);
       if (!inner) return;
 
       // §4.6 — About resolves crisp out of the veil's blur. clearProps on the
@@ -63,16 +72,6 @@ export function AboutSection() {
         stagger: 0.08,
         scrollTrigger: { trigger: section, start: "top 60%", once: true },
       });
-
-      // Mono count-up, 0 → value, snapped to integers (spec §8).
-      gsap.from(values, {
-        textContent: 0,
-        snap: { textContent: 1 },
-        duration: 1.2,
-        ease: "power2.inOut",
-        stagger: 0.08,
-        scrollTrigger: { trigger: section, start: "top 55%", once: true },
-      });
     },
     { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
   );
@@ -82,112 +81,87 @@ export function AboutSection() {
       as="section"
       id="about"
       ref={sectionRef}
-      className="bg-ink relative px-page-x py-section"
+      className="bg-ink px-page-x relative min-h-svh overflow-hidden"
     >
-      <Box className="about-inner mx-auto flex max-w-7xl flex-col gap-16">
+      {/* Text column — above the portrait panel in z. */}
+      <Box className="about-inner relative z-10 flex min-h-svh flex-col pt-[14svh] pb-[10svh] lg:pb-[8svh]">
         <ChapterEyebrow
           index="03"
           label="ABOUT"
         />
 
-        <Box className="grid grid-cols-1 gap-x-6 gap-y-16 lg:grid-cols-12">
-          {/* Two-tier statement — off-axis alignment per the reference. */}
-          <Box
-            as="h2"
-            aria-label={profile.aboutStatement}
-            className="font-display text-statement text-paper grid grid-cols-1 gap-y-3 lg:col-span-12 lg:grid-cols-12"
-          >
-            <Box
-              as="span"
-              aria-hidden
-              className="block lg:col-span-8 lg:col-start-1"
-            >
-              <RevealText
-                as="span"
-                mode="lines"
-                className="block"
-              >
-                {tierOne}
-              </RevealText>
-            </Box>
-            <Box
-              as="span"
-              aria-hidden
-              className="block lg:col-span-9 lg:col-start-4"
-            >
-              <RevealText
-                as="span"
-                mode="lines"
-                className="block"
-              >
-                {tierTwo}
-              </RevealText>
-            </Box>
-          </Box>
-
-          {/* Bio (left) beside the portrait (right, rounded-top). */}
-          <Box
-            as="p"
-            className="about-item text-body text-muted max-w-[46ch] self-end lg:col-span-6 lg:col-start-1"
-          >
-            {profile.bio}
-          </Box>
-
-          <Box className="about-item lg:col-span-5 lg:col-start-8 lg:row-span-2">
-            <ParallaxImage
-              src={PORTRAIT_SRC}
-              alt="Portrait of Muhammad Sufyan"
-              aspect="aspect-[4/5]"
-              withScrim
-              className="rounded-t-[2rem]"
-            />
-          </Box>
-
-          {/* Stats — hairline-separated mono row, count-up on enter. */}
-          <Box
-            as="ul"
-            className="about-item border-line grid grid-cols-3 border-y lg:col-span-7 lg:col-start-1"
-          >
-            {profile.stats.map((stat, i) => (
+        <Box
+          as="h2"
+          className="about-item text-statement text-paper mt-[5svh] font-sans lg:max-w-[63%]"
+        >
+          {statementSegments.map((segment, i) =>
+            segment.emphasized ? (
               <Box
-                key={stat.label}
-                as="li"
-                className={cn("flex flex-col gap-2 py-6", i > 0 && "border-line border-l pl-6")}
+                key={i}
+                as="span"
+                className="font-display italic"
               >
-                <Box
-                  as="span"
-                  className="about-stat-value font-mono text-chapter text-paper"
-                >
-                  {stat.value}
-                </Box>
-                <Box
-                  as="span"
-                  className="text-eyebrow text-muted font-mono uppercase"
-                >
-                  {stat.label}
-                </Box>
+                {segment.text}
               </Box>
-            ))}
-          </Box>
-
-          <Box className="about-item lg:col-span-7 lg:col-start-1">
-            <MagneticButton>
-              <Link
-                href={profile.cvUrl}
-                className="magnetic-label text-eyebrow text-paper hover:text-accent group inline-flex items-center gap-3 font-mono uppercase transition-colors"
-              >
-                Download CV
-                <Box
-                  as="span"
-                  aria-hidden
-                  className="text-accent transition-transform group-hover:translate-x-1"
-                >
-                  →
-                </Box>
-              </Link>
-            </MagneticButton>
-          </Box>
+            ) : (
+              <Fragment key={i}>{segment.text}</Fragment>
+            ),
+          )}
         </Box>
+
+        <Box
+          as="p"
+          className="about-item text-body text-paper mt-[12svh] max-w-[36ch] lg:ml-[20%]"
+        >
+          {profile.bio}
+        </Box>
+
+        {/* The reference's "INFO" spot — our info action is the CV. */}
+        <Box className="about-item mt-12 lg:ml-[20%]">
+          <MagneticButton>
+            <Link
+              href={profile.cvUrl}
+              className="magnetic-label text-eyebrow text-paper hover:text-accent group inline-flex items-center gap-3 font-mono uppercase transition-colors"
+            >
+              Download CV
+              <Box
+                as="span"
+                aria-hidden
+                className="text-accent transition-transform group-hover:translate-x-1"
+              >
+                →
+              </Box>
+            </Link>
+          </MagneticButton>
+        </Box>
+
+        {/* Portrait — mobile: stacked full-width block at the end. */}
+        <Box className="about-item -mx-page-x mt-14 lg:hidden">
+          <ParallaxImage
+            src={PORTRAIT_SRC}
+            alt="Portrait of Muhammad Sufyan"
+            className="h-[55svh] rounded-t-[3rem]"
+          />
+        </Box>
+      </Box>
+
+      {/* Portrait panel — desktop: right ~40%, rounded left corners, flush to
+          the viewport's right edge and the section bottom (reference bleed). */}
+      <Box className="about-item absolute top-[12svh] right-0 bottom-0 hidden w-[40vw] lg:block">
+        <ParallaxImage
+          src={PORTRAIT_SRC}
+          alt="Portrait of Muhammad Sufyan"
+          className="h-full rounded-l-[clamp(3rem,9vw,11rem)]"
+        />
+      </Box>
+
+      {/* Left-gutter marker — the reference's "(23)" echo. */}
+      <Box
+        as="span"
+        aria-label={`${yearsStat.value}+ ${yearsStat.label}`}
+        className="about-item text-meta text-muted absolute left-6 top-[55%] hidden font-mono lg:block"
+      >
+        ({yearsStat.value}+)
       </Box>
     </Box>
   );
