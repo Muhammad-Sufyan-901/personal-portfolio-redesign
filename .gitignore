@@ -43,6 +43,7 @@ dist-ssr
 reference/*
 !reference/scripts/
 !reference/REFERENCE-NOTES.md
+!reference/breakdown_analysis.md
 # ...and the impeccable skill's reference docs are part of the skill, not captures
 !.claude/skills/impeccable/reference/
 

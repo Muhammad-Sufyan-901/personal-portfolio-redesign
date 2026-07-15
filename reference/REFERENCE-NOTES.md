@@ -81,3 +81,21 @@ still sets, cross-checked against the live site (chrome-devtools MCP pass, 2026-
 Grasp the arc from the 4 contact sheets; study a specific chapter from `frames/`
 (4 fps ⇒ frame № ≈ 4 × seconds); check a real hover/settled state from `lukebaffait-live/`
 or the `live-mcp-*.jpeg` shots.
+
+## Reconciliation (2026-07-15)
+
+`breakdown_analysis.md` added — consolidates + extends this file (verified via
+`reference/scripts/histogram-phases.py` + a fresh chrome-devtools MCP probe of the live
+site). Discrepancies found against this file's 2026-07-08 pass:
+
+1. **"Body font on the live site is Inter" is corrected**: the bio paragraphs, tagline,
+   statements, and contact email compute to family `Breton` (`assets/fonts/Breton.woff2`);
+   Inter is only the UI/meta layer (nav/social links, "V3.0", awards cells). Our
+   General Sans mapping is unaffected — the reference collapsing display-roman + body
+   into one face validates it further.
+2. **"72 px path width at 1440" is refined**: the stroke is 72 *viewBox units*
+   (viewBox `0 0 1400 1400`), rendering ≈74 px at 1440 and ≈20 px at 390 — it scales
+   with the viewport rather than being a fixed pixel width.
+
+Everything else here (palette values, section map, Lenis/page-height facts) reconfirmed.
+Full computed-style tables live in `breakdown_analysis.md §8`.
