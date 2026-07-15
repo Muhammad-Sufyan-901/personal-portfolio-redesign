@@ -1,5 +1,7 @@
 # Code Quality
 
+> Twins: `.claude/rules/react-typescript.md` + `.claude/rules/tailwind-styling.md` (path-scoped Claude Code mirrors — same rules, keep in sync).
+
 - TypeScript strict; no `any`. Functional components; React 19 idioms.
 - Feature isolation: no cross-feature imports; promote shared code up.
 - Design tokens only — no raw hex/magic px in components. `cn()` for classes, `cva` for variants.

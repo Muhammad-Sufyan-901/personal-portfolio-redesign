@@ -122,7 +122,7 @@ The homepage is one vertical story of numbered chapters (see `design_system.md �
 ## 6. Open Decisions (resolve at planning approval)
 
 1. Accent: **Brass `#C8A46A`** (default) vs **Cobalt `#3B5BFF`**.
-   > **Resolved (2026-07-07): Ember `#E8380F`** per `design_system.md` v2 §3.2 (evidence-sampled from the reference). Brass and cobalt are demoted to documented alternates there. Note: the interim build (chapters 00–04) shipped with cobalt tokens in `src/styles/globals.css`; the ember re-theme is pending.
+   > **Resolved (2026-07-07): Ember `#E8380F`** per `design_system.md` v2 §3.2 (evidence-sampled from the reference). Brass and cobalt are demoted to documented alternates there. The ember values have been live in `src/styles/globals.css` since the 2026-07-07 re-bootstrap.
 2. **Dark-only** (recommended) vs light-mode toggle.
 3. **Single-page** (recommended) vs multi-page with `/work/$slug`.
 4. Which 4–6 projects are **featured** in chapter 05.

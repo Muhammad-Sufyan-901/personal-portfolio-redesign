@@ -2,7 +2,7 @@
 
 A motion-first, scroll-telling single-page portfolio for **Muhammad Sufyan**, a software engineer (Indonesia) working across web and mobile. The site is told as one continuous, chaptered narrative with GSAP/Lenis-driven choreography — reference feel: [lukebaffait.fr](https://lukebaffait.fr) (motion and polish only, not its content).
 
-> **Status:** the foundation and chapters **00–04 are built** — preloader, hero, manifesto, craft, and journey ship with the full motion stack (GSAP + Lenis + split-type), applied design tokens, and the PRD data layer. Remaining: **05 Selected Work**, **06 Contact** (+ `src/lib/emailjs.ts`), the footer, and the **"Void & Ember" re-theme** (the spec's v2 palette; the shipped tokens are the interim cobalt set). The redesign is fully specified in [`.agents/context/`](.agents/context/) and built chapter by chapter — one approval gate per section — through the agent workflow in [AGENTS.md](AGENTS.md).
+> **Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG. The redesign is fully specified in [`.agents/context/`](.agents/context/) + `PLAN.md` and built chapter by chapter — one approval gate per section — through the agent workflow in [AGENTS.md](AGENTS.md).
 
 ## Stack
 
@@ -54,18 +54,20 @@ The page reads as a single vertical narrative, built one chapter at a time (each
 
 | # | Chapter | Content | Status |
 | --- | --- | --- | --- |
-| 00 | **Preloader** | counter 0→100 + name mask reveal + curtain wipe, once per session | ✅ built |
-| 01 | **Hero** | name char-reveal, role line ("Software Engineer · Web & Mobile"), site chrome | ✅ built |
-| 02 | **Manifesto** | the "about" statement, pinned scroll-fill text with an accent focal word | ✅ built |
-| 03 | **Craft** | two editorial pillars (web / mobile) + full-bleed skills marquee | ✅ built |
-| 04 | **Journey** | one timeline merging work experience, education, and awards (9 items) | ✅ built |
-| 05 | **Selected Work** | 4–6 featured projects, parallax cards | ⏳ next |
-| 06 | **Contact** | magnetic CTA + EmailJS form (WhatsApp · Gmail · Telegram) | ⏳ pending |
-| — | **Footer** | name marquee, rhythm recap | ⏳ pending |
+| 00 | **Preloader** | three-act Welcome mask-reveal + ring counter → ember panels → split curtain (every load) | ✅ built |
+| 01 | **Hero** | two-row giant name char-reveal, aurora background (ogl), role line, hairline chrome bar | ✅ built |
+| 02 | **Manifesto** | WebGL MacBook scroll-story opening between the hero name rows; statement with ember focal word | ✅ built |
+| 03 | **About** | persona statement with italic focal phrases, bio, right-edge portrait panel, CV link | ✅ built |
+| 04 | **Project/Craft** | Web/Mobile pillars + keyword marquee + hover-swap index of all 6 projects | ⏳ next |
+| 05 | **Journey** | one timeline merging work experience, education, and awards (9 items) | ⏳ pending |
+| 06 | **Skills** | positioning statement + scroll-driven category accordion | ⏳ pending |
+| 07 | **Gallery** | the 5 featured projects as WorkCards (clip reveals, parallax) | ⏳ pending |
+| 08 | **Contact** | the light-invert section — magnetic CTA + EmailJS form (WhatsApp · Gmail · Telegram) | ⏳ pending |
+| — | **Footer** | name marquee bookend, mono meta columns | ⏳ pending |
 
 ## Design language
 
-- **Palette — "Void & Ember" (spec target, `design_system.md` v2)**: neutral near-black `#0A0A0A` background, neutral paper `#E4E4E4` text, one vivid **ember accent `#E8380F`** used surgically — evidence-sampled from the reference site. The shipped `src/styles/globals.css` still carries the interim Warm Ink + Cobalt (`#3B5BFF`) tokens; the re-theme is a token-values-only change because components style by token *name*, never raw hex. Brass `#C8A46A` and cobalt remain documented alternates.
+- **Palette — "Void & Ember" (`design_system.md` v2, live)**: neutral near-black `#0A0A0A` background, neutral paper `#E4E4E4` text, one vivid **ember accent `#E8380F`** used surgically — evidence-sampled from the reference site and applied in `src/styles/globals.css` since 2026-07-07. Components style by token *name*, never raw hex. Brass `#C8A46A` and cobalt `#3B5BFF` remain unchosen documented alternates.
 - **Typography** — **Fraunces** (display: name, chapter titles) · **General Sans** (body, UI) · **JetBrains Mono** (chapter numbers, eyebrows, labels) — all bundled/self-hosted, live today.
 - **Motion** — GSAP + ScrollTrigger on a Lenis canvas; every effect has a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden).
 
@@ -84,7 +86,7 @@ Feature, page, and section code never emits raw HTML wrappers — it uses the po
 | `a` / router link | `<Link href="/x">` (internal · hash smooth-scroll via Lenis · external/mailto/tel) |
 | `img` | `<Image src alt width height />` (lazy + skeleton + fallback) |
 
-The same barrel ships the **motion primitives** — `RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader` — all GSAP-scoped with reduced-motion fallbacks built in.
+The same barrel ships the **motion primitives** — `RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`, `PathDraw` — all GSAP-scoped with reduced-motion fallbacks built in.
 
 ```tsx
 import { Box, Heading, Text } from "@/components/common";
@@ -103,19 +105,19 @@ Interactive controls (buttons, inputs, dialogs) use shadcn/ui, not raw elements.
 src/
 ├── assets/fonts/      # self-hosted General Sans variable woff2
 ├── components/
-│   ├── common/        # Box, Container, Text, Heading, Link, Image, ThemeToggle +
+│   ├── common/        # Box, Container, Text, Heading, Link, Image +
 │   │                  # motion primitives (RevealText, ParallaxImage, Marquee,
-│   │                  # MagneticButton, ChapterEyebrow, Cursor, Preloader)
-│   ├── layouts/       # Header (z-60), MobileMenu (z-80), RootLayout
+│   │                  # MagneticButton, ChapterEyebrow, Cursor, Preloader, PathDraw)
+│   ├── layouts/       # MenuButton, MenuPopout (z-60), SiteMenu (z-80), RootLayout
 │   └── ui/            # shadcn/ui generated primitives (button, tooltip)
 ├── config/            # site.ts (SEO/meta), env.ts (EmailJS keys)
-├── constants/         # projects.data.ts, navigation.ts, images.ts
+├── constants/         # projects.data.ts, navigation.ts
 ├── features/
 │   └── home/          # the portfolio page — pages/HomePage.tsx,
-│                      # sections/{Hero,Manifesto,Craft,Journey}Section.tsx,
-│                      # components/{JourneyEntry,PillarBlock}.tsx,
+│                      # sections/{Hero,Manifesto,About}Section.tsx,
+│                      # components/AuroraBackground.tsx + manifesto-3d/ (R3F island),
 │                      # data/{profile,skills,journey,contact}.data.ts
-├── hooks/             # useTheme, useLenis, usePrefersReducedMotion, useIsomorphicLayoutEffect
+├── hooks/             # useLenis, usePrefersReducedMotion, useIsomorphicLayoutEffect
 ├── lib/               # gsap.ts (single GSAP source), utils.ts (cn) — emailjs.ts joins at ch. 06
 ├── providers/         # AppProviders, SmoothScrollProvider (single Lenis), theme-provider
 ├── routes/            # TanStack Router registry files only (no JSX): __root.tsx, index.tsx

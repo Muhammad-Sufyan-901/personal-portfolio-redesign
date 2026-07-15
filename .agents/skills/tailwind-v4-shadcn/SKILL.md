@@ -11,7 +11,7 @@ Authoritative: `context/design_system.md §9` (v2 — "Void & Ember" palette, ev
 
 Define all tokens via `@theme` in `src/styles/globals.css` (Tailwind `^4.2.1` + `@tailwindcss/vite`): colors (`--color-ink #0A0A0A`, `--color-surface #141414`, `--color-raised #1C1C1C`, `--color-paper #E4E4E4`, `--color-muted #9A9A9A`, `--color-faint #4D4D4D`, `--color-line #242424`, `--color-accent #E8380F` ember + `--color-accent-deep #B32C0B` + `--color-accent-tint`, invert pair `#E8E8E8`/`#0A0A0A`), fonts (`--font-display` Fraunces / `--font-sans` General Sans / `--font-mono` JetBrains Mono), radius (`--radius: 4px`, `--radius-lg: 8px`), fluid type scale (`--text-display` … `--text-meta`, §4.3), motion eases/durations (§7.1). Reference as utilities (`bg-ink`, `text-paper`, `text-accent`, `font-display`).
 
-> Superseded values, kept for the record: v1 of the design system specified Warm Ink + Brass (`#0B0B0F` / `#ECE8E1` / `#C8A46A`); the shipped `globals.css` (chapters 00–04) currently carries the interim Warm Ink + Cobalt (`#3B5BFF`) tokens. Ember is authoritative (design_system v2 §3.2); brass/cobalt remain documented alternates there. Because components use token *names*, the re-theme is a globals.css-only change.
+> Superseded values, kept for the record: v1 of the design system specified Warm Ink + Brass (`#0B0B0F` / `#ECE8E1` / `#C8A46A`); a pre-reset interim build briefly carried Warm Ink + Cobalt (`#3B5BFF`). **Ember is authoritative and live** in `globals.css` since the 2026-07-07 re-bootstrap (design_system v2 §3.2); brass/cobalt remain unchosen documented alternates. Because components use token *names*, any re-theme is a globals.css-only change.
 
 ## Rules
 

@@ -5,6 +5,8 @@ paths:
 
 # Custom component primitives (enforced everywhere, incl. subagents)
 
+> Twin: no `.agents/rules/` mirror — the portable counterpart is the house-style section in `.agents/agents.md` ("Component house style") + the subagent instructions; this file is the authoritative prop surface.
+
 Output styles are not inherited by subagents, so this rule is the durable enforcement. In any `src/**/*.tsx` under `features/`, `pages/`, `sections/`, `layouts/`:
 
 - Never emit a bare `div`, `p`, `span`, `h1`–`h6`, `a`, or `img`. Use `@/components/common`: `Box`/`Container` (polymorphic via `as`), `Text` (`as`, `variant`), `Heading` (`level`/`variant`), `Link` (`href`), `Image`. See `.claude/output-styles/custom-components.md` for the full mapping + example.
@@ -31,11 +33,13 @@ All import GSAP only from `@/lib/gsap` and ship a `prefers-reduced-motion` branc
 - **`MagneticButton`** — `strength` (default `12` px max translate); inner `.magnetic-label` counter-moves ×−0.35.
 - **`ChapterEyebrow`** — `index`, `label` (`"01 — WHO I AM"` pattern, mono, accent index). Static.
 - **`Cursor`** — no props; dot 8px + ring 40px, `z-[100]`; returns `null` on coarse pointer / reduced motion.
-- **`Preloader`** — no props; `z-[90]`, runs on every load/refresh (split-curtain reveal — name/counter fade, two ink panels part), signals `useUIStore.setPreloaderDone`.
+- **`Preloader`** — no props; `z-[90]`, runs on every load/refresh (three-act Welcome/ember/curtain intro), signals `useUIStore.setPreloaderDone`.
+- **`PathDraw`** — `d` (required), `strokeWidth` (default `3.5`), `trigger`, `scrub` (default `true`), `start`/`end`, `viewBox`; `stroke="currentColor"` + `text-accent` wrapper (token-driven); reduced motion renders fully drawn. Built, not yet wired into a section.
 
 ## Known gotchas
 
-- `ThemeToggle` is NOT re-exported from the barrel — import from `@/components/common/ThemeToggle` if needed (open follow-up).
-- `Heading`'s default-variant responsive sizes (`md:text-3xl` etc.) survive `twMerge` over fluid tokens like `text-item` — for token-sized headings in sections, use `Box as="h3"` + token classes instead (established in the Journey build, `logs/feature-changes/2026-07-07-journey.md`).
+- There is **no `ThemeToggle`** component (dark-only site) — the barrel exports exactly the 14 primitives above.
+- `Heading`'s default-variant responsive sizes (`md:text-3xl` etc.) survive `twMerge` over fluid tokens like `text-item` — for token-sized headings in sections, use `RevealText as="h2"` / `Box as="h3"` + token classes instead (established in the Journey build, `logs/feature-changes/2026-07-07-journey.md`).
+- Any new `--text-*` token must be registered in `src/lib/utils.ts`'s extended-twMerge font-size class groups, or it's silently dropped next to color classes.
 
-**Why this matters here:** chapters 00–04 were built this way (see `src/features/home/sections/*` and `JourneyEntry.tsx`/`PillarBlock.tsx`); the QA auditor greps for bare tags (`grep -rnE "<(div|p|span|h[1-6]|img|a)[ >]" src/features`) and fails the Definition of Done on any hit.
+**Why this matters here:** chapters 00–03 were built this way (see `src/features/home/sections/*` — the `manifesto-3d/` island's three.js JSX is the documented exemption); the QA auditor greps for bare tags (`grep -rnE "<(div|p|span|h[1-6]|img|a)[ >]" src/features`) and fails the Definition of Done on any hit.

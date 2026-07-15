@@ -21,6 +21,6 @@ Authoritative: `context/design_system.md §11` (per-chapter spec), `context/prod
 - Consistent left-aligned narrative spine; work + footer may be full-bleed.
 - Section rhythm: `padding-block: clamp(6rem, 14vh, 12rem)`.
 
-## As built (chapters 00–04 shipped)
+## As built (chapters 00–03 shipped on the PLAN v3.1 10-chapter map)
 
-The vocabulary above is live in `src/features/home/sections/`: hero char reveal (gated on `useUIStore.preloaderDone`), manifesto pinned scroll-fill (words `opacity 0.15→1`, accent focal word), craft full-bleed marquee (21 skills, 30s/loop), journey rail scrub + once-only entry rises. Remaining: Work (05, clip reveals + parallax), Contact (06, magnetic CTA), plus v2 upgrades (hero aurora §11.1, bold path draw §11.4/11.5, optional footer ornament converge).
+The vocabulary above is live in `src/features/home/sections/`: hero char reveal (gated on `useUIStore.preloaderDone`) + aurora glow, the manifesto WebGL MacBook seam (pin + 520vh channels scrub, statement with accent focal word), About veil-landing + item stagger. Remaining per PLAN v3.1 §3: 04 Project/Craft (marquee + hover-swap index + PathDraw entry), 05 Journey (PathDraw rail), 06 Skills (pinned sequential accordion), 07 Gallery (clip reveals + parallax), 08 Contact (the light-invert beat, magnetic CTA), Footer (marquee bookend + optional ornament converge).

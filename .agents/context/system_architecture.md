@@ -54,7 +54,7 @@ src/
 │   │   ├── Marquee.tsx        # infinite hover-pause marquee
 │   │   ├── MagneticButton.tsx # pointer-follow magnetic wrapper
 │   │   └── ChapterEyebrow.tsx # "01 — LABEL" structural marker
-│   ├── layouts/              # RootLayout, Header, Footer, MobileMenu
+│   ├── layouts/              # RootLayout, MenuButton, MenuPopout, SiteMenu (as built — no Header/MobileMenu), Footer (pending)
 │   └── ui/                   # shadcn re-exports actually used (Dialog, Tooltip, form bits)
 │
 ├── config/                   # ⚙️ GLOBAL SETTINGS

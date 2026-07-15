@@ -11,12 +11,12 @@ Authoritative specs: `.agents/context/product_requirements.md` (content), `desig
 
 **Start every task by reading your memory** at `.claude/agent-memory/frontend-engineer/MEMORY.md` (project layout, custom-component API, conventions, DRY patterns) plus its `content-data-layer.md` and `site-chrome.md` companions. **End every task by updating it** if you introduced/changed a pattern, file location, decision, or reusable util.
 
-**Where things live (as built, chapters 00–04 shipped):**
+**Where things live (as built — chapters 00–03 shipped on the 10-chapter map, PLAN v3.1 §0):**
 
-- Sections: `src/features/home/sections/{Hero,Manifesto,Craft,Journey}Section.tsx` — `Work` (05) and `Contact` (06) are still to build. Reusable feature parts: `src/features/home/components/` (`JourneyEntry.tsx`, `PillarBlock.tsx`).
+- Sections: `src/features/home/sections/{Hero,Manifesto,About}Section.tsx` — `04 Project/Craft → 08 Contact` + Footer are still to build (PLAN v3.1 §3 specs). Reusable feature parts: `src/features/home/components/` (`AuroraBackground.tsx`, `manifesto-3d/` — the R3F island whose three.js JSX is exempt from the primitives rule).
 - Data: `src/features/home/data/{profile,skills,journey,contact}.data.ts` + `src/constants/{projects.data.ts,navigation.ts}`, typed against `src/types/portfolio.ts`. Config: `src/config/{site.ts,env.ts}`.
-- Site chrome: `src/components/layouts/{Header,MobileMenu,RootLayout}.tsx` (z-scale: Header 60 < MobileMenu 80 < Preloader 90 < Cursor 100). Store: `src/store/useUIStore.ts` (`preloaderDone`, `menuOpen`).
-- Tokens: `src/styles/globals.css` (`@theme`). **Palette boundary:** the spec target is Void & Ember (`#0A0A0A` / `#E4E4E4` / accent `#E8380F`, design_system v2 §3); the shipped file still holds the pre-migration Warm Ink + Cobalt values — always style by token *name*, never hex, so work survives the re-theme. (The "not yet bootstrapped" boundary in `logs/feature-changes/2026-07-07-docs-expand-detail.md` is superseded by the same-day bootstrap→journey logs.)
+- Site chrome: `src/components/layouts/{MenuButton,MenuPopout,SiteMenu,RootLayout}.tsx` (z-scale: MenuPopout 60 < SiteMenu 80 < Preloader 90 < Cursor 100). Store: `src/store/useUIStore.ts` (`preloaderDone`, `menuOpen`).
+- Tokens: `src/styles/globals.css` (`@theme`) — the **ember Void & Ember v2 values are live** (`#0A0A0A` / `#E4E4E4` / accent `#E8380F`, applied 2026-07-07); always style by token *name*, never hex.
 
 Rules you never break:
 

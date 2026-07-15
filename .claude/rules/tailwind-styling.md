@@ -6,6 +6,8 @@ paths:
 
 # Tailwind v4 + shadcn styling — see design_system.md §9
 
+> Twins: `.agents/rules/code-quality.md` (tokens-only rule) + `.agents/skills/tailwind-v4-shadcn` (portable deep-dive).
+
 - Tailwind v4 only (`tailwindcss ^4.2.1` + `@tailwindcss/vite`, CSS-first). Tokens defined via `@theme` in `src/styles/globals.css`. NO `tailwind.config.ts`.
 - Use token utilities (e.g. `bg-ink`, `text-paper`, `text-accent`, `font-display`) — never raw hex in JSX.
 - Merge classes with `cn()` (tailwind-merge + clsx); variants with `cva`.
@@ -26,6 +28,6 @@ paths:
 | `--color-invert-bg` / `--color-invert-text` | `#E8E8E8` / `#0A0A0A` | the one optional light-invert section (§3.1b) |
 
 - Fluid type-scale tokens (`--text-display` … `--text-meta`, design_system §4.3) and motion tokens (`--ease-out`, `--ease-inout`, `--dur-fast/base/slow`) also live in the same `@theme` block.
-- **Current-vs-target note:** the shipped `src/styles/globals.css` (chapters 00–04) still carries the pre-migration **Warm Ink + Cobalt** values (`--accent: #3b5bff`); the ember re-theme is a pending step of the redesign. New styling work references tokens by *name* (`text-accent`), so it stays correct through the re-theme — one more reason raw hex is banned. Brass `#C8A46A` and Cobalt `#3B5BFF` remain documented alternates in design_system §3.2.
+- **Live values:** `src/styles/globals.css` carries the **ember Void & Ember v2** values (`--color-accent: #e8380f`, applied 2026-07-07). Styling work references tokens by *name* (`text-accent`), so it stays correct through any re-theme — one more reason raw hex is banned. Brass `#C8A46A` and Cobalt `#3B5BFF` remain unchosen documented alternates in design_system §3.2.
 
-**Why this matters here:** the QA Definition of Done greps `#[0-9a-fA-F]{6}` across `src/components src/features` and fails on any raw hex; tokens-by-name is also what makes the cobalt→ember migration a one-file change instead of a codebase sweep.
+**Why this matters here:** the QA Definition of Done greps `#[0-9a-fA-F]{6}` across `src/components src/features` and fails on any raw hex; tokens-by-name is also what made the cobalt→ember migration a one-file change instead of a codebase sweep.

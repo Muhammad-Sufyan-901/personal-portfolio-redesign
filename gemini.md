@@ -4,15 +4,15 @@ Project context for Gemini CLI. This mirrors `CLAUDE.md`; the exhaustive specs l
 
 ## Repo state
 
-This is **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) working across web and mobile — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish only, not its content). The old enterprise boilerplate was removed in commit `9be4947`; the redesign has since **bootstrapped and shipped chapters 00–04** (preloader, hero, manifesto, craft, journey — commits `2abbe94` → `b245c1e`). `src/` now holds:
+This is **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) working across web and mobile — a motion-first, scroll-telling single page (reference feel: `lukebaffait.fr`, for motion/polish only, not its content). After the 2026-07-07 `chore(reset)` + PLAN v3 re-bootstrap, `src/` holds:
 
-- the `/` route → `HomePage` composing `sections/{Hero,Manifesto,Craft,Journey}Section.tsx`;
+> **Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
+
+- the `/` route → `HomePage` composing `sections/{Hero,Manifesto,About}Section.tsx`;
 - the full motion foundation: `lib/gsap.ts` (single GSAP source), `providers/SmoothScrollProvider.tsx` (single Lenis, lerp 0.09), hooks (`useLenis`, `usePrefersReducedMotion`, `useIsomorphicLayoutEffect`), zustand `store/useUIStore.ts` (`preloaderDone`, `menuOpen`), `types/motion.ts`;
-- common primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`, `ThemeToggle`) + seven motion primitives (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`);
-- the PRD data layer (`types/portfolio.ts` + `features/home/data/*.data.ts` + `constants/projects.data.ts`) and applied design tokens in `src/styles/globals.css` (`src/index.css` was deleted);
-- site chrome (`Header` z-60, `MobileMenu` z-80, `RootLayout`); shadcn `button` + `tooltip`.
-
-**Still pending — don't treat as existing:** chapters **05 Selected Work** and **06 Contact** (+ Footer), `src/lib/emailjs.ts`, and the **"Void & Ember" re-theme** — design_system v2 makes ember `#E8380F` the authoritative accent while the shipped tokens are the interim cobalt `#3B5BFF` set (token *names* are stable; only values change).
+- common primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`) + eight motion primitives (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`, `PathDraw`) — no `ThemeToggle` (dark-only);
+- the PRD data layer (`types/portfolio.ts` + `features/home/data/*.data.ts` + `constants/projects.data.ts`) and the applied ember design tokens in `src/styles/globals.css` (`src/index.css` was deleted);
+- site chrome (`MenuButton`/`MenuPopout` z-60, `SiteMenu` z-80, `RootLayout`); feature components `AuroraBackground` + the `manifesto-3d/` R3F island; shadcn `button` + `tooltip`.
 
 ## Tech stack (all installed)
 
@@ -32,9 +32,9 @@ Contact form uses EmailJS; keys `VITE_EMAILJS_SERVICE_ID` / `VITE_EMAILJS_TEMPLA
 ## Redesign context
 
 - **Content source**: `.agents/context/product_requirements.md` is the *only* content source — transcribe, never invent; omit unknown fields. The dataset is already transcribed (21 skills, 9 journey items, 6 projects, 3 contact channels) — reuse it, never re-transcribe. Persona: "Software Engineer · Web & Mobile"; stats 3 years · 7 stacks · 10 projects.
-- **Design system** (`.agents/context/design_system.md`, **v2 "Void & Ember"**, evidence-sampled from the reference video §3.0): bg `#0A0A0A`, paper `#E4E4E4`, muted `#9A9A9A`, hairline `#242424`, surgical **ember accent `#E8380F`** (brass `#C8A46A`/cobalt `#3B5BFF` are documented alternates; cobalt is what's currently shipped). Motion tokens `--ease-out: cubic-bezier(0.16,1,0.3,1)`, `--dur-base 0.8s`, Lenis `lerp 0.09`. §7.5 lists the vetted reference libraries (React Bits, Magic UI, Aceternity UI, 21st.dev) with a mandatory adapt-to-GSAP rule — never install `framer-motion`.
+- **Design system** (`.agents/context/design_system.md`, **v2 "Void & Ember"**, evidence-sampled from the reference video §3.0): bg `#0A0A0A`, paper `#E4E4E4`, muted `#9A9A9A`, hairline `#242424`, surgical **ember accent `#E8380F`** (brass `#C8A46A`/cobalt `#3B5BFF` are unchosen documented alternates — ember is live in `globals.css`). Motion tokens `--ease-out: cubic-bezier(0.16,1,0.3,1)`, `--dur-base 0.8s`, Lenis `lerp 0.09`. §7.5 lists the vetted reference libraries (React Bits, Magic UI, Aceternity UI, 21st.dev) with a mandatory adapt-to-GSAP rule — never install `framer-motion`.
 - **Fonts**: Fraunces (display) · General Sans (body) · JetBrains Mono (labels) — bundled, live today.
-- **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer` — **00–04 built**. **Journey (04)** merges work experience + education + awards — don't drop awards. Sections live in `src/features/home/sections/*`, content in `src/features/home/data/*` typed against `src/types/portfolio.ts`.
+- **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0) — **00–03 built**. **Journey (05)** merges work experience + education + awards — don't drop awards. Sections live in `src/features/home/sections/*`, content in `src/features/home/data/*` typed against `src/types/portfolio.ts`.
 - **Three Golden Rules**: (1) feature isolation — no `src/features/*` imports another feature; (2) one GSAP source — `src/lib/gsap.ts`, no component imports `gsap/ScrollTrigger` directly; (3) one Lenis owner — `src/providers/SmoothScrollProvider.tsx`, synced to `gsap.ticker`. Every animation runs in `useGSAP(() => {…}, { scope })` with a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden); design tokens only — no raw hex/px; Lighthouse ≥ 90.
 - **Workflow**: plan (`PLAN.md`, whole-site) → **stop for approval** → build **one section at a time with a stop-for-approval gate after every section** → QA audit per section and at the end. See `AGENTS.md` and `.agents/workflows/`.
 
@@ -43,12 +43,12 @@ Contact form uses EmailJS; keys `VITE_EMAILJS_SERVICE_ID` / `VITE_EMAILJS_TEMPLA
 Feature-based structure. Path alias `@/` → `src/` (tsconfig + vite).
 
 - **`src/routes/`**: registry files only — no JSX. `__root.tsx` mounts `AppProviders` + `Preloader` + `Cursor` + `RootLayout`; `index.tsx` → `/` → `HomePage`. `routeTree.gen.ts` is auto-generated (`autoCodeSplitting: true`) — don't hand-edit.
-- **`src/features/home/`**: the only feature; owns the whole page. `sections/` holds the four built chapters; `components/` holds `JourneyEntry`/`PillarBlock`; `data/` holds the typed PRD constants. Features never import from other features; shared code goes to `components/common`, `lib`, `hooks`, or `types`.
+- **`src/features/home/`**: the only feature; owns the whole page. `sections/` holds the three built chapters (Hero/Manifesto/About); `components/` holds `AuroraBackground` + the `manifesto-3d/` R3F island; `data/` holds the typed PRD constants. Features never import from other features; shared code goes to `components/common`, `lib`, `hooks`, or `types`.
 - **Entry (`src/main.tsx`)**: `StrictMode → AppProviders → RouterProvider` where `AppProviders` = `ThemeProvider(defaultTheme="dark") → TooltipProvider → SmoothScrollProvider` (router `scrollRestoration: true`, `defaultPreload: "intent"`).
-- **Theme**: `useTheme()` → `{ theme, setTheme }`, persisted to `localStorage["vite-ui-theme"]`; default **dark** (dark-first identity); a final light toggle is an open decision.
+- **Theme**: `useTheme()` → `{ theme, setTheme }`, persisted to `localStorage["vite-ui-theme"]`; default **dark**. The site ships **dark-only** (PLAN v3.1 decision 2; `globals.css` carries no `.light` token block).
 - **State/data**: static — no server-state or HTTP layer. Cross-tree state = zustand `useUIStore` (`preloaderDone` gates the hero timeline, `menuOpen`); else local `useState`. Contact form (ch. 06) will use react-hook-form + `src/lib/emailjs.ts` (not yet created).
 - **`src/components/ui/`**: shadcn/ui generated primitives only (button, tooltip); add via `/add-shadcn`.
-- **Styling**: Tailwind v4 CSS-first in `src/styles/globals.css` — the only stylesheet: fonts, `:root`/`.light` token values, `@theme inline` mapping (`bg-ink`, `text-paper`, `text-accent`, `font-display`, fluid `--text-*` scale, motion tokens, `--radius: 4px`). `cn()` is an *extended* twMerge (registers `--text-*` as font-size groups). Always style by token name — the ember re-theme changes values only.
+- **Styling**: Tailwind v4 CSS-first in `src/styles/globals.css` — the only stylesheet: fonts, the ember token values, `@theme inline` mapping (`bg-ink`, `text-paper`, `text-accent`, `font-display`, fluid `--text-*` scale, motion tokens, `--radius: 4px`). `cn()` is an *extended* twMerge (registers `--text-*` as font-size groups). Always style by token name.
 - **Types**: `src/types/portfolio.ts` (`TechStack`, `Project`, `Skill`, `JourneyItem`, `Profile`, `ContactChannel`) is the live content contract; `src/types/motion.ts` (`RevealMode`, `ParallaxConfig`).
 
 ## Component primitives (mandatory)
@@ -63,8 +63,8 @@ Never emit raw HTML wrappers in feature/page/section code — use the polymorphi
 | `Heading` | `h1`–`h6` | `level` 1–6 (`1`) or `as`, `variant` default\|display\|title\|subtitle\|section (`"default"`) |
 | `Link` | `a` / router link | `href` — auto-routes internal (TanStack) / hash (Lenis smooth-scroll) / external·mailto·tel (auto `rel`) |
 | `Image` | `img` | `src`, `alt`, `width`/`height`, `objectFit`, `priority` (`"lazy"`), `quality` (`75`), `fallback` — lazy + skeleton + srcset |
-| `ThemeToggle` | shadcn `Button` | none (not re-exported from the barrel — known follow-up) |
 | `RevealText` | split-type reveal | `mode` lines\|words\|chars (`"lines"`), `stagger` .08/.04/.025 |
+| `PathDraw` | scrubbed SVG path draw | `d`, `strokeWidth` (`3.5`), `trigger`, `scrub` (`true`) — built, not yet wired |
 | `ParallaxImage` / `Marquee` / `MagneticButton` / `ChapterEyebrow` | motion primitives | parallax −8→8 / speed 30 / strength 12 / `index`+`label` |
 | `Cursor` / `Preloader` | overlays z-100 / z-90 | none — mounted once in `__root.tsx` |
 

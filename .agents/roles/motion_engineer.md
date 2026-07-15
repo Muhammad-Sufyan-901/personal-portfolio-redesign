@@ -2,17 +2,34 @@
 
 **Mission:** Own the GSAP + Lenis subsystem and all reusable motion primitives.
 
-## Responsibilities
-- `lib/gsap.ts` (single GSAP source: register ScrollTrigger, set defaults, custom eases) — shipped, defaults `power4.out` / `0.8s`.
-- `providers/SmoothScrollProvider.tsx` (single Lenis owner: `lerp 0.09`, sync `lenis.raf` ↔ `gsap.ticker`, `ScrollTrigger.update` on scroll, `refresh` on resize/route change) — shipped.
-- Primitives in `components/common/` — all seven shipped: `RevealText` (split-type lines/words/chars, staggers .08/.04/.025), `ParallaxImage` (clip-inset + scrub −8→8), `Marquee` (30s/loop, hover-pause), `MagneticButton` (strength 12), `ChapterEyebrow`, `Cursor` (8px dot + 40px ring, z-100), `Preloader` (z-90, session-gated, signals `useUIStore.setPreloaderDone`).
-- Motion tokens + choreography per `design_system.md §7`; hooks `useLenis` / `usePrefersReducedMotion` / `useIsomorphicLayoutEffect` in `src/hooks/`.
-- Remaining motion scope: Work (05) clip reveals + optional pinned row, Contact (06), and the v2 upgrades — thick organic SVG **bold path draw** for the Journey rail (§7.2/§11.4, replacing the shipped 1px `scaleY` rail), Hero **aurora** background (§11.1), optional footer **ornament converge** (§11 Footer).
+## Authoritative inputs
+
+1. **`PLAN.md` v3.1 §2** — the motion-vocabulary coherence contract (staggers, eases, durations, trigger configs) every remaining chapter carries forward.
+2. `context/design_system.md §7` — motion tokens, reveal vocabulary, cursor/preloader spec, reduced-motion mandate.
+3. **`.claude/agent-memory/motion-engineer/MEMORY.md`** (+ `manifesto-3d.md` for the R3F island) — exact primitive APIs, chapter choreography patterns, and the trap list. Read before building; update after.
+4. `PLAN.md §3` for the current chapter's choreography spec.
+
+## Owns (as built)
+
+- `lib/gsap.ts` (single GSAP source, defaults `power4.out`/0.8s) and `providers/SmoothScrollProvider.tsx` (single Lenis owner, `lerp 0.09`, synced to `gsap.ticker`).
+- All **eight motion primitives** in `components/common/`: `RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader` (three-act Welcome/ember/curtain, runs every load), and `PathDraw` (built, not yet wired — enters at 04 Craft, hands off to 05 Journey).
+- Hooks `useLenis` / `usePrefersReducedMotion` / `useIsomorphicLayoutEffect`; chrome motion (`MenuPopout` pop-out, `SiteMenu` curtain).
+- Remaining motion scope: 04 Craft (PathDraw entry + hover-swap crossfade) → 05 Journey (PathDraw rail) → 06 Skills (pinned sequential accordion) → 07 Gallery (clip reveals) → 08 Contact (invert entry) → Footer (marquee + ornament converge), per PLAN v3.1 §3.
+
+## Definition of done
+
+`system_architecture.md §8` via `/qa-audit`; motion-specific gates: reduced-motion branch per effect, scrubs `invalidateOnRefresh: true`, everything inside `useGSAP({ scope })`.
+
+## Project-specific pitfalls (from memory — check FIRST)
+
+- **`useGSAP` with `prefersReducedMotion`-derived deps needs `revertOnUpdate: true`** — without it, cleanup defers to unmount and never-unmounting components leak listeners (3rd-recurrence QA finding).
+- **Never use `end: "max"` on a no-`trigger` ScrollTrigger meant to stay active to page end** — `isActive` flips false exactly at `progress === 1`; use a large fixed `end` instead (MenuPopout lesson).
+- **`lenis.scrollTo` is silently dropped while Lenis is stopped** — any overlay that calls `lenis.stop()` needs `{ force: true }` on its nav scrolls (shared `Link` already does this).
+- **Pin-spacer dead zone**: a pinned intro (`#hero` T1) leaves a spacer; the next scrub bridges it with `-mt-[100svh]` (manifesto pattern — see `manifesto-3d.md` for the full R3F↔GSAP island trap list, incl. fiber v9 `advance()` taking SECONDS).
 
 ## Hard Rules
-- Every animation runs inside `useGSAP(() => {...}, { scope })` from `@gsap/react ^2.1.2` (auto cleanup).
-- Every effect ships a `prefers-reduced-motion` fallback (opacity-only, Lenis off, cursor hidden).
-- No component imports `gsap/ScrollTrigger` directly — only from `lib/gsap.ts` (stack: gsap `^3.15.0`, lenis `^1.3.25`).
-- Use `split-type ^0.3.4` (license-safe) for text splitting.
+
+- Every animation runs inside `useGSAP(() => {...}, { scope })` (auto cleanup). Every effect ships a `prefers-reduced-motion` fallback (content stays visible — hide via `gsap.set`, never CSS).
+- No component imports `gsap/ScrollTrigger` directly — only from `lib/gsap.ts`.
 - Borrowed animation ideas go through `skills/animated-ui-references` — never install `framer-motion`; prefer React Bits' GSAP variants; Aceternity's Timeline is the Journey-rail sketch.
 - Post-change: log the change (`rules/logging.md`) and update `.claude/agent-memory/motion-engineer/MEMORY.md` (`rules/memory-context.md`). Claude Code counterpart: `.claude/agents/motion-engineer.md`.

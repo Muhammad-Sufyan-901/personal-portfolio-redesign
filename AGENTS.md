@@ -36,7 +36,7 @@ The setup is intentionally mirrored: a **portable spec** any agent can read, and
 ├── rules/             # path-scoped rules mirroring .agents (incl. accessibility.md)
 ├── hooks/             # format.sh (PostToolUse auto-format on Edit/Write)
 ├── output-styles/     # custom-components.md (house style, real prop surfaces)
-└── workflows/         # native /workflows JS scripts (home for feature-done, section-cycle)
+└── workflows/         # native /workflows home (README only; scripts not yet generated)
 ```
 
 ## Protocols (from `.agents/agents.md`)
@@ -51,8 +51,8 @@ The setup is intentionally mirrored: a **portable spec** any agent can read, and
 | --- | --- | --- |
 | **@pm** | Project Manager / Lead Architect — reads the context docs + as-built state, writes `PLAN.md` (whole-site: file tree + chapter order + technique per chapter + data-mapping table), surfaces the open design decisions, then **pauses for explicit approval** before any code. | `PLAN.md` |
 | **@frontend** | Frontend Engineer — builds chapter sections/components to the design system using tokens only, transcribes PRD content into typed constants, wires in @motion's primitives. Feature isolation, `cn()`/`cva`. | `features/home/sections/*`, `data/*`, feature components |
-| **@motion** | Motion Engineer — owns the GSAP + Lenis subsystem (`src/lib/gsap.ts`, `SmoothScrollProvider`) and the seven motion primitives (RevealText, ParallaxImage, Marquee, MagneticButton, ChapterEyebrow, Cursor, Preloader); guarantees Lenis↔ScrollTrigger sync + a reduced-motion fallback per effect. No layout decisions. | motion layer + primitives |
-| **@qa** | QA Auditor — runs the Definition of Done (TS strict/no `any`, no cross-feature imports, no raw hex, no bare HTML tags, reduced-motion + Lenis↔ScrollTrigger refresh, a11y incl. overlay `inert`, Lighthouse ≥ 90, SEO/meta). Read-only on source; writes findings to `.artifacts/qa-log.md`. | QA log |
+| **@motion** | Motion Engineer — owns the GSAP + Lenis subsystem (`src/lib/gsap.ts`, `SmoothScrollProvider`) and the eight motion primitives (RevealText, ParallaxImage, Marquee, MagneticButton, ChapterEyebrow, Cursor, Preloader, PathDraw); guarantees Lenis↔ScrollTrigger sync + a reduced-motion fallback per effect. No layout decisions. | motion layer + primitives |
+| **@qa** | QA Auditor — runs the Definition of Done (TS strict/no `any`, no cross-feature imports, no raw hex, no bare HTML tags, reduced-motion + Lenis↔ScrollTrigger refresh, a11y incl. overlay `inert` — SiteMenu z-80 / Preloader z-90, Lighthouse ≥ 90, SEO/meta). Read-only on source; writes findings to `.artifacts/qa-log.md`. | QA log |
 
 Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-engineer,motion-engineer,qa-auditor}.md` (all `memory: project`, with as-built path maps).
 
@@ -68,10 +68,10 @@ Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-e
 
 1. `/plan-redesign` → `PLAN.md` (**whole-site**) → **stop for human approval** (@pm pauses here)
 2. **Bootstrap** — design tokens + motion foundation. *(Done 2026-07-07: deps, fonts, tokens, `lib/gsap.ts`, `SmoothScrollProvider`, primitives, PRD data layer.)*
-3. `/build-section <chapter>` — **one section at a time, with a stop-for-approval gate after every section**, in order: `00 Preloader · 01 Hero · 02 Manifesto · 03 Craft · 04 Journey · 05 Selected Work · 06 Contact · Footer` (Journey merges experience + education + awards)
+3. `/build-section <chapter>` — **one section at a time, with a stop-for-approval gate after every section**, in order: `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0; Journey merges experience + education + awards)
 4. `/qa-audit` per section (before its gate) and once globally at the end
 
-**Build status:** chapters **00–04 shipped** (`feat(preloader)` `fe849ff` → `feat(journey)` `b245c1e`) on the interim cobalt tokens. Remaining: Work (05), Contact (06) + `lib/emailjs.ts`, Footer, the **ember re-theme** (design_system v2 §9), and the v2 motion upgrades (bold path draw, hero aurora, optional footer ornament).
+**Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
 
 **Post-change discipline** (every feature create/change):
 

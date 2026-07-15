@@ -38,10 +38,10 @@ Before any task, every agent MUST read: `context/product_requirements.md` (conte
 ## System Commands (map to `.claude/skills/`)
 
 - `/plan-redesign` ➔ @pm planning stage → produces `PLAN.md` (whole-site), then PAUSES for approval.
-- `/build-section <chapter>` ➔ @frontend + @motion build one chapter per `design_system.md §11`, then **stop for user approval before the next chapter** (one gate per section — `workflows/section.md`).
+- `/build-section <chapter>` ➔ @frontend + @motion build one chapter per **PLAN v3.1 §3** (the approved 10-chapter map; `design_system.md §11` stays the technique reference), then **stop for user approval before the next chapter** (one gate per section — `workflows/section.md`).
 - `/qa-audit` ➔ @qa runs the Definition of Done from `system_architecture.md §8`, per section before its gate + once globally.
 
-**Build status:** chapters 00–04 (preloader → journey) are shipped (`feat(preloader)` `fe849ff` → `feat(journey)` `b245c1e`) on the interim cobalt tokens; remaining: Work (05), Contact (06), `lib/emailjs.ts`, the ember re-theme (design_system v2 §9), and the v2 motion upgrades (bold path draw, hero aurora, optional footer ornament).
+**Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
 
 ## Skills (`.agents/skills/`) — activate by task
 

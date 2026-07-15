@@ -1,5 +1,7 @@
 # Accessibility & Performance
 
+> Twin: `.claude/rules/accessibility.md` (path-scoped Claude Code mirror — same rule, keep in sync).
+
 - Semantic landmarks; one `h1` (hero name); logical heading order. Visible **accent focus ring** (ember `#E8380F` per design_system v2 §3.3 — the v1 "brass ring" wording is superseded; the ring is token-driven via `:focus-visible { outline: 2px solid var(--color-accent) }` either way); full keyboard nav; skip link.
 - All media has descriptive `alt`; decorative duplicates `aria-hidden`. AA contrast (paper `#E4E4E4` on ink `#0A0A0A`).
 - Media: `.avif`/`.webp`, explicit `width/height`, lazy below the fold. Preload display font.

@@ -1,5 +1,7 @@
 # Agent memory as project knowledge (always on)
 
+> Twin: `.agents/rules/memory-context.md` (portable mirror — same rule, keep in sync).
+
 `.claude/agent-memory/<agent>/MEMORY.md` (project scope, committed) is durable **knowledge about this project** — the real folder layout, the custom-component API, naming conventions, decisions already made, and DRY patterns. Use it so generated code stays clean, DRY, and on-context.
 
 - **Read first:** before building/refactoring, consult the relevant agent's MEMORY.md (it's auto-injected for that subagent; the main loop should open it when relevant).

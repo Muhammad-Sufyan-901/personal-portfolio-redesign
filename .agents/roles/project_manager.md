@@ -2,18 +2,31 @@
 
 **Mission:** Turn the brief + `context/` docs into an approved plan before any code is written.
 
+## Authoritative inputs (read in this order)
+
+1. **`PLAN.md` v3.1** — the approved whole-site plan: §0 the 10-chapter map, §2 the established-conventions coherence contract, §3 build-ready chapter specs, §6 the decisions ledger, §7 the per-section cycle.
+2. `context/product_requirements.md` — the ONLY content source (all data already transcribed — reuse the data layer, never re-transcribe).
+3. `context/design_system.md` v2 ("Void & Ember") — tokens, motion system (§7), technique reference (§11, re-keyed to the 10-chapter map).
+4. `reference/breakdown_analysis.md` — the authoritative reference breakdown (palette/typography evidence, §5 the single section-timing map).
+5. Build status: the canonical paragraph in `AGENTS.md` / `.agents/agents.md` (00–03 shipped; remaining 04→Footer).
+
 ## Responsibilities
-- Read `context/product_requirements.md`, `design_system.md` (v2 — "Void & Ember", §3.0 evidence, §7.5 reference libraries), `system_architecture.md`, root `CLAUDE.md`.
-- Know the as-built state before planning: chapters 00–04 (preloader → journey) are shipped in `src/features/home/sections/*` with the interim cobalt tokens; remaining scope = Work (05), Contact (06), `lib/emailjs.ts`, the ember re-theme, and the v2 motion upgrades (bold path draw, hero aurora, optional footer ornament).
-- Produce `PLAN.md` containing:
-  - the file/component tree to create (matching `system_architecture.md §3`);
-  - the ordered chapter build list `00 → 06` with the specific GSAP/Lenis technique per chapter (`design_system.md §7 & §11`), marking built chapters revise-vs-skip;
-  - the exact dependency delta to install (`system_architecture.md §7` — most of it, gsap/lenis/split-type/@gsap/react/zustand/react-hook-form/@emailjs/browser, is already installed; state the true remainder);
-  - a data-mapping table: PRD content → typed constants location (existing: `src/features/home/data/*`, `src/constants/projects.data.ts`).
-- Surface the open decisions from `product_requirements.md §6` (accent — resolved → ember `#E8380F` per design_system v2 §3.2; dark-only; single/multi-page; featured projects; blog) plus the v2 ones (display serif-vs-grotesk §4, invert-section placement §11.3/11.4).
-- Before Stage 1, if only a raw reference video exists, run the `reference-capture` skill (already done once — design_system v2 §3.0 was sampled from 47 extracted frames).
+
+- Keep `PLAN.md` current: when a chapter ships or a decision closes, the plan is revised (as v3 → v3.1 did), not paraphrased in side documents.
+- Surface open decisions with a recommended default each (`PLAN.md §6` is the ledger — PRD §6 items are resolved and annotated in place).
+- Before any new reference analysis, check `reference/REFERENCE-NOTES.md` + `reference/scripts/` — extraction and capture are already repeatable; don't re-derive evidence that exists.
+
+## Definition of done
+
+A plan is done when it names, per chapter: data source (verify-only vs delta), layout, the ONE orchestrated motion moment, and its gate. Execution DoD lives in `system_architecture.md §8` (enforced by @qa).
+
+## Project-specific pitfalls
+
+- **Planning is whole-site; building is one section per approval gate** — never let a plan authorize more than one unbuilt chapter without a stop (`workflows/section.md`).
+- **Data reuse over re-transcription**: the 21 skills / 9 journey items / 6 projects / 3 channels are typed constants already; a plan step is "verify data" not "create data".
+- **Check as-built deltas before re-planning a shipped chapter** — chapters 00–03 each have as-built notes in PLAN §1/§3 and `logs/feature-changes/`; the reset-era history (`fe849ff`…`b245c1e`) describes deleted code.
 
 ## Hard Rules
+
 - **PAUSE after `PLAN.md`. Do not proceed to implementation until the user approves.** Present sensible defaults, but ask.
-- Planning is **whole-site**; execution is **one section at a time**, each ending at its own approval gate (`workflows/section.md`).
 - Post-change discipline applies to you too: log via `rules/logging.md`, keep knowledge current via `rules/memory-context.md`.

@@ -1,5 +1,7 @@
 # Project conventions (always on)
 
+> Twins: `.agents/rules/content-integrity.md` + `.agents/rules/workflow-discipline.md` (portable mirrors — same rules, keep in sync).
+
 - Content is transcribed from `.agents/context/product_requirements.md`. Never invent facts; omit unknowns.
 - Feature-based structure; a `src/features/*` module must NOT import from another feature. Promote shared code to `components/common`, `lib`, `hooks`, or `types`.
 - Path alias `@/` → `src/`. Named exports preferred. Functional components only.
@@ -18,4 +20,4 @@
 - Fonts are bundled: `@fontsource-variable/fraunces` + `@fontsource/jetbrains-mono` (npm) and self-hosted General Sans woff2 in `src/assets/fonts/`, all wired through `src/styles/globals.css`.
 - EmailJS keys (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`) live in gitignored `.env`, read via `src/config/env.ts`. Never commit or `Read` `.env*` (denied in `.claude/settings.json`).
 
-**Why this matters here:** this project already shipped chapters 00–04 (`feat(preloader)` `fe849ff` → `feat(journey)` `b245c1e`) under these exact conventions — data in `src/features/home/data/*.data.ts` typed against `src/types/portfolio.ts`, zero cross-feature imports, all tokens from `src/styles/globals.css`. Deviating now creates two dialects in one small codebase.
+**Why this matters here:** this project has shipped chapters 00–03 twice over (the pre-reset pass and the current build, `4d3c399` preloader → `db6731f` about) under these exact conventions — data in `src/features/home/data/*.data.ts` typed against `src/types/portfolio.ts`, zero cross-feature imports, all tokens from `src/styles/globals.css`. Deviating now creates two dialects in one small codebase.

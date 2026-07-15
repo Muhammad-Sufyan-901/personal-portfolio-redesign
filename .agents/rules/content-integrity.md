@@ -1,5 +1,7 @@
 # Content Integrity
 
+> Twin: `.claude/rules/project.md` (Claude Code mirror carrying this rule's content clauses — keep in sync).
+
 - The ONLY content source is `context/product_requirements.md`. There is no old repo in this project.
 - Never invent facts (projects, employers, dates, metrics, awards). If a field is unknown → omit it, don't fabricate.
 - Microcopy may be re-voiced to read narratively, but the underlying facts stay exact (names, tech, timeframes, links).

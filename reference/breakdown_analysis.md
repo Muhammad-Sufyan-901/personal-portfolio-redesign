@@ -95,7 +95,7 @@ The font-detector screenshot named four faces (Factory Grotesk, Apparel, Inter, 
 
 ## 5. Section-by-section breakdown
 
-Frame № ≈ 4 × seconds in `reference/frames/`.
+Frame № ≈ 8 × seconds in `reference/frames/` (sets rebuilt 2026-07-16 at 8 fps; the 60 fps `frames-bursts/` windows cover each transition below — see REFERENCE-NOTES).
 
 ### 5.0 Preloader (0–5 s)
 - **Layout:** small "Luke Baffait" wordmark centered on black.
@@ -157,7 +157,7 @@ Frame № ≈ 4 × seconds in `reference/frames/`.
 
 ## 7. Reading guide
 
-Whole arc → `contact-sheets/` (4 sheets). A specific beat → `frames/` (№ ≈ 4×s). A settled/hover state → `lukebaffait-live/` or `live-mcp-*.jpeg`. Motion numbers (easing, durations) are **not** recoverable from 4 fps stills — treat `design_system.md §7` + PLAN v3.1 §2 as authoritative for ours, and the video (played, not stills) for feel-checks only.
+Whole arc → `contact-sheets/` (4 sheets). A specific beat → `frames/` (№ ≈ 8×s). A signature transition → `frames-bursts/<window>/` (60 fps). A settled/hover state → `lukebaffait-live/` or `live-mcp-*.jpeg`. Motion numbers (easing, durations) are **not** recoverable from 8 fps stills — treat `design_system.md §7` + PLAN v3.1 §2 as authoritative for ours, the 60 fps bursts for transition anatomy, and the video (played) for feel-checks.
 
 ---
 

@@ -1,5 +1,7 @@
 # Feature-change logging (always on)
 
+> Twin: `.agents/rules/logging.md` (portable mirror — same rule, keep in sync).
+
 Whenever you (or a subagent) finish creating or changing a feature/section/component, BEFORE reporting "done":
 
 1. Append a log file to `logs/feature-changes/` named `YYYY-MM-DD-<short-slug>.md`, using `logs/feature-changes/TEMPLATE.md`. Run `/log-change` to do this in one step.

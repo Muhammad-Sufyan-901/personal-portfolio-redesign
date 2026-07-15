@@ -7,6 +7,7 @@
 **Visual Reference (motion & class, NOT content):** `lukebaffait.fr`
 **Palette source (v2):** sampled programmatically from `reference/lukebaffait-scroll.mp4` (19 frames across the full 93s scroll, color-histogram analysis) — see §3.0. Supersedes the v1 speculative "Warm Ink + Brass" palette.
 **Content Source:** `.agents/context/product_requirements.md` (all facts embedded there — no old repo needed)
+**Reconciled 2026-07-16:** §11 re-keyed to the approved PLAN v3.1 **10-chapter map**; §4 typography upgraded with the measured reference faces (`reference/breakdown_analysis.md §3/§8`); §3.0b section timings defer to `breakdown_analysis.md §5` — the single authoritative section-timing map. Token values unchanged (ember live in `globals.css` since 2026-07-07).
 
 ## 1. Overview
 
@@ -48,7 +49,9 @@ Conclusion: the reference is **not** warm-toned anywhere. The earlier "Warm Ink 
 
 ### 3.0b Reference Site — Section-by-Section Map (corrected, denser pass)
 
-The first evidence pass under-differentiated the middle of the scroll. Re-extracting at 2s intervals plus a direct fetch of `lukebaffait.fr` (its on-page section indicator + real DOM copy) gives the actual section sequence — corrects the earlier analysis, which had missed **About** and **Gallery** as named, distinct moments:
+The first evidence pass under-differentiated the middle of the scroll. Re-extracting at 2s intervals plus a direct fetch of `lukebaffait.fr` (its on-page section indicator + real DOM copy) gives the actual section sequence — corrects the earlier analysis, which had missed **About** and **Gallery** as named, distinct moments.
+
+> **Timing authority (2026-07-16):** `reference/breakdown_analysis.md §5` is the single authoritative section-timing map (its 2026-07-15 pass refined the boundaries below — notably Awards ≈66–74s, Contact ≈74–82s, Footer 83–93s). This table remains for its **"detail to borrow"** column; read timings from §5.
 
 | #   | Section (on-page label)                        | Approx. time | What's there                                                                                                                                                                                                                                                                       | Detail to borrow                                                                                                                                                                                  |
 | --- | ---------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -57,9 +60,9 @@ The first evidence pass under-differentiated the middle of the scroll. Re-extrac
 | 3   | **Work — Projects**                            | ~28–40s      | Vertical list of project names (8: CyberDiag website, Anima, CyberDiag app, Zenith, SkymcDB, ChromaBlock, Symphony, Echo) with a single live cover-image preview swapping per item; closing line "Chaque projet est une occasion d'apprendre…" (Each project is a chance to learn) | List-hover-swaps-preview interaction; closing statement after the list                                                                                                                            |
 | 4   | **Work — Gallery**                             | ~40–56s      | Same project set, re-presented as loosely scattered cover images (not a strict grid)                                                                                                                                                                                               | A second, looser "gallery" pass on the same work data — two treatments of one dataset, not two separate datasets                                                                                  |
 | 5   | **Skills (Compétences)**                       | ~56–68s      | Bio restatement + categorized, expandable skill list: **Frontend**, **Animation & 3D** (GSAP, Lenis, Barba.js, Three.js, WebGL, Blender — validates our own GSAP+Lenis stack choice), Backend, Databases, DevOps & Tools, System & Security, Design                                | Expand/collapse category disclosure pattern                                                                                                                                                       |
-| 6   | **Awards & Misc** _(the light-invert section)_ | ~68–81s      | A light-background list of 5 recognitions: GSAP "Site of the week", Awwwards "Honorable Mention", YouTube "Featured on Codegrid", Awwwards "Portfolio Honors nomination", landing.love "Best animations"                                                                           | Confirms the invert-section (§3.1b) is specifically an **awards/recognition** moment — a strong parallel to Sufyan's own Awards data already folded into Journey (`product_requirements.md §3.5`) |
-| 7   | **Contact**                                    | ~81–88s      | Two short availability statements (apprenticeship search / open to freelance) each paired with a small line-art illustration, social links, email                                                                                                                                  | Short paired statement + illustration rhythm, distinct from the footer                                                                                                                            |
-| 8   | **Footer**                                     | 88–93s       | Email + copyright, nav repeated, a **dual glyph/particle ornament** (two sparse ember-colored ASCII/dot-matrix clusters positioned symmetrically, reading almost like abstract hand or wing shapes), giant `Luke Baffait.` marquee                                                 | See §11 Footer — optional convergence/merge flourish                                                                                                                                              |
+| 6   | **Awards & Misc** _(the light-invert section)_ | ~66–74s      | A light-background list of 5 recognitions: GSAP "Site of the week", Awwwards "Honorable Mention", YouTube "Featured on Codegrid", Awwwards "Portfolio Honors nomination", landing.love "Best animations"                                                                           | Confirms the invert-section (§3.1b) is specifically an **awards/recognition** moment — a strong parallel to Sufyan's own Awards data already folded into Journey (`product_requirements.md §3.5`) |
+| 7   | **Contact**                                    | ~74–82s      | Two short availability statements (apprenticeship search / open to freelance) each paired with a small line-art illustration, social links, email                                                                                                                                  | Short paired statement + illustration rhythm, distinct from the footer                                                                                                                            |
+| 8   | **Footer**                                     | 83–93s       | Email + copyright, nav repeated, a **dual glyph/particle ornament** (two sparse ember-colored ASCII/dot-matrix clusters positioned symmetrically, reading almost like abstract hand or wing shapes), giant `Luke Baffait.` marquee                                                 | See §11 Footer — optional convergence/merge flourish                                                                                                                                              |
 
 This is evidence for **borrowing techniques and rhythm**, not for renaming Sufyan's own chapters to match — his chapters (§11) stay driven by his own content (`product_requirements.md`). Where a technique is worth adopting, §11 says so explicitly and cites this table.
 
@@ -112,11 +115,18 @@ This is evidence for **borrowing techniques and rhythm**, not for renaming Sufya
 
 Three families with strict roles — this pairing tells the "creative × engineer" dual identity.
 
-> **From the reference video:** the display type reads as a clean, tightly-tracked **grotesk/sans** at large sizes — no serif characteristics visible across any sampled frame. This is a real tension with the serif direction below. **Open decision (confirm at planning approval):**
+> **Decision closed (PLAN v3 decision 5): (A) Fraunces is the display face** — live in `globals.css`. (An interim build briefly tried option B, the grotesk swap; it was reverted at the re-bootstrap.)
 >
-> - **(A) Keep Fraunces** _(default recommendation)_ — the editorial serif still earns "elegant," and the reference's real signature is its motion choreography + restrained neutral palette, not its specific type family. Lower literal fidelity to the reference, same narrative intent.
-> - **(B) Swap to a grotesk display** (e.g. push General Sans itself larger for `--font-display`, or a Neue-Montreal/Founders-Grotesk-style family) — higher literal fidelity to what's actually on screen in the video, sacrifices some of the serif's distinctiveness.
->   Everything below assumes (A); if (B) is chosen, replace `--font-display` references with the chosen grotesk and drop the `opsz`/`SOFT`/`WONK` note.
+> **Measured reference typography (2026-07-15/16 — full evidence in `reference/breakdown_analysis.md §3/§8`):** the live site loads exactly four faces. The earlier "reads as a grotesk, no serif visible" note is upgraded — the reference's display layer is actually a **roman grotesk × italic serif duet**:
+>
+> | Declared `@font-face` family ← file | Font-detector's name | Role on the reference | Evidence |
+> | --- | --- | --- | --- |
+> | `Breton` ← `Breton.woff2` | "Factory Grotesk Medium" | Display roman ("Luke", 249.9px w300) **and the whole reading layer** (tagline, statements, bio, email) | [measured] family/role; detector ID conflicts with the declared name — glyph identity unresolved, [named] |
+> | `other` ← `Machine.otf` | "Apparel Regular" | Display *italic serif* — the "*Baffait.*" half + focal/emphasis words only | [measured] family/role; same declared-vs-detector caveat |
+> | `Inter` (variable, 400/600/700) | "Inter Regular" | **UI/meta layer only, not body** — nav/social links (16px), "V3.0" mark, awards cells | [measured] — corrects the earlier "body = Inter" reading |
+> | `Zirena` ← `Zirena.woff2` (w800) | *(missed; possibly its "Zalando Sans" read)* | Two uppercase display accents — Skills statement (40px), "Contact" title (187px, −3%, lh 0.9) | [measured]; "Zalando Sans" itself is loaded nowhere |
+>
+> **Mapping rationale (settled, unchanged):** Fraunces takes the italic-serif "emotion" job (surname + focal words); General Sans takes Breton's **double duty** (display roman + body) — the reference itself collapses those into one face, directly validating that decision; JetBrains Mono deliberately replaces the quiet meta sans (Inter) as our "engineer voice"; Zirena's two shouty moments get no counterpart (weight/case shifts of General Sans instead — a fourth face doesn't survive our restraint rule).
 
 ### 4.1 Font Families
 
@@ -220,7 +230,7 @@ GSAP custom eases (register in `lib/gsap.ts`): map `power4.out` / `expo.out` to 
 | **Char reveal**                              | `split-type` chars; `yPercent`/`opacity` stagger `0.02–0.03s`                                                                                                                                         | Hero name                                                                                                                  |
 | **Scroll-fill**                              | ScrollTrigger `scrub`; words go `opacity 0.15 → 1` across pin range                                                                                                                                   | Manifesto (chapter 02)                                                                                                     |
 | **Clip reveal**                              | image `clip-path: inset(100% 0 0 0) → inset(0)`, `dur-slow`, `ease-out`                                                                                                                               | Work media, portrait                                                                                                       |
-| **Bold path draw** _(confirmed, §3.0b #6)_   | a **thick (3–4px), organic/winding** SVG `<path>` (hand-drawn feel, not a straight rail) animated via `stroke-dasharray`/`stroke-dashoffset` `100%→0` on scroll `scrub` — replaces a plain `1px` line | Journey rail (§11.4) **and** Selected Work connecting line (§11.5) — this was under-specified before the denser video pass |
+| **Bold path draw** _(confirmed, §3.0b #6)_   | a **thick (3–4px), organic/winding** SVG `<path>` (hand-drawn feel, not a straight rail) animated via `stroke-dasharray`/`stroke-dashoffset` `100%→0` on scroll `scrub` — replaces a plain `1px` line | Journey rail (§11.5) **and** the Project/Craft index thread (§11.4) — this was under-specified before the denser video pass |
 | **Parallax**                                 | ScrollTrigger `scrub`; media `yPercent -8 → 8`                                                                                                                                                        | Work images, hero bg                                                                                                       |
 | **Pin + horizontal**                         | ScrollTrigger `pin` + `x` translate for one work row (desktop only)                                                                                                                                   | Selected Work (optional)                                                                                                   |
 | **Section invert** _(from reference §3.0)_   | background-color hard-cut or short crossfade `--color-ink`→`--color-invert-bg` (+ text `--color-paper`→`--color-invert-text`) at scroll entry                                                         | One optional chapter, for a beat of contrast — see §11                                                                     |
@@ -245,7 +255,7 @@ These are **inspiration + markup/layout sources** for specific moments below —
 | ----------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **React Bits**    | reactbits.dev     | **GSAP-native variants available** (also React-Spring, Framer Motion, Three.js — pick the GSAP version of a component)                                               | Hero/Preloader flourishes (text-split reveals, particle/aurora backgrounds); lowest adaptation cost of the four since it can already speak GSAP                                                               |
 | **Magic UI**      | magicui.design    | Motion (Framer Motion) + Tailwind, shadcn-installable                                                                                                                | Craft chapter's keyword `Marquee`, Contact's shimmer/magnetic button feel, Selected Work bento-style grid layout ideas                                                                                        |
-| **Aceternity UI** | ui.aceternity.com | Motion (Framer Motion) + Tailwind, also ships as shadcn blocks                                                                                                       | Its **Timeline** (sticky header + scroll-beam-follow) is a near-literal reference for our Journey chapter's scrubbed rail (§11.4); Spotlight/Lamp effect for Hero; sticky-navbar-hides-on-scroll matches §8.A |
+| **Aceternity UI** | ui.aceternity.com | Motion (Framer Motion) + Tailwind, also ships as shadcn blocks                                                                                                       | Its **Timeline** (sticky header + scroll-beam-follow) is a near-literal reference for our Journey chapter's scrubbed rail (§11.5); Spotlight/Lamp effect for Hero; sticky-navbar-hides-on-scroll matches §8.A |
 | **21st.dev**      | 21st.dev          | Marketplace/registry aggregating community components (shadcn-compatible; usually Motion-based) — not one curated style, use as a search engine across the ecosystem | When you need "a [specific micro-interaction]" and don't know which named library has it; install via `npx shadcn@latest add "https://21st.dev/r/<author>/<component>"`                                       |
 
 > **Mandatory adaptation rule:** all four are copy-paste sources for **layout, Tailwind classes, and the visual idea** — never install `framer-motion`/`motion` as a project dependency (it would violate §10 note 3's single-motion-stack rule and double the animation runtime). For any component pulled from Magic UI, Aceternity UI, or 21st.dev: (1) strip the `motion.div`/Framer Motion logic and reimplement the same effect with `gsap`/`ScrollTrigger` inside `useGSAP`, (2) replace every raw HTML tag (`div`, `p`, `span`, etc.) with our primitives (`Box`, `Text`, `Heading`, …) per §8 and `.claude/rules/custom-components.md`, (3) re-express any hard-coded colors/spacing as our `@theme` tokens. React Bits components already using its GSAP variant need only step 2–3. Treat every borrowed pattern as a sketch to rebuild, not a package to install.
@@ -394,50 +404,60 @@ Critical rules — do not skip:
 
 ## 11. Section (Chapter) Breakdown
 
+> **Superseded as the chapter map (2026-07-16):** the approved order is **PLAN v3.1 §0's 10-chapter map**, which splits this section's original 7 chapters against the reference's real 10-beat arc. Build-ready per-chapter specs live in **PLAN v3.1 §3**; this section remains the *technique* reference (choreography vocabulary per beat) and is re-keyed to the new numbering below.
+
 The homepage is a single vertical narrative of numbered chapters. Order top → bottom:
 
-`00 Preloader → 01 Hero → 02 Manifesto → 03 Craft → 04 Journey → 05 Selected Work → 06 Contact → Footer`
+`00 Preloader → 01 Hero → 02 Manifesto → 03 About → 04 Project/Craft → 05 Journey → 06 Skills → 07 Gallery → 08 Contact → Footer`
 
-### 11.0 Preloader
+### 11.0 Preloader — SHIPPED ✅
 
-- Full-screen `--color-ink`. Center: Mono counter `0→100` + name mask-reveal. On complete: curtain wipe up (`ease-inout`, `dur-slow`) → unmount → hero timeline plays. Once per session (guard via a Zustand flag or `sessionStorage`).
+- Original spec: Mono counter `0→100` + name mask-reveal + curtain, once per session. **As built (supersedes):** the three-act Welcome/ember/curtain intro, running on **every** load — see PLAN v3.1 §1 + `logs/feature-changes/2026-07-08-preloader-welcome-ember.md`.
 
-### 11.1 Hero — `01 — INTRO`
+### 11.1 Hero — `01 — INTRO` — SHIPPED ✅ (aurora included)
 
 - Layout: full viewport. Name in Fraunces `display` (char reveal, stagger). One-line tagline (Sans) + role line (Mono): "Software Engineer · Web & Mobile". Scroll cue (ember) bottom.
 - Motion: char reveal on load; subtle mouse-parallax on name/portrait (`~10px` max); scroll cue bob. Optional portrait with clip reveal.
 - **Aurora background** _(confirmed, §3.0b #1):_ a diffuse, slow-drifting `--color-accent`-tinted glow (blurred radial/conic gradient or a canvas/WebGL blob), upper-right-weighted, fading to `--color-ink` toward the edges and as the user scrolls past the hero. Cross-ref `design_system.md §7.5` — React Bits ships GSAP-native aurora/background components as a starting point; keep it subtle (this is atmosphere, not the §3.2 accent rule's "scalpel" usage — it's a soft wash, not a UI-state signal).
 
-### 11.2 Manifesto — `02 — WHO I AM` _(the storytelling peak)_
+### 11.2 Manifesto — `02 — WHO I AM` _(the storytelling peak)_ — SHIPPED ✅
 
-- 2–3 short Fraunces `statement` lines. On scroll (pinned range, `scrub`), words fill from `--color-faint` → `--color-paper`, one focal word tinted ember (`--color-accent-tint` wash). This is the emotional center of "who I am".
+- Original spec: pinned scroll-fill statement (`--color-faint` → `--color-paper`, ember focal word). **As built (supersedes):** the WebGL MacBook scroll-story opening between the hero name rows, ending on the statement with the ember focal wash — see PLAN v3.1 §3 (02) + `logs/feature-changes/2026-07-13-manifesto-macbook-story.md`.
 
-### 11.3 Craft — `03 — WHAT I DO`
+### 11.3 About — `03 — ABOUT` — SHIPPED ✅
 
-- Two narrative pillars: **Web** (React · TypeScript · Tailwind · shadcn/ui · Laravel · Livewire) and **Mobile** (Flutter · React Native). Presented as two editorial blocks, not an icon grid. A `Marquee` of keyword/tech terms separates or underlines the pillars. Skills reveal line-by-line.
-- _Optional (§7.2, §10 note 11):_ this is **one** candidate slot for the borrowed **Section invert** — the reference actually pairs its light-invert with an _awards/recognition_ moment (§3.0b #6), which for us maps more naturally to the Awards data folded into Journey below. Pick whichever chapter — Craft or Journey — the invert serves better; don't use it in both. Decide at planning approval; skip entirely if it feels gimmicky for this content.
+- New chapter of the 10-map (the reference's beat 4, split out of the old Manifesto scope): persona statement with Fraunces-italic focal phrases, indented bio, right-edge portrait panel, CV link. Spec + as-built: PLAN v3.1 §3 (03).
 
-### 11.4 Journey — `04 — THE PATH`
+### 11.4 Project/Craft — `04 — WHAT I DO`
+
+- Two narrative pillars: **Web** (React · TypeScript · Tailwind · shadcn/ui · Laravel · Livewire) and **Mobile** (Flutter · React Native). Presented as two editorial blocks, not an icon grid. A `Marquee` of keyword/tech terms separates or underlines the pillars. Skills reveal line-by-line. The 10-map adds the **titled index of all 6 projects** (hover-swap preview) here — PLAN v3.1 §3 (04).
+- _Invert placement decided (PLAN v3.1 decision 6):_ the light-invert section is **08 Contact** (what the reference actually does); Journey's award rows keep a hover-invert micro-echo.
+
+### 11.5 Journey — `05 — THE PATH`
 
 - Merge Experience + Education + **Awards** (`product_requirements.md §3.5`) into one vertical timeline; each entry (role/title, org, dates in Mono, one-line summary) reveals on enter. Chronological, most recent first.
 - **Bold path draw** _(corrected from a plain 1px rail — see §3.0b #6, §7.2, §5.3):_ the rail is a **thick (3–4px), organic/winding SVG path** — not a straight line — that draws itself (`stroke-dashoffset 100%→0`, scrub) as you scroll. This was under-specified in the first evidence pass; the denser 47-frame re-analysis + direct site review confirmed it.
-- If the Awards items get their own beat, this is the **other** candidate slot for Section invert (see 11.3) — the reference's own light-invert section is specifically an awards/recognition list.
+- Awards rows carry the reference's **hover-invert micro-echo** (the full section invert lives at 08 Contact — PLAN v3.1 decision 6).
 
-### 11.5 Selected Work — `05 — SELECTED WORK`
+### 11.6 Skills — `06 — TOOLKIT`
+
+- New chapter of the 10-map (the reference's beat 7): positioning statement + "CONTACT ME" CTA left; scroll-driven **sequential category accordion** right (pinned scrub opens one category at a time). Spec: PLAN v3.1 §3 (06); reduced-motion/mobile = all groups open, no pin.
+
+### 11.7 Gallery — `07 — SELECTED WORK`
 
 - Curated subset of the projects listed in `product_requirements.md`. `WorkCard` grid (`grid-cols-1 md:grid-cols-2`) with `ParallaxImage` clip reveals + hover; optionally one **pinned horizontal** feature row on desktop. Tech chips in Mono. Link → `/work/$slug` (multi-page) or shadcn `Dialog` lightbox (single-page). Include live/repo links from data.
 - **Bold path draw**, same technique as Journey (§7.2): if cards are connected by a visual line (e.g. a spine linking featured items), draw it thick and organically curved, not a thin straight rule.
 - _Reference note (§3.0b #3–4):_ the reference presents its work data twice — once as a hover-swaps-preview list, once as a looser "gallery" scatter of the same covers. Consider whether Selected Work wants a similar list↔gallery toggle, or stays a single grid; not required, just an option surfaced by the denser pass.
 
-### 11.6 Contact — `06 — LET'S TALK`
+### 11.8 Contact — `08 — LET'S TALK`
 
-- Oversized Fraunces line "Let's build something." + `MagneticButton` (mailto / EmailJS form with underlined inputs) + social links (Mono, magnetic). Reuse existing EmailJS config.
+- Oversized Fraunces line "Let's build something." + `MagneticButton` (mailto / EmailJS form with underlined inputs) + social links (Mono, magnetic). Reuse existing EmailJS config. **This is the one light-invert section** (PLAN v3.1 decision 6; §3.1b tokens, §7.2 "Section invert").
 
 ### Footer
 
 - Giant `Marquee` of the name (Fraunces `display`), muted, slow. Copyright + built-with line (Mono). Back-to-top magnetic link.
 - **Ornament converge** _(optional, confirmed §3.0b #8):_ the reference's footer includes two sparse, ember-tinted glyph/dot-matrix clusters positioned symmetrically (readable almost as abstract hand or wing shapes) that read as a quiet flourish behind the marquee. If adopted: keep it decorative and `aria-hidden`, low-opacity, and let the two clusters drift/converge slightly (`x`, `opacity` scrub) as the footer enters — don't let it compete with the marquee or contact links for attention. Skip if it doesn't earn its place next to Sufyan's own content.
 
-### 11.7 Vertical Rhythm Recap
+### 11.9 Vertical Rhythm Recap
 
-- Every chapter: `padding-block: clamp(6rem, 14vh, 12rem)`, opens with the eyebrow (`01 — LABEL`), then title, then content. Consistent left alignment for the narrative spine; work + footer may go full-bleed.
+- Every chapter: `padding-block: clamp(6rem, 14vh, 12rem)`, opens with the eyebrow (`01 — LABEL`), then title, then content. Consistent left alignment for the narrative spine; marquee band, gallery + footer may go full-bleed.
