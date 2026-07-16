@@ -5,7 +5,7 @@ import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useLenis } from "@/hooks/useLenis";
 import { useUIStore } from "@/store/useUIStore";
-import { navLinks } from "@/constants/navigation";
+import { navLinks } from "@/constants/navigation.constant";
 import { Box, Link } from "@/components/common";
 import { Button } from "@/components/ui/button";
 

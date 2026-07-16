@@ -11,7 +11,7 @@ This is **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) work
 - the `/` route → `HomePage` composing `sections/{Hero,Manifesto,About}Section.tsx`;
 - the full motion foundation: `lib/gsap.ts` (single GSAP source), `providers/SmoothScrollProvider.tsx` (single Lenis, lerp 0.09), hooks (`useLenis`, `usePrefersReducedMotion`, `useIsomorphicLayoutEffect`), zustand `store/useUIStore.ts` (`preloaderDone`, `menuOpen`), `types/motion.ts`;
 - common primitives (`Box`, `Container`, `Text`, `Heading`, `Link`, `Image`) + eight motion primitives (`RevealText`, `ParallaxImage`, `Marquee`, `MagneticButton`, `ChapterEyebrow`, `Cursor`, `Preloader`, `PathDraw`) — no `ThemeToggle` (dark-only);
-- the PRD data layer (`types/portfolio.ts` + `features/home/data/*.data.ts` + `constants/projects.data.ts`) and the applied ember design tokens in `src/styles/globals.css` (`src/index.css` was deleted);
+- the PRD data layer (`types/portfolio.ts` + `features/home/data/*.data.ts` + `data/projects.data.ts`) and the applied ember design tokens in `src/styles/globals.css` (`src/index.css` was deleted);
 - site chrome (`MenuButton`/`MenuPopout` z-60, `SiteMenu` z-80, `RootLayout`); feature components `AuroraBackground` + the `manifesto-3d/` R3F island; shadcn `button` + `tooltip`.
 
 ## Tech stack (all installed)

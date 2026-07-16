@@ -3,7 +3,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { Box } from "@/components/common";
-import { MenuButton } from "@/components/layouts/MenuButton";
+import { MenuButton } from "@/components/shared/MenuButton";
 
 // ponytail: end: "max" flips isActive back to false at the exact document
 // bottom (GSAP boundary quirk — progress hitting 1 reads as "past end"), so

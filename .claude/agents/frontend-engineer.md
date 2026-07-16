@@ -14,8 +14,8 @@ Authoritative specs: `.agents/context/product_requirements.md` (content), `desig
 **Where things live (as built — chapters 00–03 shipped on the 10-chapter map, PLAN v3.1 §0):**
 
 - Sections: `src/features/home/sections/{Hero,Manifesto,About}Section.tsx` — `04 Project/Craft → 08 Contact` + Footer are still to build (PLAN v3.1 §3 specs). Reusable feature parts: `src/features/home/components/` (`AuroraBackground.tsx`, `manifesto-3d/` — the R3F island whose three.js JSX is exempt from the primitives rule).
-- Data: `src/features/home/data/{profile,skills,journey,contact}.data.ts` + `src/constants/{projects.data.ts,navigation.ts}`, typed against `src/types/portfolio.ts`. Config: `src/config/{site.ts,env.ts}`.
-- Site chrome: `src/components/layouts/{MenuButton,MenuPopout,SiteMenu,RootLayout}.tsx` (z-scale: MenuPopout 60 < SiteMenu 80 < Preloader 90 < Cursor 100). Store: `src/store/useUIStore.ts` (`preloaderDone`, `menuOpen`).
+- Data: `src/features/home/data/{profile,skills,journey,contact}.data.ts` + `src/data/projects.data.ts` + `src/constants/navigation.constant.ts`, typed against `src/types/portfolio.ts`. Config: `src/config/{site.ts,env.ts}`.
+- Site chrome: `src/components/layouts/RootLayout.tsx` + `src/components/shared/{MenuButton,MenuPopout,SiteMenu}.tsx` (z-scale: MenuPopout 60 < SiteMenu 80 < Preloader 90 < Cursor 100). Store: `src/store/useUIStore.ts` (`preloaderDone`, `menuOpen`).
 - Tokens: `src/styles/globals.css` (`@theme`) — the **ember Void & Ember v2 values are live** (`#0A0A0A` / `#E4E4E4` / accent `#E8380F`, applied 2026-07-07); always style by token *name*, never hex.
 
 Rules you never break:

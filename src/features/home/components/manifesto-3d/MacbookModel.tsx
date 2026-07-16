@@ -2,7 +2,7 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
-import { channels } from "@/features/home/components/manifesto-3d/channels";
+import { channels } from "@/features/home/utils/channels";
 import {
   buildMacbookRig,
   CAM,

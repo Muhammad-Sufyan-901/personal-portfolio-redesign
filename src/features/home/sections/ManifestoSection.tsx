@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { Box, ChapterEyebrow, Image } from "@/components/common";
 import { profile } from "@/features/home/data/profile.data";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { channels, stageState } from "@/features/home/components/manifesto-3d/channels";
+import { channels, stageState } from "@/features/home/utils/channels";
 import { ModelErrorBoundary } from "@/features/home/components/manifesto-3d/ModelErrorBoundary";
-import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
+import { HERO_REFINE } from "@/features/home/utils/hero.tunables";
 import macbookPoster from "@/assets/images/macbook-poster.webp";
 
 const ManifestoCanvas = lazy(() =>

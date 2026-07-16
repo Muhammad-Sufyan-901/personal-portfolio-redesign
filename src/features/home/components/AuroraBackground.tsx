@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { gsap } from "@/lib/gsap";
 import { useUIStore } from "@/store/useUIStore";
-import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
+import { HERO_REFINE } from "@/features/home/utils/hero.tunables";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useState } from "react";

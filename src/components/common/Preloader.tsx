@@ -7,7 +7,7 @@ import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useLenis } from "@/hooks/useLenis";
 import { useUIStore } from "@/store/useUIStore";
 import { Box } from "@/components/common/Box";
-import { PRELOADER_REFINE } from "@/components/common/preloader.tunables";
+import { PRELOADER_REFINE } from "@/utils/preloader.tunables";
 import type { Profile } from "@/types/portfolio";
 
 interface PreloaderProps {

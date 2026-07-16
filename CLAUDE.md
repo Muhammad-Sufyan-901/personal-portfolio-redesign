@@ -48,7 +48,7 @@ Only `home` exists — it owns the whole portfolio page. `pages/HomePage.tsx` co
 `StrictMode → AppProviders → RouterProvider` where `AppProviders` = `ThemeProvider(defaultTheme="dark", storageKey="vite-ui-theme") → TooltipProvider → SmoothScrollProvider`. The router is created with `scrollRestoration: true` and `defaultPreload: "intent"`. Router devtools live inside `RootLayout`.
 
 ### Theme
-`src/providers/theme-provider.tsx` exposes `ThemeProvider` and `useTheme()` → `{ theme, setTheme }` with `Theme = "dark" | "light" | "system"`. State persists to `localStorage["vite-ui-theme"]`, toggles `.light`/`.dark` on `<html>`; default is **dark**. The portfolio ships **dark-only** (PLAN v3.1 decision 2 — `globals.css` carries no `.light` token block; the provider machinery stays but no toggle is exposed).
+`src/providers/ThemeProvider.tsx` exposes `ThemeProvider` and `useTheme()` → `{ theme, setTheme }` with `Theme = "dark" | "light" | "system"`. State persists to `localStorage["vite-ui-theme"]`, toggles `.light`/`.dark` on `<html>`; default is **dark**. The portfolio ships **dark-only** (PLAN v3.1 decision 2 — `globals.css` carries no `.light` token block; the provider machinery stays but no toggle is exposed).
 
 ### Common components (`src/components/common/`)
 Polymorphic primitives that replace raw HTML tags in feature/page/section code, **plus the motion primitives**. Import from the barrel: `import { Box, Heading, Text } from "@/components/common";`.

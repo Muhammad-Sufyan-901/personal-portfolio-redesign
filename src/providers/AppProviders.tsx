@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { SmoothScrollProvider } from "@/providers/SmoothScrollProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 

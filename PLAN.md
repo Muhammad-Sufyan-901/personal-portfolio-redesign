@@ -17,7 +17,7 @@ Everything in v3 §1 landed and is verified healthy (2026-07-08: `npm run build`
 As-built deltas vs v3:
 
 - **No Header/MobileMenu.** Chrome is: hero-inline `MenuButton` → fixed `MenuPopout` (z-60, pops out past 100vh with `back.out(2)`) → fullscreen `SiteMenu` overlay (z-80, ember bg, all 8 anchors, focus-trapped, Escape-close). Two-level `inert` in `RootLayout` (preloader up / menu open).
-- **Preloader is the name-as-shared-element morph** (2026-07-16, supersedes the three-act Welcome/ember/curtain `4d3c399`; sheet-transition revision same day), runs on **every** load: centered wordmark chars cascade up (unclipped, settling rotation, stagger from center) and breathe through a real loading gate (fonts + aurora + hero chunk, `hold.min 0.7`–`max 4.0`) → FLIP-morphs onto the hero h1's word rects while an EMBER sheet wipes bottom→top (full cover exactly at the landing) → hold → INK sheet wipes bottom→top → atomic cut at ink full-cover (`setPreloaderDone`; invisible — ink == page bg; the name rides above both sheets) → hero chrome staggers + aurora ramps from the reveal (`[data-chrome]` groups, `auroraIn`); scroll unlocks when the last group starts. Tunables: `src/components/common/preloader.tunables.ts`.
+- **Preloader is the name-as-shared-element morph** (2026-07-16, supersedes the three-act Welcome/ember/curtain `4d3c399`; sheet-transition revision same day), runs on **every** load: centered wordmark chars cascade up (unclipped, settling rotation, stagger from center) and breathe through a real loading gate (fonts + aurora + hero chunk, `hold.min 0.7`–`max 4.0`) → FLIP-morphs onto the hero h1's word rects while an EMBER sheet wipes bottom→top (full cover exactly at the landing) → hold → INK sheet wipes bottom→top → atomic cut at ink full-cover (`setPreloaderDone`; invisible — ink == page bg; the name rides above both sheets) → hero chrome staggers + aurora ramps from the reveal (`[data-chrome]` groups, `auroraIn`); scroll unlocks when the last group starts. Tunables: `src/utils/preloader.tunables.ts`.
 - **Hero**: two-row giant name (first name `font-sans font-medium` / surname `font-display italic` + "."), `text-hero` clip spans, char reveal gated on `preloaderDone`, `AuroraBackground` (ogl) fading on scroll, ±10px pointer parallax, hairline bottom bar with role · socials · 3 anchors.
 - `HomePage` still carries a ponytail-commented **150vh scroll runway** placeholder — removed when 02 lands.
 - Non-blocking: production JS is one 515 kB chunk (gsap+ogl+react) — revisit at the final whole-site QA (manualChunks), not per-section.
@@ -27,7 +27,7 @@ As-built deltas vs v3:
 Every remaining chapter carries these forward; deviations need a reason at its gate.
 
 - **Motion vocabulary:** clip-mask reveals `yPercent 100→0` inside `overflow-hidden` wrappers; staggers chars `0.025` / words `0.04` / lines `0.08` / items `0.06–0.08`; eases `power4.out` (default, dur 0.8 — reveals), `power4.inOut` (curtains/panels), `power2.inOut` (counters), `back.out(2)` (pop-ins), `elastic.out(1,0.4)` (magnetic spring); durations cluster 0.4 / 0.8 / 1.0 / 1.1 / 1.2; enter-reveals `start:"top 80%", once:true`; scrubs always `invalidateOnRefresh:true`. Everything in `useGSAP({ scope, dependencies, revertOnUpdate: true })`; GSAP only from `@/lib/gsap`; reduced-motion early-return in every effect (content visible via JSX — hide only via `gsap.set`, never CSS).
-- **Chapter shell:** `<Box as="section" id="…" className="px-page-x py-section">` → `ChapterEyebrow index="0N" label="…"` → title (`RevealText as="h2" mode="lines"` + `font-display text-chapter text-paper`) → content. Section `id`s must match `constants/navigation.ts` anchors. Custom primitives only; tokens by NAME only.
+- **Chapter shell:** `<Box as="section" id="…" className="px-page-x py-section">` → `ChapterEyebrow index="0N" label="…"` → title (`RevealText as="h2" mode="lines"` + `font-display text-chapter text-paper`) → content. Section `id`s must match `constants/navigation.constant.ts` anchors. Custom primitives only; tokens by NAME only.
 - **Gotchas honored:** any new `--text-*` token must be registered in `lib/utils.ts` extended-twMerge font-size groups; `Heading` default-variant responsive sizes survive twMerge over fluid tokens — use `RevealText as="h2"` / `Box as="h3"` + token classes for token-sized headings; `RevealText` wraps plain text only (structural reveals replay the recipe in a scoped useGSAP); full-bleed inside the padded shell via `-mx-page-x`; cursor labels via `data-cursor="VIEW"`; z-scale: content ≤ 50 < popout 60 < SiteMenu 80 < Preloader 90 < Cursor 100; Marquee seam = single joined span + NBSP before the trailing separator; `Link` handles `#hash` via `lenis.scrollTo { force: true }` already.
 
 ## 3. Per-chapter build spec (02 → Footer, build-ready)
@@ -74,7 +74,7 @@ Every remaining chapter carries these forward; deviations need a reason at its g
 - **Motion:** invert entry as a short crossfade/hard cut on ScrollTrigger enter (§7.2 "section invert"; semicircle wipe = open decision 12); heading `RevealText`; magnetic CTA. A11y gate: focus-ring + accent contrast re-checked on the light bg; form fully keyboard-navigable.
 - **Data:** exists (`contactChannels`, `socialLinks`, env config) — the delta is code, not data.
 
-### Footer — `components/layouts/Footer.tsx`, rendered by HomePage after Contact
+### Footer — `components/shared/Footer.tsx`, rendered by HomePage after Contact
 
 - **Layout:** back to ink (the bookend after the invert); giant name `Marquee` — the hero's mixed-pairing device (first name `font-sans font-medium`, surname `font-display italic` + ".") at display scale, `text-muted`, slow (speed 30); mono meta columns (email · © year · socials · navLinks); back-to-top `MagneticButton`.
 - **Motion:** slow marquee (duplicate track `aria-hidden`); **ornament converge** (decision 8: yes, subtle) — two sparse ember glyph clusters, `aria-hidden`, low opacity, x/opacity scrub on footer enter. Reduced: static.
@@ -90,9 +90,9 @@ Loud open (preloader curtain → aurora hero) → **quiet typographic middle** (
 | §2 persona/bio/stats/CV | `features/home/data/profile.data.ts` | 01, 02, 03, 06 |
 | §3.1 skills (21, with levels) + §3.2 tools (6) | `features/home/data/skills.data.ts` (presentation `category`) | 04 pillars, 06 accordion |
 | §3.3 work (4) + §3.4 education (2) + §3.5 awards (3) | `features/home/data/journey.data.ts` (9 items) | 05 |
-| §3.6 projects (6) | `src/constants/projects.data.ts` (`featured` flags) | 04 index (all 6), 07 gallery (featured 5) |
+| §3.6 projects (6) | `src/data/projects.data.ts` (`featured` flags) | 04 index (all 6), 07 gallery (featured 5) |
 | §3.7 contact (3 channels) | `features/home/data/contact.data.ts` | 08, footer |
-| §3.8 navigation | `src/constants/navigation.ts` (8 anchors, already matches the chapter map) | SiteMenu, footer |
+| §3.8 navigation | `src/constants/navigation.constant.ts` (8 anchors, already matches the chapter map) | SiteMenu, footer |
 
 No data deltas are expected for 02→Footer; per-chapter step 1 verifies rather than extends. Unknown fields (project years, portrait asset) stay omitted — never fabricated.
 

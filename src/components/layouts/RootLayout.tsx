@@ -1,7 +1,7 @@
 import { Outlet } from "@tanstack/react-router";
 import { Box } from "@/components/common";
-import { MenuPopout } from "@/components/layouts/MenuPopout";
-import { SiteMenu } from "@/components/layouts/SiteMenu";
+import { MenuPopout } from "@/components/shared/MenuPopout";
+import { SiteMenu } from "@/components/shared/SiteMenu";
 import { useUIStore } from "@/store/useUIStore";
 
 /** Site frame. Containment (established overlay pattern):

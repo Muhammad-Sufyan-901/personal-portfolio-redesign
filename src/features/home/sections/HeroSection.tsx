@@ -5,12 +5,12 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useUIStore } from "@/store/useUIStore";
 import { profile } from "@/features/home/data/profile.data";
 import { socialLinks } from "@/features/home/data/contact.data";
-import { navLinks } from "@/constants/navigation";
+import { navLinks } from "@/constants/navigation.constant";
 import { AuroraBackground } from "@/features/home/components/AuroraBackground";
-import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
-import { PRELOADER_REFINE } from "@/components/common/preloader.tunables";
+import { HERO_REFINE } from "@/features/home/utils/hero.tunables";
+import { PRELOADER_REFINE } from "@/utils/preloader.tunables";
 import { Box, Image, Link } from "@/components/common";
-import { MenuButton } from "@/components/layouts/MenuButton";
+import { MenuButton } from "@/components/shared/MenuButton";
 import macbookPoster from "@/assets/images/macbook-poster.webp";
 
 /** Tagline split around the italic-serif emphasis phrase. */
