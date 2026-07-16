@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Hero pairing — reference vs candidates</title>
+<style>
+  @font-face { font-family: "Instrument Serif"; src: url("/fonts/_candidates/instrument-serif/InstrumentSerif-Italic.ttf") format("truetype"); font-style: italic; font-weight: 400; }
+  @font-face { font-family: "Fraunces Full"; src: url("/fonts/_candidates/fraunces/fraunces-latin-full-italic.woff2") format("woff2-variations"); font-style: italic; font-weight: 100 900; }
+  @font-face { font-family: "Switzer"; src: url("/fonts/_candidates/switzer/Switzer-Variable.woff2") format("woff2-variations"); font-style: normal; font-weight: 100 900; }
+  @font-face { font-family: "General Sans"; src: url("/fonts/_candidates/general-sans/GeneralSans-Variable.woff2") format("woff2-variations"); font-style: normal; font-weight: 200 700; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; color: #e4e4e4; padding: 1.5rem; }
+  .label { font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #9a9a9a; margin: 1.6rem 0 0.4rem; }
+  .label:first-child { margin-top: 0; }
+  .label b { color: #e8380f; font-weight: 500; }
+  .refcrop { width: 100%; overflow: hidden; position: relative; }
+  .refcrop img { width: 100%; display: block; position: relative; }
+  .crop-frame { height: 250px; }
+  .crop-frame img { top: -488px; }   /* frame_0001: 1920×1080 → 1392×783; name band ~62% down */
+  .crop-live { height: 240px; }
+  .crop-live img { top: -620px; }    /* live-mcp-hero: 1200×863 → 1392×1001; name band ~62% down */
+  .name { font-size: 13.5vw; line-height: 0.95; letter-spacing: -0.03em; white-space: nowrap; }
+  .lead { font-weight: 500; }
+  .tail { font-style: italic; }
+  .lead-switzer { font-family: "Switzer", sans-serif; }
+  .lead-general { font-family: "General Sans", sans-serif; }
+  .tail-instr { font-family: "Instrument Serif", serif; font-weight: 400; }
+  .tail-fraunces { font-family: "Fraunces Full", serif; font-weight: 380; font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0; }
+</style>
+</head>
+<body>
+
+<div class="label"><b>Reference</b> · lukebaffait.fr hero (frames-key/frame_0001.jpg) — Factory Grotesk + Apparel Italic</div>
+<div class="refcrop crop-frame"><img src="/@fs/Users/muhammadsufyan/Program/React JS/Individual Projects/portfolio-redesign/reference/frames-key/frame_0001.jpg" /></div>
+
+<div class="label"><b>Reference</b> · live capture (live-mcp-hero.jpeg)</div>
+<div class="refcrop crop-live"><img src="/@fs/Users/muhammadsufyan/Program/React JS/Individual Projects/portfolio-redesign/reference/live-mcp-hero.jpeg" /></div>
+
+<div class="label">A · Switzer 500 + <b>Instrument Serif Italic</b> — L1+T1</div>
+<div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+
+<div class="label">B · Switzer 500 + Fraunces Italic 380 (opsz 144 · soft 0 · wonk 0) — L1+T4</div>
+<div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-fraunces">Sufyan.</span></div>
+
+<div class="label">D · General Sans 500 + <b>Instrument Serif Italic</b> — L4+T1</div>
+<div class="name"><span class="lead lead-general">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+
+<div class="label">E · General Sans 500 + Fraunces Italic 380 (opsz 144 · soft 0 · wonk 0) — L4+T4 · zero new payload</div>
+<div class="name"><span class="lead lead-general">Muh.</span> <span class="tail tail-fraunces">Sufyan.</span></div>
+
+</body>
+</html>

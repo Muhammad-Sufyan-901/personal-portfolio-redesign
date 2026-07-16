@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hero font specimen — throwaway</title>
+<style>
+  /* ── Tails (serif italic — the "Sufyan." voice) ─────────────────── */
+  @font-face {
+    font-family: "Instrument Serif";
+    src: url("/fonts/_candidates/instrument-serif/InstrumentSerif-Italic.ttf") format("truetype");
+    font-style: italic; font-weight: 400;
+  }
+  @font-face {
+    font-family: "DM Serif Display";
+    src: url("/fonts/_candidates/dm-serif-display/DMSerifDisplay-Italic.ttf") format("truetype");
+    font-style: italic; font-weight: 400;
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("/fonts/_candidates/playfair-display/PlayfairDisplay-Italic[wght].ttf") format("truetype-variations");
+    font-style: italic; font-weight: 400 900;
+  }
+  @font-face {
+    font-family: "Fraunces Full";
+    src: url("/fonts/_candidates/fraunces/fraunces-latin-full-italic.woff2") format("woff2-variations");
+    font-style: italic; font-weight: 100 900;
+  }
+  /* ── Leads (grotesk medium — the "Muh." voice) ──────────────────── */
+  @font-face {
+    font-family: "Switzer";
+    src: url("/fonts/_candidates/switzer/Switzer-Variable.woff2") format("woff2-variations");
+    font-style: normal; font-weight: 100 900;
+  }
+  @font-face {
+    font-family: "Hanken Grotesk";
+    src: url("/fonts/_candidates/hanken-grotesk/HankenGrotesk[wght].ttf") format("truetype-variations");
+    font-style: normal; font-weight: 100 900;
+  }
+  @font-face {
+    font-family: "Instrument Sans";
+    src: url("/fonts/_candidates/instrument-sans/InstrumentSans[wdth,wght].ttf") format("truetype-variations");
+    font-style: normal; font-weight: 400 700;
+  }
+  @font-face {
+    font-family: "General Sans";
+    src: url("/fonts/_candidates/general-sans/GeneralSans-Variable.woff2") format("woff2-variations");
+    font-style: normal; font-weight: 200 700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;            /* --color-ink (throwaway page, raw hex OK) */
+    color: #e4e4e4;                 /* --color-paper */
+    padding: 2rem 1.5rem 4rem;
+  }
+  .row { margin-bottom: 3.5rem; }
+  .label {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9a9a9a;
+    margin-bottom: 0.4rem;
+  }
+  .name {
+    font-size: clamp(3.5rem, 15vw, 19rem);   /* --text-hero (16vw → 15vw so one row fits 1440) */
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+  .lead { font-weight: 500; }
+  .tail { font-style: italic; }
+
+  .lead-switzer  { font-family: "Switzer", sans-serif; }
+  .lead-general  { font-family: "General Sans", sans-serif; }
+  .lead-hanken   { font-family: "Hanken Grotesk", sans-serif; }
+  .lead-instr    { font-family: "Instrument Sans", sans-serif; }
+
+  .tail-instr    { font-family: "Instrument Serif", serif; font-weight: 400; }
+  .tail-dm       { font-family: "DM Serif Display", serif; font-weight: 400; }
+  .tail-playfair { font-family: "Playfair Display", serif; font-weight: 500; }
+  .tail-fraunces      { font-family: "Fraunces Full", serif; font-weight: 380;
+                        font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0; }
+  .tail-fraunces-wonk { font-family: "Fraunces Full", serif; font-weight: 380;
+                        font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 1; }
+</style>
+</head>
+<body>
+
+<div class="row">
+  <div class="label">A · Switzer 500 (ITF FFL) + Instrument Serif Italic (OFL) — L1+T1</div>
+  <div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">B · Switzer 500 (ITF FFL) + Fraunces Italic 380 · opsz 144 · soft 0 · wonk 0 (OFL) — L1+T4</div>
+  <div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-fraunces">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">C · Switzer 500 (ITF FFL) + Fraunces Italic 380 · opsz 144 · soft 0 · wonk 1 (OFL) — L1+T4w</div>
+  <div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-fraunces-wonk">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">D · General Sans 500 (ITF FFL, installed) + Instrument Serif Italic (OFL) — L4+T1</div>
+  <div class="name"><span class="lead lead-general">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">E · General Sans 500 (installed) + Fraunces Italic 380 · opsz 144 · soft 0 · wonk 0 (installed) — L4+T4 · zero new payload</div>
+  <div class="name"><span class="lead lead-general">Muh.</span> <span class="tail tail-fraunces">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">F · Switzer 500 (ITF FFL) + DM Serif Display Italic (OFL) — L1+T2</div>
+  <div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-dm">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">G · Switzer 500 (ITF FFL) + Playfair Display Italic 500 (OFL) — L1+T3</div>
+  <div class="name"><span class="lead lead-switzer">Muh.</span> <span class="tail tail-playfair">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">H · Hanken Grotesk 500 (OFL) + Instrument Serif Italic (OFL) — L2+T1</div>
+  <div class="name"><span class="lead lead-hanken">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+</div>
+
+<div class="row">
+  <div class="label">I · Instrument Sans 500 (OFL) + Instrument Serif Italic (OFL) — L3+T1</div>
+  <div class="name"><span class="lead lead-instr">Muh.</span> <span class="tail tail-instr">Sufyan.</span></div>
+</div>
+
+</body>
+</html>
