@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `src/` was hard-reset on 2026-07-07 (`chore(reset)`), then **rebuilt** from the `.agents/context/` specs per PLAN v3/v3.1 (B0 `chore(setup)` re-bootstrap onward). The pre-reset pass's decisions and gotchas survive in `logs/feature-changes/*` and `.claude/agent-memory/*`.
 
-> **Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
+> **Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: name-as-shared-element morph preloader (2026-07-16 — wordmark char-cascade + loading-gate → FLIP morph onto the hero h1 under an ember→ink two-sheet bottom-up wipe, atomic cut at ink full-cover; runs every load, tunables `preloader.tunables.ts`), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
 
 The full motion/form stack is installed (gsap + @gsap/react, lenis, split-type, zustand, react-hook-form, @emailjs/browser, ogl + the R3F island deps for the manifesto 3D story, shadcn/cva/clsx/tailwind-merge, fonts); `vite.config.ts` (router plugin, Tailwind plugin, `@/` alias) and `index.html` are stable.
 
@@ -65,7 +65,7 @@ Polymorphic primitives that replace raw HTML tags in feature/page/section code, 
 | `ParallaxImage` | clip-reveal figure | `aspect`, `parallax` (−8→8), `withScrim` (`false`) |
 | `PathDraw` | scrubbed SVG path draw | `d` (required), `strokeWidth` (`3.5`), `trigger`, `scrub` (`true`), `viewBox`; `stroke="currentColor"` + `text-accent` wrapper — built, not yet wired into a section |
 | `Marquee` / `MagneticButton` / `ChapterEyebrow` | motion utilities | `speed` (30) / `strength` (12) / `index`+`label` |
-| `Cursor` / `Preloader` | overlays (z-100 / z-90) | none — mounted once in `__root.tsx` |
+| `Cursor` / `Preloader` | overlays (z-100 / z-90) | `Cursor` none · `Preloader` `name` (required) — mounted once in `__root.tsx` |
 
 There is **no `ThemeToggle`** component (dark-only site — the barrel exports exactly the 14 primitives above).
 

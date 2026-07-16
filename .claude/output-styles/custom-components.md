@@ -33,7 +33,7 @@ All import GSAP only from `@/lib/gsap` and ship a `prefers-reduced-motion` fallb
 | `Marquee` | `speed` (30 s/loop), `reverse` (false), `pauseOnHover` (true) | keyword/footer marquees (duplicate track `aria-hidden`) |
 | `MagneticButton` | `strength` (12 px) | CTAs, social links |
 | `ChapterEyebrow` | `index`, `label` | `01 — WHO I AM` chapter markers |
-| `Cursor` / `Preloader` | none | mounted once in `src/routes/__root.tsx` (z-100 / z-90) — do not remount |
+| `Cursor` / `Preloader` | `Cursor`: none · `Preloader`: `name` (required, `Profile["heroName"]`) | mounted once in `src/routes/__root.tsx` (z-100 / z-90) — do not remount. Preloader = name-morph choreography, tunables in `preloader.tunables.ts` |
 
 ## Example (follow this shape — token utilities only, never raw palette classes)
 

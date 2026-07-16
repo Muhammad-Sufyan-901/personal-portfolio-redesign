@@ -33,7 +33,7 @@ All import GSAP only from `@/lib/gsap` and ship a `prefers-reduced-motion` branc
 - **`MagneticButton`** — `strength` (default `12` px max translate); inner `.magnetic-label` counter-moves ×−0.35.
 - **`ChapterEyebrow`** — `index`, `label` (`"01 — WHO I AM"` pattern, mono, accent index). Static.
 - **`Cursor`** — no props; dot 8px + ring 40px, `z-[100]`; returns `null` on coarse pointer / reduced motion.
-- **`Preloader`** — no props; `z-[90]`, runs on every load/refresh (three-act Welcome/ember/curtain intro), signals `useUIStore.setPreloaderDone`.
+- **`Preloader`** — `name` (required, `Profile["heroName"]`, passed from `__root`); `z-[90]`, runs on every load/refresh. Name-as-shared-element morph (P0–P5): centered wordmark char-cascade (unclipped rise + settling rotation, stagger from center) + loading gate (fonts/aurora/hero, `hold.min–max`) → FLIP morph onto the hero h1 word rects while an EMBER sheet wipes bottom→top → full-cover hold → INK sheet wipes bottom→top → atomic cut at ink full-cover (`setPreloaderDone` fires there, NOT at overlay end; the ink sheet matches the bg so the cut is invisible); the name rides ABOVE both sheets; hero chrome + aurora ramp start at the reveal; scroll unlocks when the last chrome group starts. Tunables: `preloader.tunables.ts` (`PRELOADER_REFINE`).
 - **`PathDraw`** — `d` (required), `strokeWidth` (default `3.5`), `trigger`, `scrub` (default `true`), `start`/`end`, `viewBox`; `stroke="currentColor"` + `text-accent` wrapper (token-driven); reduced motion renders fully drawn. Built, not yet wired into a section.
 
 ## Known gotchas

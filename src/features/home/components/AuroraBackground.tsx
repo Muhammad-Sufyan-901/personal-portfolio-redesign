@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { gsap } from "@/lib/gsap";
+import { useUIStore } from "@/store/useUIStore";
 import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
@@ -150,7 +151,12 @@ export function AuroraBackground() {
   // the same closure via gsap.ticker; useGSAP only owns the ScrollTrigger fade.
   useIsomorphicLayoutEffect(() => {
     const ctn = ref.current;
-    if (!active || !ctn) return;
+    if (!active || !ctn) {
+      // Terminal no-shader paths (reduced motion / WebGL failed): the
+      // preloader gate must never wait on a compile that won't happen.
+      useUIStore.getState().setAuroraReady(true);
+      return;
+    }
 
     let renderer: Renderer;
     try {
@@ -164,6 +170,7 @@ export function AuroraBackground() {
       });
     } catch {
       setWebglFailed(true);
+      useUIStore.getState().setAuroraReady(true);
       return;
     }
     const gl = renderer.gl;
@@ -251,6 +258,7 @@ export function AuroraBackground() {
       program.uniforms.uMouse.value = [mouse.x, mouse.y];
       program.uniforms.uTime.value = time * SPEED;
       renderer.render({ scene: mesh });
+      if (!useUIStore.getState().auroraReady) useUIStore.getState().setAuroraReady(true);
     };
     const fadedRef = { faded: false };
     gsap.ticker.add(tick);
