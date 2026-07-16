@@ -4,6 +4,9 @@ import type { Profile } from "@/types/portfolio";
  *  (bio → tagline/manifesto/aboutStatement), facts unchanged. */
 export const profile: Profile = {
   name: "Muhammad Sufyan",
+  // Owner-approved hero display abbreviation (2026-07-16) — not PRD content;
+  // the hero h1's aria-label still reads the full `name`.
+  heroName: { lead: "Muh.", tail: "Sufyan." },
   role: "Software Engineer · Web & Mobile",
   tagline: "Building digital applications that help many people.",
   taglineEmphasis: "help many people",

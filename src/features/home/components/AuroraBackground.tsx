@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
 import { gsap } from "@/lib/gsap";
+import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useState } from "react";
@@ -27,6 +28,10 @@ uniform float uAmplitude;
 uniform vec3 uColorStops[3];
 uniform vec2 uResolution;
 uniform float uBlend;
+uniform float uIntensity;
+uniform float uMidPoint;
+uniform vec2 uMouse;
+uniform float uHotspotRadius;
 
 out vec4 fragColor;
 
@@ -107,10 +112,14 @@ void main() {
   float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
   height = exp(height);
   height = (uv.y * 2.0 - height + 0.2);
-  float intensity = 0.6 * height;
+  float intensity = uIntensity * height;
 
-  float midPoint = 0.20;
-  float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
+  // Damped pointer hotspot (uv space, bottom-origin y) — a weighted
+  // emphasis on the band, never a 1:1 spotlight.
+  float hotspot = smoothstep(uHotspotRadius, 0.0, distance(uv, uMouse));
+  intensity *= 1.0 + hotspot * 0.5;
+
+  float auroraAlpha = smoothstep(uMidPoint - uBlend * 0.5, uMidPoint + uBlend * 0.5, intensity);
 
   vec3 auroraColor = intensity * rampColor;
 
@@ -121,6 +130,14 @@ void main() {
 const AMPLITUDE = 1.0;
 const BLEND = 0.6;
 const SPEED = 0.6;
+/** The shipped intensity scalar — HERO_REFINE.aurora.intensity multiplies it
+ *  (1.0 = the pre-refine look). */
+const BASE_INTENSITY = 0.6;
+/** coverage 0→1 maps to the alpha smoothstep midpoint 0.35→0.02 (the shipped
+ *  look's 0.20 ≈ coverage 0.45); lower midpoint = chroma reaches further down. */
+const midPointFor = (coverage: number) => 0.35 - 0.33 * coverage;
+/** Idle seconds without pointer movement before the hotspot drifts on its own. */
+const IDLE_AFTER = 2;
 
 export function AuroraBackground() {
   const ref = useRef<HTMLDivElement>(null);
@@ -137,7 +154,14 @@ export function AuroraBackground() {
 
     let renderer: Renderer;
     try {
-      renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true });
+      renderer = new Renderer({
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: true,
+        // Fill-cost cap (the old 2D-canvas version's DPR≤1.5 rule, restored
+        // for the bolder coverage).
+        dpr: Math.min(window.devicePixelRatio, 1.5),
+      });
     } catch {
       setWebglFailed(true);
       return;
@@ -171,6 +195,15 @@ export function AuroraBackground() {
         uColorStops: { value: stops },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: BLEND },
+        uIntensity: { value: BASE_INTENSITY * HERO_REFINE.aurora.intensity },
+        // midPoint scales WITH intensity — the alpha smoothstep reads the
+        // scaled intensity, so without this coupling a brightness boost
+        // silently expands coverage too (measured: 60% frame chroma vs the
+        // reference's 37%). Coverage stays the one area knob.
+        uMidPoint: { value: HERO_REFINE.aurora.intensity * midPointFor(HERO_REFINE.aurora.coverage) },
+        // uv space, bottom-origin y — starts centered in the band up top.
+        uMouse: { value: [0.5, 0.85] },
+        uHotspotRadius: { value: HERO_REFINE.aurora.hotspot.radius },
       },
     });
     const mesh = new Mesh(gl, { geometry, program });
@@ -188,9 +221,34 @@ export function AuroraBackground() {
     });
     io.observe(ctn);
 
+    // Hotspot targeting: one pointermove on window (the wrapper is
+    // pointer-events-none); the tick damps toward the target with
+    // frame-rate-independent exp decay — no second RAF, no quickTo.
+    const { followLambda, idleDriftSpeed, idleDriftAmp } = HERO_REFINE.aurora.hotspot;
+    const hoverCapable = window.matchMedia("(hover: hover)").matches;
+    const mouse = { x: 0.5, y: 0.85 };
+    const target = { x: 0.5, y: 0.85 };
+    let lastPointerAt = -Infinity;
+    const onPointerMove = (e: PointerEvent) => {
+      target.x = e.clientX / window.innerWidth;
+      target.y = 1 - e.clientY / window.innerHeight; // uv space: y is bottom-origin
+      lastPointerAt = gsap.ticker.time;
+    };
+    if (hoverCapable) window.addEventListener("pointermove", onPointerMove);
+
     // gsap.ticker time is seconds — matches the original's ms*0.01*0.1 scaling.
-    const tick = (time: number) => {
+    const tick = (time: number, deltaTime: number) => {
       if (document.hidden || offscreen || fadedRef.faded) return;
+      // Idle (or touch): the hotspot drifts on a slow noise-ish path inside
+      // the band instead of freezing.
+      if (!hoverCapable || time - lastPointerAt > IDLE_AFTER) {
+        target.x = 0.5 + Math.sin(time * idleDriftSpeed) * idleDriftAmp;
+        target.y = 0.8 + Math.cos(time * idleDriftSpeed * 0.8) * idleDriftAmp * 0.4;
+      }
+      const k = 1 - Math.exp((-followLambda * deltaTime) / 1000);
+      mouse.x += (target.x - mouse.x) * k;
+      mouse.y += (target.y - mouse.y) * k;
+      program.uniforms.uMouse.value = [mouse.x, mouse.y];
       program.uniforms.uTime.value = time * SPEED;
       renderer.render({ scene: mesh });
     };
@@ -215,6 +273,7 @@ export function AuroraBackground() {
 
     return () => {
       gsap.ticker.remove(tick);
+      if (hoverCapable) window.removeEventListener("pointermove", onPointerMove);
       ro.disconnect();
       io.disconnect();
       fade.scrollTrigger?.kill();
@@ -228,7 +287,7 @@ export function AuroraBackground() {
     return (
       <Box
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_75%_20%,var(--color-accent-tint),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_100%_70%_at_50%_0%,var(--color-accent-tint),transparent_75%)]"
       />
     );
   }

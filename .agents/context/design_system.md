@@ -76,7 +76,9 @@ This is evidence for **borrowing techniques and rhythm**, not for renaming Sufya
 | **Text Primary**   | Paper          | `--color-paper`   | `#E4E4E4` | Headings, body — neutral off-white (not warm)        |
 | **Text Muted**     | Muted          | `--color-muted`   | `#9A9A9A` | Secondary text, captions                             |
 | **Text Faint**     | Faint          | `--color-faint`   | `#4D4D4D` | Disabled, timestamps, index numbers pre-reveal       |
+| **Text Bright**    | Paper Bright   | `--color-paper-bright` | `#F0F0F0` | Hover step above Paper (hero bar labels) — evidence: §3.0 footer samples (v2.1, 2026-07-16) |
 | **Border**         | Line           | `--color-line`    | `#242424` | Hairline dividers, 1px borders                       |
+| **Border Strong**  | Line Strong    | `--color-line-strong` | `#8A8A8A` | The hero bar's bright rule — sampled from `frames-key/frame_0001.jpg` hairline (y986: `#888888`–`#8A8889`) (v2.1, 2026-07-16) |
 
 ### 3.1b Invert Section (borrowed technique)
 
@@ -92,6 +94,7 @@ This is evidence for **borrowing techniques and rhythm**, not for renaming Sufya
 | `--color-accent`      | `#E8380F`              | **Signature ember** — a vivid red-orange, directly sampled from the reference (raw range `#c01010`–`#f81800`, cleaned up for UI use). Active nav dot, link hover, scroll cue, hero underline |
 | `--color-accent-deep` | `#B32C0B`              | Pressed/hover-deep, gradient end                                                                                                                                                             |
 | `--color-accent-tint` | `rgba(232,56,15,0.12)` | Faint accent wash behind a focal word / selection                                                                                                                                            |
+| `--color-flash`       | `#66EACC`              | Reference's tail-word mint (most-saturated sample, `frame_0001.jpg`) — used ONLY by the opt-in `surnameHoverFlash` tunable, **default OFF** (v2.1, 2026-07-16)                               |
 
 > **Documented alternates** (if you'd rather not literally echo the reference's red-orange): **Brass `#C8A46A`** (warmer, more "craft") or **Elevated Cobalt `#3B5BFF`** (continuity with the old blue brand). Ember is the default because it's what's actually in the reference; either alternate is a valid deliberate departure. Keep everything else identical either way. Decide once, at planning approval.
 
@@ -128,6 +131,8 @@ Three families with strict roles — this pairing tells the "creative × enginee
 >
 > **Mapping rationale (settled, unchanged):** Fraunces takes the italic-serif "emotion" job (surname + focal words); General Sans takes Breton's **double duty** (display roman + body) — the reference itself collapses those into one face, directly validating that decision; JetBrains Mono deliberately replaces the quiet meta sans (Inter) as our "engineer voice"; Zirena's two shouty moments get no counterpart (weight/case shifts of General Sans instead — a fourth face doesn't survive our restraint rule).
 
+> **v2.1 hero-display amendment (owner-approved 2026-07-16):** the HERO NAME ONLY gets two dedicated faces, picked at a specimen gate against the reference (pairing A of 8 candidates): **Switzer Medium 500** (`--font-display-lead`, "Muh.") and **Instrument Serif Italic 400** (`--font-display-tail`, "Sufyan."). Provenance: Switzer static woff2 from the official Fontshare distribution (ITF FFL license beside it in `public/fonts/switzer/`); Instrument Serif latin-subset woff2 from the official Google Fonts serving API (`fonts.gstatic.com`, OFL beside it in `public/fonts/instrument-serif/`). Fallback chains land on the settled faces (General Sans / Fraunces italic), never system-ui. Body/mono faces are untouched; Fraunces keeps every other display job (chapter titles, statements, focal words). An upgrade slot exists in `HERO_REFINE.FONTS`: licensed Apparel/Factory Grotesk woff2 at `public/fonts/{apparel,factory-grotesk}/` + `useReferenceFaces: true` swaps the hero to the reference's literal faces with no other change.
+
 ### 4.1 Font Families
 
 | Family                  | Token            | Role                                                          | Source                          |
@@ -135,6 +140,8 @@ Three families with strict roles — this pairing tells the "creative × enginee
 | **Fraunces** (variable) | `--font-display` | Hero name, chapter titles, large editorial statements         | `@fontsource-variable/fraunces` |
 | **General Sans**        | `--font-sans`    | Body, navigation, buttons, paragraphs — **default UI face**   | Fontshare (self-host)           |
 | **JetBrains Mono**      | `--font-mono`    | Chapter numbers, eyebrows, labels, metadata, tech-stack chips | `@fontsource/jetbrains-mono`    |
+| **Switzer** (500 static, v2.1) | `--font-display-lead` | Hero name lead ("Muh.") only                            | Fontshare official zip (self-host, `public/fonts/switzer/` + FFL) |
+| **Instrument Serif** (400 italic, v2.1) | `--font-display-tail` | Hero name tail ("Sufyan.") only — the Apparel-italic voice | Google Fonts official latin subset (self-host, `public/fonts/instrument-serif/` + OFL) |
 
 > Fraunces `opsz` (optical size) should be pushed high on the hero (`opsz` ~120) and `SOFT`/`WONK` kept low for a refined, not decorative, look. Satoshi is an acceptable swap for General Sans if preferred.
 
@@ -149,6 +156,7 @@ Mono: `400`, `500`.
 | Style               | Font               | Size (`clamp`)                   | Line Height | Tracking  | Case      | Use Case                         |
 | ------------------- | ------------------ | -------------------------------- | ----------- | --------- | --------- | -------------------------------- |
 | **Display / Name**  | Fraunces 400       | `clamp(3.5rem, 12vw, 11rem)`     | `0.95`      | `-0.03em` | —         | Hero name, footer marquee        |
+| **Hero One-Line** (v2.1) | Switzer 500 + Instrument Serif 400i | `clamp(3rem, 15.5vw, 18rem)` (`--text-hero-line`) | `0.95` | `-0.03em` | — | ≥lg one-line "Muh. [slot] Sufyan." (stacked `--text-hero` below lg) |
 | **Chapter Title**   | Fraunces 400       | `clamp(2.5rem, 7vw, 6rem)`       | `1.0`       | `-0.02em` | —         | Section titles ("Selected Work") |
 | **Statement**       | Fraunces 300       | `clamp(1.75rem, 4vw, 3.25rem)`   | `1.15`      | `-0.01em` | —         | Manifesto lines (scroll-fill)    |
 | **H3 / Item**       | General Sans 600   | `clamp(1.25rem, 2.4vw, 1.75rem)` | `1.2`       | `-0.01em` | —         | Work title, journey role         |

@@ -23,3 +23,7 @@ Gotchas found 2026-07-07 (ch.01):
 - Marquee seam check (ch.03): measure junction spacing with the Range API on the span's LAST text node — the trailing `{" · "}` is its own text node whose final space collapses at end of inline context (real bug, fix = trailing NBSP). Also: instant `scrollIntoView` jumps leave below-fold `once` triggers unfired — scroll to the element itself before asserting settle.
 - `useGSAP` deps containing `prefersReducedMotion` but missing `revertOnUpdate: true` is a recurring builder omission (ch.02 F2, ch.03 F2) — check every new animated component first. (Applied correctly in B2 AuroraBackground — the lesson landed.)
 - Canvas effect probes (B2 aurora): sample the FULL buffer alpha (`getImageData` sum), never a corner — regional washes legitimately leave corners at 0 (false "not painting"). To prove a pause guard works: alpha-sum twice ~400ms apart while the guard should hold (sums identical = frozen), then again after un-pausing (sums differ = drifting).
+
+Gotchas found 2026-07-16 (hero one-line refine):
+- Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
+- Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.

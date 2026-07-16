@@ -7,6 +7,7 @@ import { profile } from "@/features/home/data/profile.data";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { channels, stageState } from "@/features/home/components/manifesto-3d/channels";
 import { ModelErrorBoundary } from "@/features/home/components/manifesto-3d/ModelErrorBoundary";
+import { HERO_REFINE } from "@/features/home/sections/hero.tunables";
 import macbookPoster from "@/assets/images/macbook-poster.webp";
 
 const ManifestoCanvas = lazy(() =>
@@ -21,7 +22,9 @@ const SEAM_LENGTH = "+=120%";
 /** Seam progress where the hidden window appears (0.42 × 120% ≈ half a
  *  viewport of scroll — "halfway down the screen"). */
 const SEAM_APPEAR = 0.42;
-/** The window is born as a small centered box and zooms to full-bleed. */
+/** <lg only: the window is born as a small centered box and zooms to
+ *  full-bleed (the shipped mobile grammar). ≥lg the window is clipped to the
+ *  name's inline slot instead — see the seam matchMedia contexts. */
 const SEAM_BOX_SCALE = 0.14;
 /** Manifesto root height (the stage pin length) — set in the JSX class. */
 const MANIFESTO_HEIGHT = "h-[520vh]";
@@ -68,7 +71,7 @@ function StatementWords({ staticRender = false }: { staticRender?: boolean }) {
               )}
             >
               {word}
-              {wordIndex < words.length - 1 ? " " : ""}
+              {wordIndex < words.length - 1 ? " " : ""}
             </Box>
           ))}
         </Box>
@@ -90,15 +93,21 @@ function StagePoster() {
   );
 }
 
-/** 02 — Manifesto: WebGL MacBook scroll-story (PROMPT #4).
+/** 02 — Manifesto: WebGL MacBook scroll-story (PROMPT #4, seam re-rigged for
+ *  the one-line hero name, v2.1).
  *
- *  A live window is born between the hero's two name rows (T1 "seam": hero
- *  pinned, the fixed stage's clip-path expands from the slot rect to full
- *  viewport while the rows ride off-screen), then the pinned stage plays the
- *  MacBook choreography (T2 master scrub tweens the `channels` singleton —
- *  the render loop damps toward it): closed hold → lid opens facing away
- *  (logo beat) → 180° reveal turn onto the lit wallpaper → statement over the
- *  receded machine → blur+ember veil out of which About resolves.
+ *  T1 "seam" (hero pinned from scroll 0, breakpoint-split via matchMedia):
+ *  ≥lg the fixed stage is CLIPPED to the name's inline slot rect — the gap
+ *  between "Muh." and "Sufyan." — and the clip-path expands from that rect
+ *  to full-bleed while the words exit horizontally (lead → left, tail →
+ *  right); the stage keeps full layout size, so the canvas renders full-res
+ *  from frame 1. <lg keeps the shipped grammar: a hidden centered box
+ *  (scale 0.14) zooms to full-bleed while the stacked rows exit vertically.
+ *  Then the pinned stage plays the MacBook choreography (T2 master scrub
+ *  tweens the `channels` singleton — the render loop damps toward it):
+ *  closed hold → lid opens facing away (logo beat) → 180° reveal turn onto
+ *  the lit wallpaper → statement over the receded machine → blur+ember veil
+ *  out of which About resolves.
  *
  *  The timelines never wait for the model: a late GLB damp-catches-up and the
  *  poster fallback keeps the full DOM sequence on WebGL failure. */
@@ -118,59 +127,46 @@ export function ManifestoSection() {
       if (!section || !hero || !stage || !glow || !veil || !copy) return;
 
       const words = gsap.utils.toArray<HTMLElement>(".manifesto-word", section);
-      const nameRows = gsap.utils.toArray<HTMLElement>(".hero-name > span", hero);
-      const heroItems = gsap.utils.toArray<HTMLElement>(".hero-item, .hero-bar", hero);
       const heroName = hero.querySelector<HTMLElement>(".hero-name");
-      if (import.meta.env.DEV && nameRows.length !== 2) {
-        console.warn("manifesto seam: hero name rows not found — row choreography skipped");
-      }
 
-      // Row exit distances via accumulated offsets, never gBCR: offsets are
+      // Measurements via accumulated offsets, never gBCR: offsets are
       // transform-independent (pointer parallax, pin park position after a
       // mid-page refresh). Accumulated because the parallax transform on
       // .hero-name makes the h1 an offsetParent — a single hop would measure
       // against it.
-      const rowTop = (row: HTMLElement) => {
-        let top = 0;
-        for (let el: HTMLElement | null = row; el && el !== hero; el = el.offsetParent as HTMLElement | null) {
-          top += el.offsetTop;
+      const accum = (el: HTMLElement, prop: "offsetTop" | "offsetLeft") => {
+        let v = 0;
+        for (let node: HTMLElement | null = el; node && node !== hero; node = node.offsetParent as HTMLElement | null) {
+          v += node[prop];
         }
-        return top + Math.min(0, window.innerHeight - hero.offsetHeight);
+        return v;
       };
+      const pinShift = () => Math.min(0, window.innerHeight - hero.offsetHeight);
 
-      // The window is born as a small centered box: the border radius is
-      // pre-divided by the scale so its VISUAL rounding equals the radius
-      // token while small, then relaxes to square as it reaches full-bleed.
       const radiusToken = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--radius-lg"));
-      const boxRadius = `${((Number.isNaN(radiusToken) ? 8 : radiusToken) / SEAM_BOX_SCALE).toFixed(0)}px`;
+      const radius = Number.isNaN(radiusToken) ? 8 : radiusToken;
 
-      // Initial states via gsap.set (the CSS classes only carry safe pre-JS
-      // defaults: stage transparent, veil transparent). Hidden at load —
-      // the window only exists once the seam summons it.
-      gsap.set(stage, {
-        autoAlpha: 0,
-        scale: SEAM_BOX_SCALE,
-        borderRadius: boxRadius,
-        transformOrigin: "50% 50%",
-      });
+      // Shared initial states via gsap.set (the CSS classes only carry safe
+      // pre-JS defaults: stage transparent, veil transparent). The stage's
+      // own initial state is per-breakpoint — set inside each seam context.
       gsap.set(glow, { opacity: 0.35 });
       gsap.set(copy, { autoAlpha: 0 });
       gsap.set(words, { opacity: 0.15 });
       gsap.set(veil, { opacity: 0 });
 
       // Stage lifecycle: hidden at rest (T1's scrub owns the appearance),
-      // alive from just before the zoom-in through P5, hidden past the
+      // alive from just before the window opens through P5, hidden past the
       // manifesto. The render loop only runs while the stage could be seen;
       // derived from progress on update AND refresh so a mid-page load
       // (scrollRestoration) lands correct without crossing edges. Declared
-      // before both triggers — their onRefresh can fire during creation.
+      // before all triggers — their onRefresh can fire during creation.
       let seamStarted = false;
       let stageVisible = true;
       const syncActive = () => {
         stageState.active = seamStarted && stageVisible;
       };
       const syncStageActive = (seamProgress: number) => {
-        // pre-warm slightly before the box appears so the first visible
+        // pre-warm slightly before the window appears so the first visible
         // frame isn't also the first rendered one
         seamStarted = seamProgress > SEAM_APPEAR - 0.1;
         syncActive();
@@ -186,46 +182,131 @@ export function ManifestoSection() {
         syncActive();
       };
 
-      // T1 — the seam: hero pinned from scroll 0. Nothing shows for the first
-      // half-viewport of scroll; then the window zooms in as a small centered
-      // box and expands to full-bleed while the name rows exit and the chrome
-      // fades.
-      const seam = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: hero,
-          start: "clamp(bottom bottom)",
-          end: SEAM_LENGTH,
-          pin: true,
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => syncStageActive(self.progress),
-          onRefresh: (self) => syncStageActive(self.progress),
-        },
-      });
-      seam
-        .fromTo(stage, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, SEAM_APPEAR)
-        .fromTo(stage, { scale: SEAM_BOX_SCALE }, { scale: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
-        .fromTo(stage, { borderRadius: boxRadius }, { borderRadius: "0px", duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
-        .fromTo(channels, { sceneIntro: 0 }, { sceneIntro: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
-        .to(glow, { opacity: 1, duration: 0.5 }, 0.5);
-      if (heroName) seam.to(heroName, { x: 0, y: 0, duration: 0.05 }, SEAM_APPEAR - 0.07);
-      if (nameRows.length === 2) {
+      // T1 — the seam: hero pinned from scroll 0; nothing shows for the
+      // first half-viewport of scroll. The window's birth is breakpoint-
+      // split (matchMedia contexts below); pin/scrub config is shared.
+      const seamTimeline = () =>
+        gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: hero,
+            start: "clamp(bottom bottom)",
+            end: SEAM_LENGTH,
+            pin: true,
+            scrub: true,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => syncStageActive(self.progress),
+            onRefresh: (self) => syncStageActive(self.progress),
+          },
+        });
+
+      const mm = gsap.matchMedia();
+
+      mm.add(HERO_REFINE.oneLineMinBp, () => {
+        // ≥lg — the one-line name: the stage is clipped to the inline slot
+        // rect (the door between the words) and expands to full-bleed while
+        // the words ride horizontally off-screen. No scale — the canvas
+        // keeps full layout size the whole way.
+        const slot = hero.querySelector<HTMLElement>(".hero-slot");
+        const wordEls = gsap.utils.toArray<HTMLElement>(".hero-name .hero-word", hero);
+        const heroItems = gsap.utils.toArray<HTMLElement>(".hero-item, .hero-bar", hero);
+        if (import.meta.env.DEV && (!slot || wordEls.length !== 2)) {
+          console.warn("manifesto seam: hero slot/words not found — desktop seam degraded");
+        }
+
+        const fullClip = `inset(0px 0px 0px 0px round 0px)`;
+        // Shape-matched inset(T R B L round r) strings on both ends — GSAP
+        // needs identical shape/unit counts to interpolate a clip-path.
+        const slotClip = () => {
+          if (!slot) return fullClip;
+          const top = accum(slot, "offsetTop") + pinShift();
+          const left = accum(slot, "offsetLeft");
+          const bottom = window.innerHeight - top - slot.offsetHeight;
+          const right = window.innerWidth - left - slot.offsetWidth;
+          return `inset(${top.toFixed(1)}px ${right.toFixed(1)}px ${bottom.toFixed(1)}px ${left.toFixed(1)}px round ${radius}px)`;
+        };
+
+        // Explicitly neutralize the other context's rig — matchMedia revert
+        // does not reliably clear the inline styles across a live resize.
+        gsap.set(stage, { autoAlpha: 0, clipPath: slotClip(), scale: 1, borderRadius: "0px" });
+
+        const seam = seamTimeline();
         seam
-          .to(nameRows[0], { y: () => -(rowTop(nameRows[0]) + nameRows[0].offsetHeight), duration: 0.45 }, 0.5)
-          .to(
-            nameRows[1],
-            { y: () => window.innerHeight - rowTop(nameRows[1]) + nameRows[1].offsetHeight, duration: 0.45 },
-            0.5,
-          );
-      }
-      if (heroItems.length) {
-        seam.to(heroItems, { autoAlpha: 0, duration: 0.25, immediateRender: false }, 0.4);
-      }
+          .fromTo(stage, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, SEAM_APPEAR)
+          .fromTo(stage, { clipPath: slotClip }, { clipPath: fullClip, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+          .fromTo(channels, { sceneIntro: 0 }, { sceneIntro: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+          .to(glow, { opacity: 1, duration: 0.5 }, 0.5);
+        if (heroName) seam.to(heroName, { x: 0, y: 0, duration: 0.05 }, SEAM_APPEAR - 0.07);
+        if (slot && wordEls.length === 2) {
+          seam
+            .to(
+              wordEls[0],
+              {
+                x: () => HERO_REFINE.seam.wordExit.leadX * (accum(wordEls[0], "offsetLeft") + wordEls[0].offsetWidth),
+                duration: 0.45,
+              },
+              0.5,
+            )
+            .to(
+              wordEls[1],
+              {
+                x: () => HERO_REFINE.seam.wordExit.tailX * (window.innerWidth - accum(wordEls[1], "offsetLeft")),
+                duration: 0.45,
+              },
+              0.5,
+            );
+        }
+        if (heroItems.length) {
+          seam.to(heroItems, { autoAlpha: 0, duration: 0.25, immediateRender: false }, 0.4);
+        }
+      });
+
+      mm.add(`not all and ${HERO_REFINE.oneLineMinBp}`, () => {
+        // <lg — the shipped grammar, unchanged: the window is born as a
+        // small centered box (visual rounding pre-divided by the scale so it
+        // equals the radius token while small) and zooms to full-bleed while
+        // the stacked rows exit vertically.
+        const rows = gsap.utils.toArray<HTMLElement>(".hero-name .hero-word", hero);
+        const heroItems = gsap.utils.toArray<HTMLElement>(".hero-item, .hero-bar", hero);
+        if (import.meta.env.DEV && rows.length !== 2) {
+          console.warn("manifesto seam: hero name rows not found — row choreography skipped");
+        }
+        const rowTop = (row: HTMLElement) => accum(row, "offsetTop") + pinShift();
+        const boxRadius = `${(radius / SEAM_BOX_SCALE).toFixed(0)}px`;
+
+        // clipPath cleared for the same live-resize reason as the ≥lg set.
+        gsap.set(stage, {
+          autoAlpha: 0,
+          scale: SEAM_BOX_SCALE,
+          borderRadius: boxRadius,
+          transformOrigin: "50% 50%",
+          clipPath: "none",
+        });
+
+        const seam = seamTimeline();
+        seam
+          .fromTo(stage, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, SEAM_APPEAR)
+          .fromTo(stage, { scale: SEAM_BOX_SCALE }, { scale: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+          .fromTo(stage, { borderRadius: boxRadius }, { borderRadius: "0px", duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+          .fromTo(channels, { sceneIntro: 0 }, { sceneIntro: 1, duration: 1 - SEAM_APPEAR }, SEAM_APPEAR)
+          .to(glow, { opacity: 1, duration: 0.5 }, 0.5);
+        if (heroName) seam.to(heroName, { x: 0, y: 0, duration: 0.05 }, SEAM_APPEAR - 0.07);
+        if (rows.length === 2) {
+          seam
+            .to(rows[0], { y: () => -(rowTop(rows[0]) + rows[0].offsetHeight), duration: 0.45 }, 0.5)
+            .to(rows[1], { y: () => window.innerHeight - rowTop(rows[1]) + rows[1].offsetHeight, duration: 0.45 }, 0.5);
+        }
+        if (heroItems.length) {
+          seam.to(heroItems, { autoAlpha: 0, duration: 0.25, immediateRender: false }, 0.4);
+        }
+      });
 
       // T2 — master scrub across the 520vh runway. No invalidateOnRefresh:
       // every value here is a resolution-independent 0→1 abstraction, and
       // invalidating plain-object tweens mid-scrub re-records drifted starts.
+      // Built once, outside the matchMedia split — the story is breakpoint-
+      // agnostic (its {scale:1→1.05} veil tween is valid in both contexts:
+      // ≥lg the seam never touches scale, <lg the seam ends at scale 1).
       const master = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
@@ -276,6 +357,7 @@ export function ManifestoSection() {
         .fromTo(stage, { scale: 1 }, { scale: 1.05, duration: 1 - PHASE.veil.at }, PHASE.veil.at);
 
       return () => {
+        mm.revert();
         stageState.active = true;
       };
     },
@@ -283,7 +365,8 @@ export function ManifestoSection() {
   );
 
   // Reduced motion: no pins, no seam, no canvas, no veil — a normal static
-  // chapter (the hero slot carries the poster strip separately, spec §9).
+  // chapter. ≥lg the poster strip lives in the hero's inline slot instead
+  // (relocated placement, spec §9), so it renders here only below lg.
   if (prefersReducedMotion) {
     return (
       <Box
@@ -307,7 +390,7 @@ export function ManifestoSection() {
             alt="An open MacBook, its screen glowing with a monochrome swirl wallpaper"
             width={1600}
             height={1000}
-            className="w-full max-w-3xl rounded-lg"
+            className="w-full max-w-3xl rounded-lg lg:hidden"
           />
         </Box>
       </Box>
@@ -322,9 +405,10 @@ export function ManifestoSection() {
       className={cn("relative", MANIFESTO_HEIGHT, "-mt-[100svh]")}
     >
       {/* Fixed stage (z-20): ember horizon + transparent WebGL canvas.
-          Hidden at load (opacity-0 pre-JS default) — the seam summons it as
-          a small centered box that zooms to full-bleed at half a viewport of
-          scroll. Purely visual — pointer-events pass through to the page. */}
+          Hidden at load (opacity-0 pre-JS default) — the seam summons it
+          through the name's inline slot (≥lg, clip-path) or as a small
+          centered box (<lg, scale) at half a viewport of scroll. Purely
+          visual — pointer-events pass through to the page. */}
       <Box
         aria-hidden
         role="presentation"

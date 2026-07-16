@@ -46,6 +46,10 @@ export interface ProfileStat {
 
 export interface Profile {
   name: string;
+  /** OWNER-APPROVED display abbreviation of `name` for the hero headline only
+   *  (decision 2026-07-16, alongside the Switzer/Instrument Serif pairing) —
+   *  not PRD-transcribed; a11y surfaces (aria-label, title, OG) keep `name`. */
+  heroName: { lead: string; tail: string };
   role: string;
   tagline: string;
   /** Substring of `tagline` rendered italic-serif in the hero (the

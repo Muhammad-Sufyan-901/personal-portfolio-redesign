@@ -18,6 +18,25 @@
   font-display: swap;
 }
 
+/* Hero display faces (design_system v2.1 amendment, owner-approved 2026-07-16).
+   Self-hosted in public/fonts/<family>/ beside their licenses; preloaded from
+   index.html. Fallback chains land on the settled faces (General Sans /
+   Fraunces), never system-ui. */
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/Switzer-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/fonts/instrument-serif/InstrumentSerif-Italic-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* "Void & Ember" system (design_system.md v2 §3 — palette evidence-sampled from
    the reference video §3.0; live site cross-checked: bg is exactly #0A0A0A).
    Dark-only identity (PLAN v3 decision #2) — values live directly in @theme. */
@@ -27,9 +46,17 @@
   --color-surface: #141414;
   --color-raised: #1c1c1c;
   --color-paper: #e4e4e4;
+  /* v2.1 hero-display amendment (2026-07-16): brighter chrome pair — hover
+     text (§3.0 footer samples #f0f0f0) and the hero bar's strong hairline
+     (sampled from frame_0001.jpg at y986: #888888–#8a8889). */
+  --color-paper-bright: #f0f0f0;
   --color-muted: #9a9a9a;
   --color-faint: #4d4d4d;
   --color-line: #242424;
+  --color-line-strong: #8a8a8a;
+  /* Reference's tail-word mint (frame_0001 most-saturated sample) — used only
+     by the opt-in surnameHoverFlash tunable (default OFF). */
+  --color-flash: #66eacc;
 
   --color-invert-bg: #e8e8e8;
   --color-invert-text: #0a0a0a;
@@ -65,6 +92,10 @@
   --font-display: "Fraunces Variable", "Fraunces", serif;
   --font-sans: "General Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Hero name faces (v2.1 amendment, owner pick 2026-07-16): grotesk lead +
+     serif-italic tail; fallbacks degrade to the settled faces, not system-ui. */
+  --font-display-lead: "Switzer", "General Sans", system-ui, sans-serif;
+  --font-display-tail: "Instrument Serif", "Fraunces Variable", serif;
 
   /* Fluid type scale (§4.3) */
   --text-display: clamp(3.5rem, 12vw, 11rem);
@@ -75,6 +106,13 @@
   --text-hero: clamp(3.5rem, 16vw, 19rem);
   --text-hero--line-height: 0.95;
   --text-hero--letter-spacing: -0.03em;
+  /* ≥lg one-line hero name "Muh. [slot] Sufyan." — lead + slot + tail must
+     fill 100vw − 2·page-x on a single row (v2.1 hero-display amendment).
+     Sized from live metrics: lead+tail ≈ 4.77em, so 15.5vw leaves the slot
+     ≈15–18% of the line (reference gap ratio). */
+  --text-hero-line: clamp(3rem, 15.5vw, 18rem);
+  --text-hero-line--line-height: 0.95;
+  --text-hero-line--letter-spacing: -0.03em;
   --text-chapter: clamp(2.5rem, 7vw, 6rem);
   --text-chapter--line-height: 1;
   --text-chapter--letter-spacing: -0.02em;

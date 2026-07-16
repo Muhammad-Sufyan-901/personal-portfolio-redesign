@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "reason": "Owner picked Instrument Serif Italic at the 2026-07-16 specimen gate (pairing A) as the hero display tail face",
+        "createdAt": "2026-07-16T11:13:31.436Z"
+      }
+    ]
+  }
+}
