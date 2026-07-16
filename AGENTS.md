@@ -81,9 +81,11 @@ Details: `.agents/roles/*`. Claude Code equivalents: `.claude/agents/{frontend-e
 
 ## Skills, commands, MCP
 
-**Invokable skills** (`.claude/skills/`, 9): `plan-redesign` (whole-site plan + stop for approval) · `build-section` (one chapter per approval gate, needs an approved plan) · `qa-audit` (Definition of Done + log) · `log-change` · `update-memory` · `discover-tooling` (proposes only — never installs) · `animated-ui-references` (adapt React Bits / Magic UI / Aceternity UI / 21st.dev ideas to GSAP + primitives + tokens) · installed design toolkits `impeccable` (v3.9.1, ~25 subcommands + detector hook) and `design-taste-frontend` (anti-slop manual; apply with this repo's Vite/GSAP/Fraunces overrides).
+**Skills — two-kind architecture** (both trees list the same **19**; every skill = ONE canonical implementation + one thin stub on the other side, the impeccable pattern):
 
-**Portable skills** (`.agents/skills/`, 18): the 10 convention skills (`gsap-lenis-motion`, `scrollytelling`, `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup`, `accessibility-reduced-motion`, `seo-meta`, `reference-capture`, `discover-tooling`) + `animated-ui-references` + concise mirrors of the 5 in-house process skills (`plan-redesign`, `build-section`, `qa-audit`, `log-change`, `update-memory`) + pointer stubs for `impeccable` and `design-taste-frontend` (implementations live only in `.claude/skills/`).
+- **KNOWLEDGE (10, canonical `.agents/skills/`)**: `gsap-lenis-motion`, `scrollytelling`, `animated-ui-references` (adapt React Bits / Magic UI / Aceternity / 21st.dev to GSAP + primitives + tokens — never framer-motion), `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup`, `accessibility-reduced-motion`, `seo-meta`, `reference-capture` (executables in `reference/scripts/`).
+- **PROCESS (6, canonical `.claude/skills/` — the invokable slash-commands)**: `plan-redesign` (whole-site plan + stop for approval) · `build-section` (one chapter per approval gate) · `qa-audit` (Definition of Done + log) · `log-change` · `update-memory` · `discover-tooling` (proposes only).
+- **VENDORED (3, full implementation only in `.claude/skills/`)**: `impeccable` (v3.9.1, ~25 subcommands + detector hook) · `design-taste-frontend` (anti-slop manual, router + 13 references; apply with this repo's Vite/GSAP/Fraunces overrides) · `cinematic-web` (three.js/scrollytelling/GLB technique numbers — read its `ADAPTATION.md` first; repo Golden Rules override its single-file archetype).
 
 **Commands** (`.claude/commands/`): `/add-shadcn` (add + restyle a shadcn component with tokens) · `/commit` (Conventional Commit) · `/typecheck` (`tsc --noEmit` + `eslint`).
 

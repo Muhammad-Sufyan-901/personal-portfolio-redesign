@@ -12,8 +12,8 @@ Authoritative: `context/design_system.md §7.5` (v2). These four are **inspirati
 | Library | URL | Native animation engine | Best fit in this portfolio |
 | --- | --- | --- | --- |
 | **React Bits** | reactbits.dev | **GSAP-native variants available** (also React-Spring, Framer Motion, Three.js — always pick the GSAP variant) | Hero/Preloader flourishes: text-split reveals, particle/**aurora** backgrounds (the Hero aurora glow, §11.1). Lowest adaptation cost of the four — it already speaks GSAP. |
-| **Magic UI** | magicui.design | Motion (Framer Motion) + Tailwind, shadcn-installable | Craft chapter keyword `Marquee` ideas, Contact shimmer/magnetic button feel, Selected Work bento-grid layout ideas. |
-| **Aceternity UI** | ui.aceternity.com | Motion (Framer Motion) + Tailwind, also ships as shadcn blocks | Its **Timeline** (sticky header + scroll-beam-follow) is the near-literal sketch for the Journey chapter's scrubbed **bold-path rail** (§11.4); Spotlight/Lamp for Hero; sticky-navbar-hides matches §8.A. |
+| **Magic UI** | magicui.design | Motion (Framer Motion) + Tailwind, shadcn-installable | Craft chapter keyword `Marquee` ideas, Contact shimmer/magnetic button feel, Gallery (07) bento-grid layout ideas. |
+| **Aceternity UI** | ui.aceternity.com | Motion (Framer Motion) + Tailwind, also ships as shadcn blocks | Its **Timeline** (sticky header + scroll-beam-follow) is the near-literal sketch for the Journey chapter's scrubbed **bold-path rail** (§11.5 on the 10-chapter map — our `PathDraw` primitive); Spotlight/Lamp for Hero; sticky-navbar-hides matches §8.A. |
 | **21st.dev** | 21st.dev | Marketplace/registry aggregating community components (shadcn-compatible, usually Motion-based) | A search engine across the ecosystem when you need "a \<specific micro-interaction\>"; install candidates via `npx shadcn@latest add "https://21st.dev/r/<author>/<component>"` — then adapt per below before it touches `src/`. |
 
 ## Mandatory adaptation rule (non-negotiable)
@@ -28,6 +28,6 @@ React Bits components already using their GSAP variant need only steps 2–3. Tr
 
 ## Who uses this
 
-The @frontend and @motion roles (and their `.claude/agents/{frontend-engineer,motion-engineer}.md` counterparts) consult this skill during any section build that borrows an external idea — e.g. Aceternity's Timeline for Journey's rail upgrade, React Bits aurora for the Hero background.
+The @frontend and @motion roles (and their `.claude/agents/{frontend-engineer,motion-engineer}.md` counterparts) consult this skill during any section build that borrows an external idea — e.g. Aceternity's Timeline for the Journey rail (05), React Bits aurora for the Hero background (shipped). For 3D/cinematic technique numbers, the vendored `cinematic-web` skill complements this one (read its ADAPTATION.md).
 
-(Claude Code invokable mirror: `.claude/skills/animated-ui-references`.)
+(Claude Code: `/animated-ui-references` — a stub pointing here.)

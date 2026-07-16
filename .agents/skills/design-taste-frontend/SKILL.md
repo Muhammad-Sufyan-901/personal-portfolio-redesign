@@ -5,7 +5,7 @@ description: Pointer to the installed third-party anti-slop frontend design skil
 
 # design-taste-frontend (pointer — implementation in `.claude/skills/design-taste-frontend/`)
 
-**What it is:** a single large (~1200-line) vendored design manual for landing pages/portfolios/redesigns — brief inference, design-variance/motion-intensity/density dials, typography and color bias-correction, hero discipline, and canonical GSAP scroll-pattern skeletons (sticky-stack, horizontal-pan, scroll-reveal).
+**What it is:** a vendored design manual for landing pages/portfolios/redesigns — a router SKILL.md + 13 `references/*.md` (brief inference, the three dials, design-system mapping, bias-correcting directives, GSAP scroll-pattern skeletons, AI-tell bans, redesign protocol) with the final pre-flight check kept inline.
 
 **Why it's installed here:** adopted during agent-tooling setup (`logs/feature-changes/2026-07-06-setup-tooling.md`) as taste guardrails for exactly this kind of motion-first portfolio work.
 

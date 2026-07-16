@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAIROS · Chrono Engine</title>
+<link href="https://api.fontshare.com/v2/css?f[]=zodiak@700,900&f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--amber:#ffab3d;--blue:#6ab8ff;--ink:#f2edE4;--muted:#8b83a0;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--serif:"Zodiak",serif;--sans:"Satoshi",sans-serif}
+  html,body{background:#0d0716;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{overflow-x:hidden}
+  ::selection{background:var(--amber);color:#1a0f00}
+  #gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+  .grain{position:fixed;inset:-50%;z-index:7;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:gr 1.1s steps(3) infinite}
+  @keyframes gr{0%{transform:translate(0,0)}33%{transform:translate(-4%,3%)}66%{transform:translate(3%,-2%)}100%{transform:translate(0,0)}}
+
+  .hud{position:fixed;z-index:20;pointer-events:none}
+  .brand{top:clamp(1.1rem,3vh,2rem);left:clamp(1.2rem,4vw,3rem);display:flex;align-items:center;gap:.65rem}
+  .brand .mark{width:14px;height:14px;border:2px solid var(--amber);transform:rotate(45deg);
+    box-shadow:0 0 14px rgba(255,171,61,.7)}
+  .brand b{font-family:var(--serif);font-weight:900;letter-spacing:.22em;font-size:1rem}
+  .brand small{font-family:var(--mono);color:var(--muted);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;margin-left:.5rem}
+  .navr{top:clamp(1.1rem,3vh,2rem);right:clamp(1.2rem,4vw,3rem);font-family:var(--mono);font-size:.62rem;
+    letter-spacing:.26em;color:var(--muted);text-transform:uppercase;text-align:right}
+  .navr b{color:var(--amber)}
+  #bar{position:fixed;left:0;bottom:0;height:2px;width:0;z-index:22;background:linear-gradient(90deg,var(--amber),var(--blue));box-shadow:0 0 12px rgba(255,171,61,.5)}
+  .cue{position:fixed;z-index:20;left:50%;bottom:1.2rem;transform:translateX(-50%);font-family:var(--mono);
+    font-size:.58rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;pointer-events:none;transition:opacity .5s}
+
+  /* copy sections */
+  .sec{position:fixed;z-index:15;left:clamp(1.2rem,5vw,4.5rem);bottom:clamp(4.5rem,16vh,9rem);
+    max-width:min(560px,86vw);opacity:0;pointer-events:none;will-change:opacity,transform}
+  .sec .k{font-family:var(--mono);font-size:.62rem;letter-spacing:.32em;color:var(--amber);text-transform:uppercase;
+    display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+  .sec .k::before{content:"";width:40px;height:1px;background:var(--amber)}
+  .sec h1,.sec h2{font-family:var(--serif);font-weight:900;line-height:.96;letter-spacing:-.015em;
+    font-size:clamp(2.4rem,7vw,5rem);text-shadow:0 4px 44px rgba(0,0,0,.8)}
+  .sec p{margin-top:1rem;font-size:clamp(.98rem,1.5vw,1.15rem);line-height:1.6;color:#cfc6dd;max-width:44ch;
+    text-shadow:0 1px 18px rgba(0,0,0,.9)}
+  .sec .cta{display:inline-flex;align-items:center;gap:.8rem;margin-top:1.5rem;padding:.85rem 1.6rem;
+    border:1px solid rgba(255,171,61,.55);color:var(--amber);font-family:var(--mono);font-size:.66rem;
+    letter-spacing:.3em;text-transform:uppercase;background:rgba(255,171,61,.06);backdrop-filter:blur(4px)}
+  .sec .cta i{font-style:normal;transform:translateY(-1px)}
+  .sec .spec{margin-top:1.3rem;font-family:var(--mono);font-size:.6rem;letter-spacing:.24em;color:var(--muted);
+    text-transform:uppercase;line-height:2.1}
+  .sec .spec b{color:var(--blue);font-weight:400}
+
+  #charge{position:fixed;z-index:20;right:clamp(1.2rem,4vw,3rem);bottom:clamp(4.5rem,14vh,7rem);
+    width:120px;pointer-events:none;font-family:var(--mono);font-size:.56rem;letter-spacing:.26em;
+    color:var(--muted);text-transform:uppercase;text-align:right;opacity:.9}
+  #charge .track{height:2px;background:rgba(255,255,255,.12);margin-top:.5rem;position:relative;overflow:hidden}
+  #charge .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--amber),var(--blue));
+    box-shadow:0 0 10px rgba(255,171,61,.8)}
+
+  #loader{position:fixed;inset:0;z-index:60;background:#0d0716;display:flex;flex-direction:column;gap:1.2rem;
+    align-items:center;justify-content:center;transition:opacity .9s}
+  #loader.off{opacity:0;pointer-events:none}
+  #loader b{font-family:var(--serif);font-weight:900;font-size:clamp(2rem,6vw,3.6rem);letter-spacing:.24em}
+  #loader small{font-family:var(--mono);font-size:.6rem;letter-spacing:.4em;color:var(--muted);text-transform:uppercase}
+  #scroller{position:relative;z-index:2;pointer-events:none}
+</style>
+<script type="importmap">
+{ "imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <div class="grain"></div>
+
+  <div class="hud brand"><div class="mark"></div><b>KAIROS</b><small>chrono engine · est. 3021</small></div>
+  <div class="hud navr">ENGINE <b>MK·IV</b><br>SERI TERBATAS — 88 UNIT</div>
+  <div id="bar"></div>
+  <div class="cue" id="cue">scroll — atau tahan klik untuk mengisi daya</div>
+
+  <div id="charge">CHARGE <span id="cpc">0%</span><div class="track"><div class="fill" id="cfill"></div></div></div>
+
+  <section class="sec" id="s0">
+    <div class="k">MESIN WAKTU MEKANIS</div>
+    <h1>Waktu,<br>ditempa.</h1>
+    <p>Empat cincin gimbal. Satu inti fusi. Nol kompromi. KAIROS bukan mengukur waktu — ia menahannya.</p>
+    <a class="cta">PRE-ORDER MK·IV <i>→</i></a>
+  </section>
+  <section class="sec" id="s1">
+    <div class="k">THE CORE · 心臓</div>
+    <h2>Inti yang<br>bernapas api.</h2>
+    <p>Reaktor plasma ganda mengapit inti fusi — panas oranye bertemu dingin biru. Cincin rune berputar menghitung mundur menuju momen sempurna.</p>
+    <div class="spec">ROTASI <b>4-AXIS GIMBAL</b><br>SUHU INTI <b>5.800K</b><br>LEVITASI <b>MAGLEV SENYAP</b></div>
+  </section>
+  <section class="sec" id="s2">
+    <div class="k">WIND IT UP</div>
+    <h2>Tahan. Isi.<br>Lepaskan.</h2>
+    <p>Tahan klik di mana pun — rasakan mesin berakselerasi, inti memutih, dan waktu melambat di sekitarmu. Lepaskan tepat di 100%.</p>
+    <a class="cta">AMANKAN 1 DARI 88 <i>→</i></a>
+  </section>
+
+  <div id="loader"><b>KAIROS</b><small>menempa inti…</small></div>
+  <div id="scroller"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*(3-2*t);};
+
+const canvas=document.getElementById('gl');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x150b26,0.022);
+const camera=new THREE.PerspectiveCamera(42,1,0.1,300);
+
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromScene(new RoomEnvironment(),0.06).texture;
+
+// ---------- dusk sky dome ----------
+const sky=new THREE.Mesh(new THREE.SphereGeometry(140,32,20),
+  new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,
+    uniforms:{uTime:{value:0}},
+    vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`
+      varying vec3 vP;uniform float uTime;
+      float h(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+      void main(){
+        float y=normalize(vP).y;
+        vec3 top=vec3(0.035,0.02,0.09), mid=vec3(0.16,0.07,0.28), hor=vec3(0.55,0.22,0.28);
+        vec3 c=mix(mid,top,smoothstep(0.12,0.75,y));
+        c=mix(hor,c,smoothstep(-0.02,0.22,y));
+        c+=vec3(0.9,0.45,0.2)*pow(max(0.,1.-abs(y-0.02)*7.),3.)*0.5;   // amber horizon band
+        // stars
+        vec2 sp=normalize(vP).xz/(0.18+y);
+        float st=step(0.9975,h(floor(sp*90.)));
+        c+=st*smoothstep(0.15,0.5,y)*(0.5+0.5*sin(uTime*2.+h(floor(sp*90.))*30.));
+        gl_FragColor=vec4(c,1.);
+      }`}));
+scene.add(sky);
+
+// ---------- FBM mountain ridges ----------
+function hsh(x,z){return Math.abs(Math.sin(x*127.1+z*311.7)*43758.5453)%1;}
+function n2(x,z){const xi=Math.floor(x),zi=Math.floor(z),xf=x-xi,zf=z-zi,
+  u=xf*xf*(3-2*xf),v=zf*zf*(3-2*zf);
+  return lerp(lerp(hsh(xi,zi),hsh(xi+1,zi),u),lerp(hsh(xi,zi+1),hsh(xi+1,zi+1),u),v);}
+function ridged(x,z){let s=0,a=0.5,f=1;for(let o=0;o<4;o++){s+=a*(1-Math.abs(2*n2(x*f,z*f)-1));f*=2.1;a*=0.5;}return s;}
+function ridge(zPos,height,color){
+  const g=new THREE.PlaneGeometry(320,50,180,24);
+  g.rotateX(-Math.PI/2);
+  const p=g.attributes.position;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);
+    const t=1-Math.abs(z)/25;
+    p.setY(i,ridged(x*0.02+zPos,z*0.04)*height*t*t);}
+  g.computeVertexNormals();
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color,roughness:1,flatShading:true}));
+  m.position.set(0,-0.4,zPos); scene.add(m); return m;
+}
+ridge(-42,16,0x120b22); ridge(-28,10,0x1a1030); ridge(-18,5.5,0x241542);
+
+// glossy dark floor + glow pool
+const floor=new THREE.Mesh(new THREE.CircleGeometry(90,48),
+  new THREE.MeshStandardMaterial({color:0x0b0614,roughness:0.32,metalness:0.7,envMapIntensity:0.35}));
+floor.rotation.x=-Math.PI/2; floor.position.y=-0.42; scene.add(floor);
+const poolTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  const r=g.createRadialGradient(128,128,6,128,128,128);
+  r.addColorStop(0,'rgba(255,171,61,.32)');r.addColorStop(.5,'rgba(120,90,255,.10)');r.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=r;g.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
+const pool=new THREE.Mesh(new THREE.PlaneGeometry(14,14),
+  new THREE.MeshBasicMaterial({map:poolTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+pool.rotation.x=-Math.PI/2; pool.position.y=-0.41; scene.add(pool);
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0x6a55b8,0x0a0512,0.5));
+const key=new THREE.DirectionalLight(0xb9a4ff,0.9); key.position.set(-6,8,4); scene.add(key);
+const coreLight=new THREE.PointLight(0xffab3d,30,20); coreLight.position.set(0,1.7,0); scene.add(coreLight);
+const blueLight=new THREE.PointLight(0x5c9fff,14,16); blueLight.position.set(0,0.6,2.2); scene.add(blueLight);
+
+// ---------- THE ENGINE (all procedural) ----------
+const engine=new THREE.Group(); engine.position.y=1.55; scene.add(engine);
+
+const metal=new THREE.MeshStandardMaterial({color:0x2a2438,metalness:0.92,roughness:0.24,envMapIntensity:1.2});
+const darkMetal=new THREE.MeshStandardMaterial({color:0x171226,metalness:0.85,roughness:0.4,envMapIntensity:0.8});
+const amberGlow=new THREE.MeshBasicMaterial({color:0xffab3d});
+const blueGlow=new THREE.MeshBasicMaterial({color:0x6ab8ff});
+
+// core: emissive icosahedron + wire shell
+const core=new THREE.Mesh(new THREE.IcosahedronGeometry(0.42,1),
+  new THREE.MeshStandardMaterial({color:0x1a0e00,emissive:0xffab3d,emissiveIntensity:2.4,roughness:0.3,metalness:0.4}));
+engine.add(core);
+const coreWire=new THREE.Mesh(new THREE.IcosahedronGeometry(0.56,1),
+  new THREE.MeshBasicMaterial({color:0xffc87a,wireframe:true,transparent:true,opacity:0.5}));
+engine.add(coreWire);
+
+// 4 gimbal rings (each: metal torus + inner glow line)
+const gimbals=[];
+[[1.05,0.055,'x',0.5,0xffab3d],[1.34,0.05,'y',-0.36,0x9a86ff],[1.62,0.045,'z',0.28,0x6ab8ff],[1.9,0.04,'x',-0.2,0xffab3d]]
+.forEach(([R,tube,axis,speed,glow],i)=>{
+  const g=new THREE.Group();
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(R,tube,14,90),metal);
+  const line=new THREE.Mesh(new THREE.TorusGeometry(R,tube*0.3,8,90),
+    new THREE.MeshBasicMaterial({color:glow,transparent:true,opacity:0.85}));
+  // knuckles on the ring
+  const kn=new THREE.InstancedMesh(new THREE.BoxGeometry(tube*4.4,tube*4.4,tube*4.4),darkMetal,8);
+  const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),S=new THREE.Vector3(1,1,1);
+  for(let k=0;k<8;k++){const a=k/8*Math.PI*2;
+    M.compose(new THREE.Vector3(Math.cos(a)*R,Math.sin(a)*R,0),
+      Q.setFromAxisAngle(new THREE.Vector3(0,0,1),a),S);
+    kn.setMatrixAt(k,M);}
+  g.add(ring,line,kn);
+  g.rotation.set(Math.random()*0.6,Math.random()*0.6,Math.random()*0.6);
+  engine.add(g); gimbals.push({g,axis,speed});
+});
+
+// rune tick-ring (instanced marks around the whole engine)
+const RUNES=72;
+const runeInst=new THREE.InstancedMesh(new THREE.BoxGeometry(0.045,0.16,0.02),amberGlow,RUNES);
+{ const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),S=new THREE.Vector3();
+  for(let i=0;i<RUNES;i++){const a=i/RUNES*Math.PI*2, R=2.35, tall=i%9===0?1.9:1.0;
+    S.set(1,tall,1);
+    M.compose(new THREE.Vector3(Math.cos(a)*R,Math.sin(a)*R*0.22,Math.sin(a)*R*0.97*0),Q.identity(),S);
+    // place flat ring around Y axis instead:
+    M.compose(new THREE.Vector3(Math.cos(a)*R,0,Math.sin(a)*R),
+      Q.setFromAxisAngle(new THREE.Vector3(0,1,0),-a),S);
+    runeInst.setMatrixAt(i,M);} }
+const runeRing=new THREE.Group(); runeRing.add(runeInst); engine.add(runeRing);
+
+// energy ribbon (torus knot)
+const ribbon=new THREE.Mesh(new THREE.TorusKnotGeometry(2.05,0.018,220,10,2,5),
+  new THREE.MeshBasicMaterial({color:0x6ab8ff,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending}));
+engine.add(ribbon);
+
+// orbiting comets
+const comets=[];
+for(let i=0;i<4;i++){
+  const c=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,8),i%2?blueGlow:amberGlow);
+  engine.add(c); comets.push({m:c,ph:Math.random()*6.28,sp:0.5+Math.random()*0.5,r:2.5+i*0.22,tilt:Math.random()*0.9});
+}
+
+// flanking obsidian pylons with flame emitters
+function pylon(x){
+  const p=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.3,2.6,6),darkMetal);
+  p.position.set(x,0.9,0.4); scene.add(p);
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(0.14,0.3,6),metal);
+  tip.position.set(x,2.35,0.4); scene.add(tip);
+  return new THREE.Vector3(x,2.5,0.4);
+}
+const emitA=pylon(-3.1), emitB=pylon(3.1);
+
+// ---------- flame particles (CPU-updated, additive) ----------
+const FN=900;
+const fGeo=new THREE.BufferGeometry();
+const fPos=new Float32Array(FN*3), fCol=new Float32Array(FN*3);
+const fLife=new Float32Array(FN), fVel=new Float32Array(FN*3), fSeed=new Float32Array(FN), fHome=new Float32Array(FN);
+function respawn(i,burst){
+  const src=(fHome[i]<0.5)?emitA:emitB;
+  const ix=i*3;
+  fPos[ix]=src.x+(Math.random()-0.5)*0.16; fPos[ix+1]=src.y+(Math.random()-0.5)*0.1; fPos[ix+2]=src.z+(Math.random()-0.5)*0.16;
+  if(burst){ fPos[ix]=0; fPos[ix+1]=1.55; fPos[ix+2]=0; }
+  const sp=burst?(0.06+Math.random()*0.1):(0.014+Math.random()*0.02);
+  const ang=Math.random()*6.28, el=burst?(Math.random()-0.5)*2:1;
+  fVel[ix]=Math.cos(ang)*sp*(burst?1:0.3);
+  fVel[ix+1]=burst?Math.sin(el)*sp:0.02+Math.random()*0.02;
+  fVel[ix+2]=Math.sin(ang)*sp*(burst?1:0.3);
+  fLife[i]=1;
+}
+for(let i=0;i<FN;i++){fHome[i]=Math.random()<0.5?0:1;fSeed[i]=Math.random()*6.28;respawn(i,false);fLife[i]=Math.random();}
+fGeo.setAttribute('position',new THREE.BufferAttribute(fPos,3));
+fGeo.setAttribute('color',new THREE.BufferAttribute(fCol,3));
+const dot=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');
+  const r=g.createRadialGradient(32,32,0,32,32,32);r.addColorStop(0,'rgba(255,255,255,1)');
+  r.addColorStop(.3,'rgba(255,255,255,.6)');r.addColorStop(1,'rgba(255,255,255,0)');
+  g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
+const flames=new THREE.Points(fGeo,new THREE.PointsMaterial({size:0.14,map:dot,vertexColors:true,
+  transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+scene.add(flames);
+
+// ambient embers
+const EN=240, eGeo=new THREE.BufferGeometry(), ePos=new Float32Array(EN*3);
+for(let i=0;i<EN;i++){ePos[i*3]=(Math.random()-0.5)*30;ePos[i*3+1]=Math.random()*9;ePos[i*3+2]=(Math.random()-0.5)*22;}
+eGeo.setAttribute('position',new THREE.BufferAttribute(ePos,3));
+const embers=new THREE.Points(eGeo,new THREE.PointsMaterial({color:0x9a86ff,size:0.035,map:dot,
+  transparent:true,opacity:0.55,depthWrite:false,blending:THREE.AdditiveBlending}));
+scene.add(embers);
+
+// ---------- post ----------
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(1,1),0.75,0.6,0.62);
+composer.addPass(bloom);
+const Final={
+  uniforms:{tDiffuse:{value:null},uTime:{value:0},uRes:{value:new THREE.Vector2(1,1)},uCharge:{value:0}},
+  vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`,
+  fragmentShader:`
+    precision highp float;varying vec2 vUv;
+    uniform sampler2D tDiffuse;uniform float uTime,uCharge;uniform vec2 uRes;
+    float rnd(vec2 p){return fract(sin(dot(p,vec2(12.9,78.2)))*43758.5);}
+    void main(){
+      vec2 d=vUv-0.5;float r2=dot(d,d);
+      float ca=0.0015+r2*0.007+uCharge*0.004;
+      vec3 c;
+      c.r=texture2D(tDiffuse,vUv+d*ca).r;
+      c.g=texture2D(tDiffuse,vUv).g;
+      c.b=texture2D(tDiffuse,vUv-d*ca).b;
+      c*=mix(1.0,smoothstep(1.25,0.36,length(d)*1.35),0.9);
+      c+=(rnd(vUv*uRes*0.5+uTime)-0.5)*0.05;
+      gl_FragColor=vec4(c,1.0);
+    }`};
+const finalPass=new ShaderPass(Final);composer.addPass(finalPass);
+composer.addPass(new OutputPass());
+
+// ---------- interaction ----------
+const mouse={x:0,y:0};
+addEventListener('pointermove',e=>{mouse.x=e.clientX/innerWidth*2-1;mouse.y=-(e.clientY/innerHeight*2-1);});
+let holding=false,charge=0,burstDone=false;
+addEventListener('pointerdown',()=>holding=true);
+addEventListener('pointerup',()=>holding=false);
+addEventListener('pointercancel',()=>holding=false);
+
+const scroller=document.getElementById('scroller');
+scroller.style.height='390vh';
+const SECS=[document.getElementById('s0'),document.getElementById('s1'),document.getElementById('s2')];
+const CAMS=[
+  {p:new THREE.Vector3(0,1.7,8.6), l:new THREE.Vector3(0,1.5,0)},
+  {p:new THREE.Vector3(4.1,2.6,4.6), l:new THREE.Vector3(0,1.6,0)},
+  {p:new THREE.Vector3(-2.9,0.8,4.4), l:new THREE.Vector3(0,1.35,0)}
+];
+const cue=document.getElementById('cue'),bar=document.getElementById('bar'),
+      cfill=document.getElementById('cfill'),cpc=document.getElementById('cpc');
+
+function resize(){const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();
+  renderer.setSize(w,h);composer.setSize(w,h);bloom.resolution.set(w,h);
+  finalPass.uniforms.uRes.value.set(w,h);}
+addEventListener('resize',resize);resize();
+setTimeout(()=>document.getElementById('loader').classList.add('off'),700);
+
+const camP=CAMS[0].p.clone(), camL=CAMS[0].l.clone();
+const clock=new THREE.Clock();
+function frame(){
+  requestAnimationFrame(frame);
+  const dt=Math.min(clock.getDelta(),0.05), t=clock.getElapsedTime();
+
+  // charge state
+  charge=clamp(charge+(holding?dt*0.55:-dt*0.9));
+  if(charge>0.985&&!burstDone){burstDone=true;
+    for(let i=0;i<FN;i++)if(i%3===0)respawn(i,true);}
+  if(charge<0.2)burstDone=false;
+  const spd=1+charge*4.5;
+  cfill.style.width=(charge*100)+'%';cpc.textContent=Math.round(charge*100)+'%';
+
+  // engine motion
+  gimbals.forEach(({g,axis,speed})=>{g.rotation[axis]+=speed*dt*spd;});
+  runeRing.rotation.y-=dt*0.22*spd;
+  ribbon.rotation.y+=dt*0.1*spd; ribbon.rotation.x=Math.sin(t*0.2)*0.3;
+  core.rotation.y+=dt*0.6; coreWire.rotation.y-=dt*0.4; coreWire.rotation.x+=dt*0.2;
+  const pulse=1+Math.sin(t*3)*0.06+charge*0.35;
+  core.scale.setScalar(pulse);
+  core.material.emissiveIntensity=2.2+charge*4+Math.sin(t*6)*0.3;
+  core.material.emissive.setHSL(lerp(0.075,0.58,charge),1,0.55); // amber → blue-white as it charges
+  coreLight.intensity=26+charge*70+Math.sin(t*6)*3;
+  coreLight.color.setHSL(lerp(0.075,0.58,charge),0.9,0.6);
+  engine.position.y=1.55+Math.sin(t*0.8)*0.07;
+  engine.rotation.y+=dt*0.05*spd;
+  bloom.strength=0.7+charge*0.8;
+
+  // flames
+  const pc=fGeo.attributes.position.array, cc=fGeo.attributes.color.array;
+  for(let i=0;i<FN;i++){const ix=i*3;
+    fLife[i]-=dt*(0.5+charge*0.4);
+    if(fLife[i]<=0)respawn(i,false);
+    fVel[ix]+=Math.sin(t*3+fSeed[i])*0.0012;
+    fVel[ix+2]+=Math.cos(t*2.6+fSeed[i]*1.7)*0.0012;
+    pc[ix]+=fVel[ix]*(1+charge); pc[ix+1]+=fVel[ix+1]*(1+charge*1.5); pc[ix+2]+=fVel[ix+2]*(1+charge);
+    const L=fLife[i];
+    // orange base → blue tips (like twin plasma)
+    const blue=fHome[i]>0.5?0.55:0.0;
+    cc[ix]  =lerp(1.0,0.35,blue)*L*1.4;
+    cc[ix+1]=lerp(0.5,0.6,blue)*L*L*1.2;
+    cc[ix+2]=lerp(0.12,1.0,blue)*(1-L)*1.3+0.05;
+  }
+  fGeo.attributes.position.needsUpdate=true; fGeo.attributes.color.needsUpdate=true;
+
+  // embers drift
+  const ea=eGeo.attributes.position.array;
+  for(let i=0;i<EN;i++){ea[i*3+1]+=dt*0.12;if(ea[i*3+1]>9)ea[i*3+1]=0;}
+  eGeo.attributes.position.needsUpdate=true;
+
+  // scroll → camera + sections
+  const H=innerHeight, total=document.documentElement.scrollHeight-H;
+  const gp=total>0?clamp(scrollY/total):0;
+  bar.style.width=(gp*100)+'%'; cue.style.opacity=gp>0.03?0:1;
+  const sf=gp*(CAMS.length-1);
+  const s0=Math.min(CAMS.length-2,Math.floor(sf)), f=smooth(0,1,sf-s0);
+  camP.lerpVectors(CAMS[s0].p,CAMS[s0+1].p,f);
+  camL.lerpVectors(CAMS[s0].l,CAMS[s0+1].l,f);
+  camera.position.x=lerp(camera.position.x,camP.x+mouse.x*0.7,0.06);
+  camera.position.y=lerp(camera.position.y,camP.y+mouse.y*0.4,0.06);
+  camera.position.z=lerp(camera.position.z,camP.z,0.06);
+  camera.lookAt(camL.x+mouse.x*0.3,camL.y+mouse.y*0.2,camL.z);
+  SECS.forEach((el,i)=>{
+    const w=1-Math.min(1,Math.abs(sf-i)*1.6);
+    el.style.opacity=clamp(w*1.3).toFixed(2);
+    el.style.transform=`translateY(${(1-clamp(w*1.3))*26}px)`;
+  });
+
+  sky.material.uniforms.uTime.value=t;
+  finalPass.uniforms.uTime.value=t;
+  finalPass.uniforms.uCharge.value=charge;
+  composer.render();
+}
+frame();
+</script>
+</body>
+</html>

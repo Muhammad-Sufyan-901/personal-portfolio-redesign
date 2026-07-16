@@ -1,5 +1,6 @@
 ---
-description: Update the relevant .claude/agent-memory/<agent>/MEMORY.md with durable project knowledge (new patterns, decisions, file locations, reusable utils) after a codebase change.
+name: update-memory
+description: Update the relevant .claude/agent-memory/<agent>/MEMORY.md with durable project knowledge (new patterns, decisions, file locations, reusable utils) after any codebase change that introduces or revises one. Memory is knowledge, not a changelog.
 argument-hint: [agent: frontend-engineer|motion-engineer|qa-auditor]
 ---
 

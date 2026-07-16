@@ -1,6 +1,6 @@
 ---
 name: scrollytelling
-description: Choreograph the 7-chapter scroll narrative (Preloader→Hero→Manifesto→Craft→Journey→Work→Contact). Activate when building or sequencing sections.
+description: Choreograph the 10-chapter scroll narrative (Preloader→Hero→Manifesto→About→Craft→Journey→Skills→Gallery→Contact→Footer, PLAN v3.1 §0). Activate when building or sequencing any chapter section.
 ---
 
 # Scrollytelling Choreography

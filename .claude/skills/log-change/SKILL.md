@@ -1,5 +1,6 @@
 ---
-description: Write a feature-change log entry to logs/feature-changes/ after creating or modifying a feature/section/component.
+name: log-change
+description: Append a dated history entry to logs/feature-changes/ after creating or modifying any feature/section/component, before reporting done — every change gets one, no matter how small. Logs are history only; durable knowledge goes to agent memory instead.
 argument-hint: <short-slug describing the change>
 ---
 

@@ -43,17 +43,17 @@ Before any task, every agent MUST read: `context/product_requirements.md` (conte
 
 **Build status (2026-07-16):** foundation + chapters **00–03** are shipped on the **10-chapter map** — `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0). As built: three-act Welcome/ember/curtain preloader (runs every load), aurora hero (ogl), WebGL MacBook manifesto seam, reference-exact About. Tokens are **ember `#E8380F`** (Void & Ember v2, applied 2026-07-07 — brass/cobalt remain unchosen documented alternates), display face **Fraunces**, dark-only. All **14 primitives** live in `@/components/common` (incl. `PathDraw` — built, not yet wired). Chrome = `MenuButton` → `MenuPopout` (z-60) → `SiteMenu` (z-80); there is no Header/MobileMenu. Remaining: **04 Craft → 08 Contact + Footer** (PLAN v3.1 §7 order) + `src/lib/emailjs.ts` (lands with 08). Deferred to final QA: scroll-spy nav dot, bundle split, favicon/OG.
 
-## Skills (`.agents/skills/`) — activate by task
+## Skills — two-kind architecture (both trees list the same 19; every skill = ONE canonical + one stub)
 
-Convention knowledge (portable spec; each has a Claude Code enforcement mirror in `.claude/rules/` or an as-built note):
+**KNOWLEDGE skills (10) — canonical here in `.agents/skills/<name>/`** (portable spec; `.claude/skills/` holds a thin stub; Claude Code enforcement mirrors live in `.claude/rules/`):
 
-- `reference-capture` — @pm, before Stage 1, to turn `lukebaffait.fr` screenshots or a screen-recording into usable stills (Claude's vision reads images only, not video). Already run once — it produced design_system v2's §3.0 evidence.
-- `gsap-lenis-motion`, `scrollytelling` — @motion & @frontend for all motion work (mirror: `.claude/rules/motion.md`).
+- `reference-capture` — @pm: turn a reference site/recording into stills Claude can read (executables: `reference/scripts/`).
+- `gsap-lenis-motion`, `scrollytelling` — @motion & @frontend for all motion work (rule mirror: `.claude/rules/motion.md`).
 - `animated-ui-references` — @motion & @frontend when borrowing from React Bits / Magic UI / Aceternity UI / 21st.dev (design_system v2 §7.5): adapt to GSAP + primitives + tokens, **never install `framer-motion`**.
-- `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup` — @frontend for scaffolding + UI (mirrors: `.claude/rules/{tailwind-styling,react-typescript,project}.md`).
-- `accessibility-reduced-motion`, `seo-meta` — @frontend & @qa for final polish + audit (mirror: `.claude/rules/accessibility.md`).
+- `tailwind-v4-shadcn`, `typescript-react-strict`, `tanstack-router`, `vite-setup` — @frontend for scaffolding + UI (rule mirrors: `.claude/rules/{tailwind-styling,react-typescript,project}.md`).
+- `accessibility-reduced-motion`, `seo-meta` — @frontend & @qa for polish + audit (rule mirror: `.claude/rules/accessibility.md`).
 
-Process skills (portable mirrors of the invokable `.claude/skills/` slash-commands):
+**PROCESS skills (6) — canonical in `.claude/skills/<name>/`** (the invokable slash-commands with argument-hints; `.agents/skills/` holds the stub):
 
 - `plan-redesign` — @pm: whole-site `PLAN.md`, then hard STOP for approval.
 - `build-section` — @frontend + @motion: one chapter per invocation, stop-for-approval gate after every section.
@@ -61,10 +61,11 @@ Process skills (portable mirrors of the invokable `.claude/skills/` slash-comman
 - `log-change`, `update-memory` — all agents: post-change discipline (see below).
 - `discover-tooling` — propose (never auto-install) new skills/MCP servers.
 
-Installed third-party design toolkits (pointer stubs here; **implementation lives only in `.claude/skills/`**):
+**VENDORED toolkits (3) — full implementation ONLY in `.claude/skills/`** (pointer stubs here):
 
 - `impeccable` (v3.9.1) — design critique/polish/live-iteration toolkit + anti-slop detector hook.
-- `design-taste-frontend` — anti-slop design manual; apply with this repo's overrides (we're Vite+GSAP not Next+Motion; Fraunces is deliberate).
+- `design-taste-frontend` — anti-slop design manual (router + 13 references); apply with this repo's overrides (Vite+GSAP not Next+Motion; Fraunces is deliberate).
+- `cinematic-web` — three.js/scrollytelling/GLB technique numbers and patterns; **read its `ADAPTATION.md` first** (repo Golden Rules override its single-file archetype).
 
 ## Rules (`.agents/rules/`) — always in effect
 

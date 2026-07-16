@@ -14,12 +14,13 @@ Scroll the reference site slowly and capture one screenshot at each meaningful s
 ## Option B — Screen-record, then extract frames (captures motion timing better)
 
 1. Record a slow scroll-through with any screen recorder, pausing ~1s at each section and right as a reveal animation triggers.
-2. Extract frames with ffmpeg (install first if missing — macOS: `brew install ffmpeg`; Ubuntu/Debian: `sudo apt install ffmpeg`; Windows: `winget install ffmpeg` or download from ffmpeg.org):
+2. Extract frames. **In this repo, use the CONFIG-driven extractor** (scripts/ pointer — the real executables live with the reference data, not duplicated here):
    ```bash
-   ffmpeg -i reference/lukebaffait-scroll.mp4 -vf fps=2 reference/frames/frame_%03d.png
+   node reference/scripts/extract-frames.mjs           # dense 8fps + key + 60fps bursts + contact sheets
+   node reference/scripts/extract-frames.mjs --probe   # boundary frames when tuning burst windows
    ```
-   `fps=2` (2 frames/sec) is enough for most reveals; bump to `fps=4` only around one specific fast animation you want studied closely. Delete near-duplicate frames before attaching if the set is large.
-3. Attach the resulting `reference/frames/*.png` files to Claude Code instead of the raw video.
+   For an arbitrary NEW video outside that pipeline, the raw recipe is `ffmpeg -i <video> -vf fps=2 frames/frame_%03d.png` (install ffmpeg first — macOS `brew install ffmpeg`); bump fps only around one specific fast animation. The related live-site crawler is `reference/scripts/capture-lukebaffait.mjs` (`npm run capture:ref`), and the palette-evidence script is `reference/scripts/histogram-phases.py`.
+3. Attach the resulting frames to Claude Code instead of the raw video.
 
 ## Letting Claude Code do the extraction itself
 
@@ -27,7 +28,7 @@ Prefer not to run ffmpeg yourself? Place the raw recording at `reference/lukebaf
 
 ## Already applied in this repo
 
-This procedure has run for real: `reference/lukebaffait-scroll.mp4` was extracted twice (19 frames at `fps=1/5`, then 47 frames at `fps=1/2`) and the frames were color-histogram-sampled to ground design_system.md v2 — the §3.0 evidence table, the §3.0b section-by-section map, and the "Void & Ember" palette all come from that pass. Re-run it only if a new reference video arrives.
+This procedure has run for real, several times: the early passes (19 then 47 frames) grounded design_system.md v2's §3.0 evidence and the "Void & Ember" palette; the 2026-07-16 rebuild produced the current sets — `frames/` (746 @ 8fps, № ≈ 8×s), `frames-key/`, seven 60fps `frames-bursts/` windows, contact sheets — all regenerable via `reference/scripts/extract-frames.mjs` (inventory + burst-window table: `reference/REFERENCE-NOTES.md`; analysis: `reference/breakdown_analysis.md`). Re-run only if a new reference video arrives or a burst window changes.
 
 ## What visual reference is for (and isn't)
 
