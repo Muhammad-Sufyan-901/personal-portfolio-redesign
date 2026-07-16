@@ -12,7 +12,7 @@ import {
   RECEDE_DRIFT,
   RECEDE_SCALE,
   YAW_START,
-} from "@/features/home/components/manifesto-3d/rig";
+} from "@/features/home/utils/rig.tunables";
 
 const MODEL_URL = "/models/macbook.rigged.glb";
 const DRACO_PATH = "/draco/"; // self-hosted decoder — no runtime CDN fetches

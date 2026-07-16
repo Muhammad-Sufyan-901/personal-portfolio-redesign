@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
 import { gsap } from "@/lib/gsap";
 import { channels, stageState } from "@/features/home/utils/channels";
-import { CAM, DAMP_LAMBDA } from "@/features/home/components/manifesto-3d/rig";
+import { CAM, DAMP_LAMBDA } from "@/features/home/utils/rig.tunables";
 import { MacbookModel } from "@/features/home/components/manifesto-3d/MacbookModel";
 import { StudioRig } from "@/features/home/components/manifesto-3d/StudioRig";
 
