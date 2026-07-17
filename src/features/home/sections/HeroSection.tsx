@@ -9,9 +9,8 @@ import { navLinks } from "@/constants/navigation.constant";
 import { AuroraBackground } from "@/features/home/components/AuroraBackground";
 import { HERO_REFINE } from "@/features/home/utils/hero.tunables";
 import { PRELOADER_REFINE } from "@/utils/preloader.tunables";
-import { Box, Image, Link } from "@/components/common";
+import { Box, Link } from "@/components/common";
 import { MenuButton } from "@/components/shared/MenuButton";
-import macbookPoster from "@/assets/images/macbook-poster.webp";
 
 /** Tagline split around the italic-serif emphasis phrase. */
 const [taglinePre, taglinePost] = profile.taglineEmphasis
@@ -22,10 +21,11 @@ const heroAnchors = navLinks.filter((l) => ["Journey", "Gallery", "Contact"].inc
 
 /** 01 — Hero (one-line revision, v2.1 + preloader-morph handoff): bold ogl
  *  aurora curtain, tagline top-left with italic emphasis, and the name as
- *  ONE line ≥lg — `Muh.` (Switzer lead) · inline slot · `Sufyan.`
- *  (Instrument Serif italic tail) — the slot is the door the manifesto seam
- *  opens through. Below lg the name stacks to the shipped two rows. Hairline
- *  bottom bar (role · social links · chapter anchors).
+ *  ONE line ≥lg — `Muh.` (Switzer lead) spread against `Sufyan.` (Instrument
+ *  Serif italic tail). Below lg the name stacks to the shipped two rows.
+ *  Hairline bottom bar (role · social links · chapter anchors). On scroll the
+ *  manifesto's entry rig rises + fades this h1 while its stage is born at
+ *  viewport center (center-birth grammar — the old inline slot is retired).
  *
  *  Entrance: the NAME never animates here — the preloader wordmark morphs
  *  onto the h1's word rects and swaps under the flash peak (P3); this
@@ -172,36 +172,21 @@ export function HeroSection() {
 
       <Box className="flex-1" />
 
-      {/* Name: two stacked rows (<lg) that fuse into ONE line ≥lg — lead ·
-          inline slot · tail. The slot (flex-1, min-width tunable) is the gap
-          the manifesto stage opens through; under reduced motion it carries
-          the poster strip instead (spec: relocated placement). */}
+      {/* Name: two stacked rows (<lg) that fuse into ONE line ≥lg — lead
+          spread against tail (justify-between owns the edge-to-edge gap; the
+          manifesto stage no longer lives here, it is born at viewport
+          center). Exactly two .hero-word spans — the preloader FLIP and the
+          entry rig both rely on that contract. */}
       <Box
         as="h1"
         aria-label={profile.name}
-        className="hero-name flex flex-col text-hero text-paper lg:flex-row lg:items-baseline lg:text-hero-line"
+        className="hero-name flex flex-col text-hero text-paper lg:flex-row lg:items-baseline lg:justify-between lg:text-hero-line"
       >
         <Box
           as="span"
           className="hero-word block self-start overflow-hidden pb-[0.12em] -mb-[0.12em] font-display-lead font-medium whitespace-nowrap lg:self-auto"
         >
           {HERO_REFINE.name.lead}
-        </Box>
-        <Box
-          as="span"
-          aria-hidden
-          className="hero-slot relative hidden lg:block lg:flex-1 lg:self-stretch"
-          style={{ minWidth: HERO_REFINE.seam.slotWidthIdle }}
-        >
-          {prefersReducedMotion && (
-            <Image
-              src={macbookPoster}
-              alt=""
-              priority="eager"
-              objectFit="cover"
-              className="absolute inset-0 h-full w-full rounded-lg"
-            />
-          )}
         </Box>
         <Box
           as="span"

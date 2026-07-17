@@ -39,7 +39,7 @@ export function MenuPopout() {
 
       gsap.set(el, { autoAlpha: 0, scale: 0.4, y: -8, transformOrigin: "top right" });
       const trigger = ScrollTrigger.create({
-        start: () => window.innerHeight,
+        start: () => window.innerHeight * POPOUT_START,
         end: POPOUT_END,
         onToggle: (self) =>
           gsap.to(

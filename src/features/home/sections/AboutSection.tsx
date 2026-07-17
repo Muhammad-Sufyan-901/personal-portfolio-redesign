@@ -4,6 +4,7 @@ import { gsap } from "@/lib/gsap";
 import { Box, ChapterEyebrow, Link, MagneticButton, ParallaxImage } from "@/components/common";
 import { profile } from "@/features/home/data/profile.data";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { MANIFESTO_ENTRY } from "@/features/home/utils/manifesto.tunables";
 
 /** Portrait is a PLAN §8 externality — the path 404s into the primitive's
  *  graceful-hide until the real photo lands in public/assets/images/. */
@@ -48,30 +49,38 @@ export function AboutSection() {
       const items = gsap.utils.toArray<HTMLElement>(".about-item", section);
       if (!inner) return;
 
-      // §4.6 — About resolves crisp out of the veil's blur. clearProps on the
-      // filter: a lingering blur(0px) pins the section to its own compositor
-      // layer and stacking context forever.
-      gsap.fromTo(
-        inner,
-        { autoAlpha: 0, y: 48, filter: "blur(14px)" },
-        {
-          autoAlpha: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 1.1,
-          ease: "power4.out",
-          clearProps: "filter",
-          scrollTrigger: { trigger: section, start: "top 78%", once: true },
-        },
-      );
+      const { blurFromPx, overlap } = MANIFESTO_ENTRY.veil.aboutResolve;
 
-      gsap.from(items, {
-        autoAlpha: 0,
-        y: 24,
-        duration: 0.9,
-        stagger: 0.08,
-        scrollTrigger: { trigger: section, start: "top 60%", once: true },
+      // §4.6 rework (2026-07-17): About resolves FROM the veil's blur while
+      // the veil element is still clearing the viewport — one scrubbed,
+      // REVERSIBLE timeline (the old once:true pair desynced on reverse).
+      // Text resolves first; the items stagger through the tail. Items start
+      // hidden via gsap.set so the section-level absolutes (portrait, gutter
+      // marker) don't flash before their tween window.
+      gsap.set(items, { autoAlpha: 0, y: 24 });
+
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top bottom",
+          end: () => `top ${overlap * 100}%`,
+          scrub: true,
+        },
       });
+      tl.fromTo(
+        inner,
+        { autoAlpha: 0, y: 48, filter: `blur(${blurFromPx}px)` },
+        { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.7 },
+        0,
+      )
+        .fromTo(items, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.35, stagger: { amount: 0.15 } }, 0.5)
+        // A scrub can't clearProps, and a lingering blur(0px) pins the section
+        // to its own compositor layer — this zero-duration set at the far edge
+        // drops the filter, and being INSIDE the scrubbed timeline it re-renders
+        // symmetrically on reverse (edge callbacks would stomp the tween's
+        // value and go stale until the next progress change).
+        .set(inner, { filter: "none" }, 1);
     },
     { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
   );

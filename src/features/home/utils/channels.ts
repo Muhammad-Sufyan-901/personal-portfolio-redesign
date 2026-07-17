@@ -15,8 +15,6 @@ export interface ManifestoChannels {
   screenGlow: number;
   /** Apple-logo emissive accent during the lid-open beat. */
   logoGlow: number;
-  /** P5 exit veil: backdrop blur + gradient opacity (DOM-applied). */
-  veil: number;
 }
 
 export const channels: ManifestoChannels = {
@@ -26,8 +24,12 @@ export const channels: ManifestoChannels = {
   recede: 0,
   screenGlow: 0,
   logoGlow: 0,
-  veil: 0,
 };
+
+/** T1 entry channels — scrubbed by the manifesto's entry timeline; the entry
+ *  applier damps rendered copies toward these and writes the DOM (h1 rise and
+ *  fade, birth-box clip). Same plain-singleton pattern as `channels`. */
+export const entry = { rise: 0, birth: 0, growth: 0 };
 
 /** Render-loop gate. The section flips `active` from its stage trigger
  *  (false once the veil has fully swallowed the stage / past About); the
