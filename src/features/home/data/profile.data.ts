@@ -16,8 +16,8 @@ export const profile: Profile = {
   aboutStatement: "A software engineer from Indonesia, crafting web and mobile applications with precision and care.",
   aboutStatementEmphasis: ["software engineer", "precision and care"],
   manifesto: {
-    lines: ["Basically, I write code."],
-    focalWord: "code",
+    lines: ["Basically, I make software."],
+    focalWord: "software",
   },
   stats: [
     { value: 3, label: "Years of Experience" },
