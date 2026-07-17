@@ -3,8 +3,10 @@ import * as THREE from "three";
 /** ============ Tunables (spec §13) ============ */
 /** Normalized world width of the MacBook (base slab is 35.5 raw units). */
 export const FIT_SIZE = 3.2;
-/** Channel smoothing — λ for MathUtils.damp (per-frame catch-up weight). */
-export const DAMP_LAMBDA = 6;
+/** Channel smoothing — λ for MathUtils.damp (per-frame catch-up weight).
+ *  Lower = longer, weightier glide (2026-07-17 refine: 6 → 4.5 for the
+ *  reference's silkier scrub feel, both directions). */
+export const DAMP_LAMBDA = 4.5;
 /** Product-shot camera. The look target tracks the machine's visual center
  *  (closed slab → open lid) so the MacBook stays centered on screen through
  *  the lid arc; `rise` keeps the slight top-down product pitch. */

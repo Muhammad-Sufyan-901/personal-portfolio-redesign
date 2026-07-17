@@ -5,22 +5,30 @@
  *  Numbers start from the measured reference beat table
  *  (reference/manifesto-about-refine.mp4.mp4) — tune ONLY here. */
 export const MANIFESTO_ENTRY = {
-  /** T1 pin distance (ScrollTrigger end string — 120% of viewport = 120vh). */
-  t1Span: "+=120%",
+  /** T1 pin distance (ScrollTrigger end string — 200% of viewport = 200vh). */
+  t1Span: "+=200%",
   /** Sub-beat windows as [start, end] fractions of T1 progress. Overlaps are
    *  intentional — the reference births the box while the name still shows. */
-  beats: { rise: [0, 0.42], birth: [0.38, 0.55], growth: [0.5, 1] },
+  beats: { rise: [0, 0.3], birth: [0.26, 0.4], growth: [0.3, 1] },
   /** Chrome fade window — must END before beats.birth[0] (acceptance gate:
    *  chrome fully gone before the box is born). Starts a hair after 0 so the
    *  scrub never renders it at rest (the preloader owns the chrome at load). */
-  chromeFade: [0.02, 0.35],
+  chromeFade: [0.02, 0.25],
   /** The h1's landing line: its center rests at this viewport-height fraction. */
   riseToY: 0.5,
   /** Birth box — the viewport-centered rect the stage is clipped to at birth.
    *  minWPx floors phone widths; maxHFrac caps short viewports (<700px). */
   birth: { wVw: 16, minWPx: 200, aspect: 1.5, maxHFrac: 0.38, radius: 12, fromOpacity: 0 },
+  /** Name exit — the h1 zooms out around viewport center as the box grows
+   *  (justify-between spreads the two words, so the scale pushes lead left /
+   *  tail right off-screen at full opacity — the reference zoom-through). */
+  exit: { scaleTo: 2.1 },
+  /** Lid cracks open over the growth tail of T1 (window = T1-progress span)
+   *  so the machine is visibly animating while the box grows; T2's lid tween
+   *  picks up FROM `lid` (its fromTo must stay immediateRender: false). */
+  storyPrelude: { lid: 0.22, window: [0.55, 1] },
   /** Entry-applier damp lambdas (MathUtils.damp style — match the T2 feel). */
-  damp: { rise: 5, growth: 4 },
+  damp: { rise: 5, growth: 3.2 },
   veil: {
     /** T2-progress anchor where the veil begins (unchanged from the story build). */
     at: 0.84,

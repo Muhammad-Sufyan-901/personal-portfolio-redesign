@@ -19,9 +19,9 @@ const ManifestoCanvas = lazy(() =>
 /** ============ Story tunables (entry/veil numbers: manifesto.tunables) ============ */
 /** Manifesto root height (the T2 stage-pin length) — set in the JSX class. */
 const MANIFESTO_HEIGHT = "h-[520vh]";
-/** Runway lengths in vh — MUST mirror MANIFESTO_ENTRY.t1Span ("+=120%") and
+/** Runway lengths in vh — MUST mirror MANIFESTO_ENTRY.t1Span ("+=200%") and
  *  MANIFESTO_HEIGHT; converts combined-runway fractions into T2 time. */
-const RUNWAY_VH = { t1: 120, t2: 520 } as const;
+const RUNWAY_VH = { t1: 200, t2: 520 } as const;
 /** Master-timeline phase fractions (P1 closed hold / P2 lid / P3 turn /
  *  P4 statement — spec §4.3). P5 veil timing lives in MANIFESTO_ENTRY.veil. */
 const PHASE = {
@@ -93,13 +93,17 @@ function StagePoster() {
  *
  *  T1 "entry" (hero pinned from scroll 0, breakpoint-agnostic): three scrubbed
  *  sub-beats tween the `entry` channels — b1 the h1 rises to the mid-viewport
- *  landing line while the chrome fades; b2 the h1 fades out WHILE the stage
- *  appears at viewport center as a small rounded box (clip-path inset — the
- *  canvas keeps full layout size, so it renders full-res from frame 1); b3 the
- *  box grows monotonically to full-bleed. A damp applier on gsap.ticker (the
- *  FrameDriver pattern — no second RAF) writes the DOM so the entry carries
- *  the same damped feel as the 3D story. Then the pinned stage plays the
- *  MacBook choreography (T2 master scrub, untouched): closed hold → lid opens
+ *  landing line while the chrome fades; b2 the stage appears at viewport
+ *  center as a small rounded box (clip-path inset — the canvas keeps full
+ *  layout size, so it renders full-res from frame 1); b3 the box grows
+ *  monotonically to full-bleed WHILE the h1 zooms out around center at full
+ *  opacity — justify-between spreads the two words, so the scale pushes lead
+ *  left / tail right off-screen (the reference zoom-through; the z-20 stage
+ *  occludes whatever remains) — and the lid cracks open over the growth tail
+ *  (storyPrelude). A damp applier on gsap.ticker (the FrameDriver pattern —
+ *  no second RAF) writes the DOM so the entry carries the same damped feel as
+ *  the 3D story. Then the pinned stage plays the MacBook choreography (T2
+ *  master scrub, lid picking up from the prelude): closed hold → lid opens
  *  facing away (logo beat) → 180° reveal turn onto the lit wallpaper →
  *  statement over the receded machine → the fast blur+ember veil out of which
  *  About resolves.
@@ -128,7 +132,16 @@ export function ManifestoSection() {
         console.warn("manifesto entry: .hero-name not found — rise/fade degraded");
       }
 
-      const { beats, chromeFade, riseToY, birth, damp: DAMP, veil: VEIL } = MANIFESTO_ENTRY;
+      const {
+        beats,
+        chromeFade,
+        riseToY,
+        birth,
+        exit: EXIT,
+        storyPrelude: PRELUDE,
+        damp: DAMP,
+        veil: VEIL,
+      } = MANIFESTO_ENTRY;
 
       // h1 measurement via accumulated offsets, never gBCR: offsets are
       // transform-independent (pointer parallax, pin park position after a
@@ -237,6 +250,15 @@ export function ManifestoSection() {
           beats.growth[0],
         )
         .fromTo(glow, { opacity: 0.35 }, { opacity: 1, duration: beats.growth[1] - beats.growth[0] }, beats.growth[0])
+        // storyPrelude: the lid cracks open over the growth tail so the
+        // machine is visibly animating while the box grows; T2's lid tween
+        // picks up from PRELUDE.lid.
+        .fromTo(
+          channels,
+          { lidProgress: 0 },
+          { lidProgress: PRELUDE.lid, duration: PRELUDE.window[1] - PRELUDE.window[0] },
+          PRELUDE.window[0],
+        )
         // .to, not fromTo: the shipped chrome-fade pattern. A fromTo's startAt
         // snapshot collides with the preloader-era autoAlpha history on the
         // [data-chrome] els (backward crossing left them 0/hidden while the
@@ -248,15 +270,19 @@ export function ManifestoSection() {
         );
 
       // Entry applier — damps rendered copies toward the entry channels and
-      // writes the DOM (h1 rise/fade + birth-box clip) so the entry carries
-      // T2's damped feel. Rides the single gsap.ticker (FrameDriver
+      // writes the DOM (h1 rise/zoom-out + birth-box clip) so the entry
+      // carries T2's damped feel. Rides the single gsap.ticker (FrameDriver
       // precedent, NOT a second RAF); idles once converged at either edge so
       // the pointer parallax owns the h1 at rest and T2's lifecycle handler
       // owns the stage past the pin.
       const rendered = { rise: 0, birth: 0, growth: 0 };
+      if (heroName) gsap.set(heroName, { transformOrigin: "50% 50%" });
       const setNameX = heroName ? gsap.quickSetter(heroName, "x", "px") : null;
       const setNameY = heroName ? gsap.quickSetter(heroName, "y", "px") : null;
-      const setNameAlpha = heroName ? gsap.quickSetter(heroName, "opacity") : null;
+      // scaleX/scaleY, never the "scale" shorthand — quickSetter binds one
+      // primitive property and silently no-ops on shorthands.
+      const setNameScaleX = heroName ? gsap.quickSetter(heroName, "scaleX") : null;
+      const setNameScaleY = heroName ? gsap.quickSetter(heroName, "scaleY") : null;
       let nameX = 0;
       let lastProgress = -1;
       const entryTick = (_time: number, deltaTime: number) => {
@@ -284,7 +310,7 @@ export function ManifestoSection() {
         const wasAtRest = lastProgress <= 0;
         lastProgress = p;
 
-        if (heroName && setNameX && setNameY && setNameAlpha) {
+        if (heroName && setNameX && setNameY && setNameScaleX && setNameScaleY) {
           // decay any pointer-parallax x residue as the rise takes over
           if (wasAtRest && p > 0) nameX = Number(gsap.getProperty(heroName, "x")) || 0;
           if (p > 0) {
@@ -292,7 +318,11 @@ export function ManifestoSection() {
             setNameX(nameX);
           }
           setNameY(rendered.rise * riseDelta);
-          setNameAlpha(1 - rendered.birth);
+          // Zoom-through exit: full opacity throughout — the growing box
+          // pushes the spread words off-screen, then occludes them.
+          const nameScale = 1 + (EXIT.scaleTo - 1) * rendered.growth;
+          setNameScaleX(nameScale);
+          setNameScaleY(nameScale);
         }
 
         stage.style.clipPath = clipAt(rendered.growth);
@@ -319,7 +349,15 @@ export function ManifestoSection() {
         },
       });
       master
-        .fromTo(channels, { lidProgress: 0 }, { lidProgress: 1, duration: PHASE.lid.dur }, PHASE.lid.at)
+        // Picks up from the T1 storyPrelude crack. immediateRender: false is
+        // load-bearing — the fromTo snapshot would otherwise write the
+        // prelude pose at load while the machine must rest closed.
+        .fromTo(
+          channels,
+          { lidProgress: PRELUDE.lid },
+          { lidProgress: 1, duration: PHASE.lid.dur, immediateRender: false },
+          PHASE.lid.at,
+        )
         .fromTo(channels, { logoGlow: 0 }, { logoGlow: 1, duration: PHASE.logoUp.dur }, PHASE.logoUp.at)
         .fromTo(
           channels,
@@ -368,7 +406,7 @@ export function ManifestoSection() {
         stage.style.clipPath = "";
         stage.style.opacity = "";
         stage.style.visibility = "";
-        if (heroName) gsap.set(heroName, { x: 0, y: 0, opacity: 1 });
+        if (heroName) gsap.set(heroName, { x: 0, y: 0, scale: 1, opacity: 1 });
         stageState.active = true;
       };
     },
