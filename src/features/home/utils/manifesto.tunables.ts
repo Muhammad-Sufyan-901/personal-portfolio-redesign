@@ -35,6 +35,10 @@ export const MANIFESTO_ENTRY = {
     /** Fast collapse: blur target + span as a fraction of the COMBINED
      *  120vh + 520vh runway (T1 span + manifesto height — keep in sync). */
     collapse: { blurPx: 28, span: 0.08 },
+    /** Ember-tint dissolve: the veil's tint layer fades out over the T2 tail
+     *  so the veil ends as PURE ink — About's top then crosses ink-on-ink
+     *  with no visible seam (the reference hands off scene → black). */
+    tintOutAt: 0.94,
     /** About resolves FROM blur while the veil tail clears; `overlap` maps to
      *  About's scrub-trigger end (`top ${overlap * 100}%`). */
     aboutResolve: { blurFromPx: 14, overlap: 0.35 },

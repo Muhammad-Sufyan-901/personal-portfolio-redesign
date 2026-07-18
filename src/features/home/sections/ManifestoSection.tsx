@@ -122,8 +122,9 @@ export function ManifestoSection() {
       const stage = section?.querySelector<HTMLElement>(".manifesto-stage");
       const glow = section?.querySelector<HTMLElement>(".manifesto-glow");
       const veil = section?.querySelector<HTMLElement>(".manifesto-veil");
+      const veilTint = section?.querySelector<HTMLElement>(".manifesto-veil-tint");
       const copy = section?.querySelector<HTMLElement>(".manifesto-copy");
-      if (!section || !hero || !stage || !glow || !veil || !copy) return;
+      if (!section || !hero || !stage || !glow || !veil || !veilTint || !copy) return;
 
       const words = gsap.utils.toArray<HTMLElement>(".manifesto-word", section);
       const heroName = hero.querySelector<HTMLElement>(".hero-name");
@@ -325,10 +326,15 @@ export function ManifestoSection() {
           setNameScaleY(nameScale);
         }
 
-        stage.style.clipPath = clipAt(rendered.growth);
-        const alpha = birth.fromOpacity + rendered.birth * (1 - birth.fromOpacity);
-        stage.style.opacity = String(alpha);
-        stage.style.visibility = alpha > 0.001 ? "inherit" : "hidden";
+        // Past the manifesto runway T2's lifecycle owns the stage (hidden,
+        // above About in the z-order) — a late damp write here would re-show
+        // it over About (fast-flick / mid-page-reload race).
+        if (stageVisible) {
+          stage.style.clipPath = clipAt(rendered.growth);
+          const alpha = birth.fromOpacity + rendered.birth * (1 - birth.fromOpacity);
+          stage.style.opacity = String(alpha);
+          stage.style.visibility = alpha > 0.001 ? "inherit" : "hidden";
+        }
       };
       gsap.ticker.add(entryTick);
 
@@ -386,6 +392,9 @@ export function ManifestoSection() {
           PHASE.words.at,
         )
         .fromTo(veil, { opacity: 0 }, { opacity: 1, duration: 0.13 }, VEIL.at)
+        // Ember tint dissolves over the tail so the veil ends pure ink and
+        // About's top edge crosses ink-on-ink (no visible seam).
+        .fromTo(veilTint, { opacity: 1 }, { opacity: 0, duration: 1 - VEIL.tintOutAt }, VEIL.tintOutAt)
         .fromTo(stage, { scale: 1 }, { scale: 1.05, duration: 1 - VEIL.at }, VEIL.at);
       // Fast collapse: span is a fraction of the COMBINED (T1+T2) runway.
       // Feature-detect: without backdrop-filter the gradient+opacity veil
@@ -490,10 +499,15 @@ export function ManifestoSection() {
             <StatementWords />
           </Box>
         </Box>
+        {/* Veil root is SOLID ink; the ember tint lives on its own child layer
+            and dissolves over the T2 tail (tintOutAt) so the veil's bottom
+            edge ends pure ink — About's top crosses ink-on-ink, no seam. */}
         <Box
           aria-hidden
-          className="manifesto-veil to-ink from-accent-deep/25 absolute inset-0 z-10 bg-linear-to-t to-65% opacity-0 [backdrop-filter:blur(var(--veil-blur))]"
-        />
+          className="manifesto-veil bg-ink absolute inset-0 z-10 opacity-0 [backdrop-filter:blur(var(--veil-blur))]"
+        >
+          <Box className="manifesto-veil-tint from-accent-deep/25 absolute inset-0 bg-linear-to-t to-transparent to-65%" />
+        </Box>
       </Box>
     </Box>
   );
