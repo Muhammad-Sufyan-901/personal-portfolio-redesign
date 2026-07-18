@@ -435,7 +435,7 @@ export function ManifestoSection() {
         <Box className="mx-auto flex max-w-4xl flex-col items-center gap-10 text-center">
           <ChapterEyebrow
             index="02"
-            label="WHO I AM"
+            label="WHO AM I"
           />
           <Box
             as="h2"
@@ -490,7 +490,7 @@ export function ManifestoSection() {
         <Box className="manifesto-copy relative flex max-w-4xl flex-col items-center gap-6 text-center">
           <ChapterEyebrow
             index="02"
-            label="WHO I AM"
+            label="WHO AM I"
           />
           <Box
             as="h2"

@@ -7,7 +7,7 @@ interface ChapterEyebrowProps {
   className?: string;
 }
 
-/** "01 — WHO I AM" structural marker (design_system §8B) — the primary
+/** "01 — WHO AM I" structural marker (design_system §8B) — the primary
  *  chapter signature. Static, no animation. */
 export function ChapterEyebrow({ index, label, className }: ChapterEyebrowProps) {
   return (
