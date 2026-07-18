@@ -64,6 +64,11 @@
   --color-accent: #e8380f;
   --color-accent-deep: #b32c0b;
   --color-accent-tint: rgba(232, 56, 15, 0.12);
+  /* About portrait ember-glow (D4, v2 orange-dominant per owner review) —
+     deep = the accent ember itself, soft = the reference highlight sample
+     #ed6c52 (f_060/f_090); alphas are the tune-pass knob. */
+  --color-ember-glow-deep: rgba(232, 56, 15, 0.5);
+  --color-ember-glow-soft: rgba(237, 108, 82, 0.25);
 
   --color-success: #5bae7c;
   --color-error: #d8735e;

@@ -24,6 +24,11 @@ Gotchas found 2026-07-07 (ch.01):
 - `useGSAP` deps containing `prefersReducedMotion` but missing `revertOnUpdate: true` is a recurring builder omission (ch.02 F2, ch.03 F2) — check every new animated component first. (Applied correctly in B2 AuroraBackground — the lesson landed.)
 - Canvas effect probes (B2 aurora): sample the FULL buffer alpha (`getImageData` sum), never a corner — regional washes legitimately leave corners at 0 (false "not painting"). To prove a pause guard works: alpha-sum twice ~400ms apart while the guard should hold (sums identical = frozen), then again after un-pausing (sums differ = drifting).
 
+Gotchas found 2026-07-18 (about refine):
+- Entry-trigger sampling math: for a scrub running `top bottom → top X%`, park the section top at viewport fraction f and its progress is p = (1−f)/(1−X) — lets you assert exact beat states (veiled vs settled) at chosen p without reading tunables at runtime. Seam checks: sample `.manifesto-veil` / `.manifesto-veil-tint` computed opacity while the NEXT section resolves (ink=1, tint=0 = ink-on-ink handoff).
+- Instant `window.scrollTo` is fine for scrub-only chapters (Lenis adopts native jumps); only `once` triggers need the scroll-to-element dance (ch.03 note). Numeric scrub needs a catch-up wait (~3× the scrub seconds) before asserting rest state.
+- Preloader-done poll: absence of `lenis-stopped` on `<html>` + require >3s elapsed (the class doesn't exist pre-lock, so a bare absence check passes instantly at t=0).
+
 Gotchas found 2026-07-16 (hero one-line refine):
 - Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
 - Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.
