@@ -1,6 +1,11 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+// ScrollTrigger snapshots history.scrollRestoration at init and re-applies the
+// snapshot on every refresh — set "manual" BEFORE registering so refreshes keep
+// it, and every reload starts at the hero (main.tsx forces the top-of-page start).
+window.history.scrollRestoration = "manual";
+
 // SINGLE GSAP SOURCE (system_architecture RULE 2) — nothing else may import
 // "gsap" or "gsap/ScrollTrigger" directly.
 gsap.registerPlugin(ScrollTrigger);

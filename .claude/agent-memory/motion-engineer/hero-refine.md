@@ -28,3 +28,10 @@
 
 - `public/fonts/switzer/Switzer-Medium.woff2` (20 KB, Fontshare official zip, FFL.txt beside) + `public/fonts/instrument-serif/InstrumentSerif-Italic-latin.woff2` (16 KB, fonts.gstatic.com official latin subset, OFL.txt beside). `@font-face` in globals.css (`font-display: swap`) + 2 preloads in index.html. Tokens `--font-display-lead/tail` with fallbacks General Sans / Fraunces (the pre-refine "Fraunces italic" hero was a faux-slant — the true italic was never imported).
 - Chrome: bar hairline `border-line-strong #8A8A8A` (sampled frame_0001 y986), role+anchors `text-paper`, anchor hover `text-paper-bright #F0F0F0`; contrast 15.6/17.4:1. `--color-flash #66EACC` (sampled tail-word mint) only feeds surnameHoverFlash (OFF).
+
+## Hero entrance gating (morph handoff — moved from MEMORY.md index 2026-07-19)
+
+- `src/features/home/sections/HeroSection.tsx` (2026-07-16 morph handoff — NO char split anymore, split-type is gone from the hero): one useGSAP, `dependencies: [preloaderDone, prefersReducedMotion]`, `revertOnUpdate: true`. `!preloaderDone`: words `gsap.set(autoAlpha:0)` — invisible but MEASURABLE (the preloader morph lands on their gBCR; never CSS-hide) — and `[data-chrome]` groups hidden.
+- On the flip (fires at the preloader's ink-cover reveal): revert re-shows words naturally (the preloader's swap `set` already showed them same-frame); P4 chrome timeline starts immediately (no delay), groups tagline→socials→nav→meta at `chrome.stagger`, `autoAlpha/y` per group, bar hairline via `borderTopColor` transparent→`var(--color-line-strong)`.
+- The `.hero-aurora` WRAPPER ramps `autoAlpha 0→1` over `PRELOADER_REFINE.auroraIn` at position 0 — the wrapper, NEVER AuroraBackground's own root: its scroll scrub-fade records that element's start alpha on refresh (hiding the inner root freezes the aurora invisible).
+- `data-chrome` tags coexist with `.hero-item` classes — the manifesto seam's `.hero-item, .hero-bar` selector must keep matching. ±10px quickTo name parallax on `(hover: hover)` unchanged.
