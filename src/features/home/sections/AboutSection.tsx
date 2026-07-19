@@ -42,15 +42,25 @@ const TINT_GRADIENT = `linear-gradient(to top, var(--color-${P.tint.stops[0]}), 
 /** Bio reveal length — own-position scrub over a viewport fraction. */
 const descEnd = () => `+=${D.reveal.spanVh * window.innerHeight}`;
 
-/** D4 ember composition (v8 — no motion overlays): a rounded clip wrapper
- *  owning the corner radius; inside it the image under the orange duotone
- *  (opaque accent stops + mix-blend-color) and a normal-blend ember wash —
- *  the box reads primarily orange even over the 404 placeholder, at all
- *  times. ParallaxImage stays untouched. */
+/** D4 ember composition (v9): a rounded clip wrapper owning the corner
+ *  radius; inside it the image under the orange duotone (opaque accent stops
+ *  + mix-blend-color) and a normal-blend ember wash — the box reads
+ *  primarily orange even over the 404 placeholder. The wrapper carries a
+ *  thin static ember glow (box-shadow — follows the radius, zero filter
+ *  cost) and a React Bits-style GLARE sweep on hover (adapted per
+ *  animated-ui-references: pure CSS background-position transition, token
+ *  colors, `motion-reduce:hidden` fallback the source lacks).
+ *  ParallaxImage stays untouched. */
 function EmberPortrait({ className, rounding }: { className?: string; rounding: string }) {
   return (
     <Box className={cn("relative", className)}>
-      <Box className={cn("about-clip relative h-full overflow-hidden", rounding)}>
+      <Box
+        className={cn(
+          "about-clip group relative h-full overflow-hidden",
+          "shadow-[0_0_40px_-8px_var(--color-ember-glow-deep)]",
+          rounding,
+        )}
+      >
         <ParallaxImage
           src={PORTRAIT_SRC}
           alt="Portrait of Muhammad Sufyan"
@@ -63,7 +73,16 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
         />
         <Box
           aria-hidden
-          className="from-accent-deep/70 to-accent/45 pointer-events-none absolute inset-0 bg-linear-to-t"
+          className="from-accent-deep to-accent pointer-events-none absolute inset-0 bg-linear-to-t"
+        />
+        <Box
+          aria-hidden
+          className={cn(
+            "about-glare pointer-events-none absolute inset-0 motion-reduce:hidden",
+            "bg-linear-[-45deg] from-transparent from-55% via-paper/25 via-70% to-transparent to-85%",
+            "[background-position:-100%_-100%] [background-size:250%_250%] [background-repeat:no-repeat]",
+            "transition-[background-position] duration-700 ease-out group-hover:[background-position:100%_100%]",
+          )}
         />
       </Box>
     </Box>

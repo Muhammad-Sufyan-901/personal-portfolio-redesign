@@ -93,6 +93,12 @@ The owner re-requested the v7 trio with one refinement:
 - **CV link**: `text-item` (28 px ≡ the description's size) + `underline decoration-1 underline-offset-8`.
 - **Staircase stats, capped to the text zone**: one card per row (`self-start`/`self-center`/`self-end`, intrinsic size) inside `lg:max-w-[calc(60vw_-_2*var(--spacing-page-x))]` — the portrait rail owns the right 40 vw and the inner column is padded by `--spacing-page-x`, so the right-aligned card ends exactly one page-x short of the panel (verified card-3 right 792 px vs panel left 864 px @1440).
 
+## v9 revision (2026-07-19) — thin ember glow + React Bits glare hover on the portrait
+
+- **Glow**: static `box-shadow: 0 0 40px -8px var(--color-ember-glow-deep)` on the `.about-clip` wrapper — follows the corner radius, zero filter cost, thin per owner request. (Reuses the otherwise-orphaned ember-glow token.)
+- **Glare hover**: React Bits "Glare Hover" adapted per `animated-ui-references` (steps 2–3 — it's pure CSS, no Motion logic to strip; CSS transition over JS): a `-45deg` `via-paper/25` gradient band at `background-size: 250%`, `background-position` transitioning `-100% -100%` → `100% 100%` on `group-hover` over 0.7 s, inside the clip (respects rounding), `motion-reduce:hidden` fallback the source lacks. Verified the generated `@media (hover:hover)` group-hover rule + computed band styles live.
+- Note: the owner separately made the ember wash opaque (`from-accent-deep to-accent`) in their own edit — kept as-is; the wash now fully covers the photo layer, revisit when the real portrait lands.
+
 ## Follow-ups
 
 - Portrait photo externality unchanged (`public/assets/images/portrait.webp`); re-judge wash strength (`from-accent-deep/70 to-accent/45`) + duotone on the real photo.
