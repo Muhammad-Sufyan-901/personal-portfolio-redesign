@@ -10,8 +10,8 @@ import { MANIFESTO_ENTRY } from "@/features/home/utils/manifesto.tunables";
 import { ABOUT_REFINE } from "@/features/home/utils/about.tunables";
 import { cn } from "@/lib/utils";
 
-/** Portrait is a PLAN §8 externality — the path 404s into the primitive's
- *  graceful-hide until the real photo lands in public/assets/images/. */
+/** Real portrait (824×1280, landed 2026-07-19). ParallaxImage still
+ *  graceful-hides if the asset ever goes missing. */
 const PORTRAIT_SRC = "/assets/images/profile/about-profile.png";
 
 const { headline: H, description: D, stats: S, portrait: P, damp, veiledOpacity, blurEnabled } = ABOUT_REFINE;
@@ -37,21 +37,29 @@ function toWords(text: string, phrases: readonly string[]): StatementWord[] {
 
 const statementWords = toWords(profile.aboutStatement, profile.aboutStatementEmphasis ?? []);
 
+/** React Bits GlareHover band recipe (example values: −30°, white .3 →
+ *  paper/30, 300% size) — shared by the hover + entrance bands. */
+const GLARE_BAND =
+  "pointer-events-none absolute inset-0 motion-reduce:hidden bg-linear-[-30deg] from-transparent from-60% via-paper/30 via-70% to-transparent to-100% bg-position-[-100%_-100%] bg-size-[300%_300%] bg-no-repeat";
+
 /** Tint gradient resolved from tunable token NAMES (single-source, no hex). */
 const TINT_GRADIENT = `linear-gradient(to top, var(--color-${P.tint.stops[0]}), var(--color-${P.tint.stops[1]}))`;
 
 /** Bio reveal length — own-position scrub over a viewport fraction. */
 const descEnd = () => `+=${D.reveal.spanVh * window.innerHeight}`;
 
-/** D4 ember composition (v9): a rounded clip wrapper owning the corner
- *  radius; inside it the image under the orange duotone (opaque accent stops
- *  + mix-blend-color) and a normal-blend ember wash — the box reads
- *  primarily orange even over the 404 placeholder. The wrapper carries a
- *  thin static ember glow (box-shadow — follows the radius, zero filter
- *  cost) and a React Bits-style GLARE sweep on hover (adapted per
- *  animated-ui-references: pure CSS background-position transition, token
- *  colors, `motion-reduce:hidden` fallback the source lacks).
- *  ParallaxImage stays untouched. */
+/** D4 portrait composition (v11): real photo under the ember DUOTONE
+ *  filter (owner request 2026-07-19 — mix-blend-color over opaque accent
+ *  stops: luminance preserved, hue pulled to ember; the old opaque
+ *  normal-blend wash stays deleted or it would hide the photo). The rounded
+ *  clip wrapper keeps the thin static ember glow (box-shadow — follows the
+ *  radius, zero filter cost) and carries TWO React Bits GlareHover bands
+ *  (adapted per animated-ui-references — token colors,
+ *  `motion-reduce:hidden` fallback the source lacks): a pure-CSS hover
+ *  sweep, and a GSAP-owned `.about-glare-in` band swept once when the
+ *  portrait first scrolls into view — separate elements, because a GSAP
+ *  write on the hover band would fight its CSS transition. ParallaxImage
+ *  stays untouched. */
 function EmberPortrait({ className, rounding }: { className?: string; rounding: string }) {
   return (
     <Box className={cn("relative", className)}>
@@ -66,6 +74,7 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
           src={PORTRAIT_SRC}
           alt="Portrait of Muhammad Sufyan"
           className="h-full w-full"
+          imageFit="cover"
         />
         <Box
           aria-hidden
@@ -74,15 +83,14 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
         />
         <Box
           aria-hidden
-          className="from-accent-deep to-accent pointer-events-none absolute inset-0 bg-linear-to-t"
+          className={cn("about-glare-in", GLARE_BAND)}
         />
         <Box
           aria-hidden
           className={cn(
-            "about-glare pointer-events-none absolute inset-0 motion-reduce:hidden",
-            "bg-linear-[-45deg] from-transparent from-55% via-paper/25 via-70% to-transparent to-85%",
-            "bg-position-[-100%_-100%] bg-size-[250%_250%] bg-no-repeat",
-            "transition-[background-position] duration-700 ease-out group-hover:bg-position-[100%_100%]",
+            "about-glare",
+            GLARE_BAND,
+            "transition-[background-position] duration-2000 ease-out group-hover:bg-position-[100%_100%]",
           )}
         />
       </Box>
@@ -313,6 +321,26 @@ export function AboutSection() {
         });
       }
 
+      // Portrait glare-in — one React Bits-style sweep per instance (mobile
+      // block + desktop rail) the first time it scrolls into view; hover
+      // replays stay pure CSS on the sibling band. Time-based, not scrubbed:
+      // an appearance flourish, not a scroll beat. Desktop's sticky clip is
+      // measured unstuck at refresh (near the section top), so this fires as
+      // the section first enters.
+      gsap.utils.toArray<HTMLElement>(".about-clip", section).forEach((clip) => {
+        const band = clip.querySelector<HTMLElement>(".about-glare-in");
+        if (!band) return;
+        gsap.fromTo(
+          band,
+          { backgroundPosition: "-100% -100%" },
+          {
+            backgroundPosition: "100% 100%",
+            duration: P.glareIn.dur,
+            scrollTrigger: { trigger: clip, start: P.glareIn.start, once: true },
+          },
+        );
+      });
+
       // Finale — odometer ignition (v5): ONE scrubbed master timeline; cards
       // ignite in staircase/DOM order (shell → border draw → digit roll →
       // glare sweep), the version line rides the tail. Markup is the settled
@@ -411,9 +439,9 @@ export function AboutSection() {
         scrub: 3 / damp,
       });
 
-      // v8: the portrait has NO motion overlays — it renders as the static
-      // primarily-orange box at all times (owner request; blur/vignette/halo
-      // removed). Its wrapper still rides the .about-item entry stagger.
+      // v11: the portrait renders the photo under the STATIC ember duotone
+      // + glare bands — no motion overlays of its own. Its wrapper still
+      // rides the .about-item entry stagger.
     },
     { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
   );
@@ -431,8 +459,12 @@ export function AboutSection() {
     >
       {/* Text column — above the portrait panel in z. Beat gaps are
           viewport-scale so the section scrolls past 100vh in the reference
-          order: headline → description → version + statistics. */}
-      <Box className="about-inner relative z-10 flex min-h-svh flex-col pt-[14svh] pb-[10svh] lg:pb-[8svh]">
+          order: headline → description → version + statistics.
+          pointer-events: the full-width z-10 box would swallow every hover
+          meant for the portrait rail beneath it (the glare hover never fired
+          on desktop) — the box goes pointer-transparent, its children opt
+          back in, and empty column space falls through to the rail. */}
+      <Box className="about-inner pointer-events-none relative z-10 flex min-h-svh flex-col pt-[14svh] pb-[10svh] lg:pb-[8svh] *:pointer-events-auto">
         <ChapterEyebrow
           index="03"
           label="ABOUT"

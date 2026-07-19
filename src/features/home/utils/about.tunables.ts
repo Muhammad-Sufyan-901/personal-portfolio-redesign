@@ -1,6 +1,6 @@
 /** Single source of truth for the About refine choreography (H1 word-blur
- *  reveal, description + finale beats on own-position triggers, D4 ember-glow
- *  portrait + focus blur). Headline spans are fractions of About's
+ *  reveal, description + finale beats on own-position triggers, D4
+ *  natural-photo portrait glare-in). Headline spans are fractions of About's
  *  entry-reveal progress (`top bottom` → `top overlap%`, owned by
  *  MANIFESTO_ENTRY.veil.aboutResolve.overlap — the G seam contract). Numbers
  *  start from the measured reference beat table (reference/about-refine.mp4)
@@ -66,12 +66,20 @@ export const ABOUT_REFINE = {
     version: { at: 1, dur: 0.5 },
   },
   portrait: {
-    /** Token NAMES (no raw hex) — resolved as var(--color-<stop>). Opaque
-     *  accent stops + mix-blend-color = the FULL orange duotone grade (photo
-     *  luminance preserved, hue pulled entirely into the ember family).
-     *  v8: the portrait is the static fully-orange box at ALL times — the
-     *  entry blur/vignette/halo overlays were removed by owner request. */
+    /** v11 orange filter (owner request 2026-07-19): the ember DUOTONE is
+     *  back over the photo — token NAMES resolved as var(--color-<stop>),
+     *  mix-blend-color over opaque stops = luminance preserved, hue pulled
+     *  into the ember family. The opaque normal-blend wash stays deleted
+     *  (it would hide the photo). */
     tint: { stops: ["accent-deep", "accent"] },
+    /** One-shot React Bits glare sweep per instance on first
+     *  scroll-into-view (hover replays live in CSS on the sibling
+     *  .about-glare band). `dur` = 2s
+     *  (owner request 2026-07-19) — keep in sync with the hover band's
+     *  `duration-2000`. clamp() = last-section protection: the MOBILE
+     *  instance ends the document, so an unclamped start could resolve
+     *  below max scroll and never fire. */
+    glareIn: { start: "clamp(top 65%)", dur: 2 },
   },
   /** Damped feel for the description/finale scrubs (numeric scrub = 3/damp
    *  seconds). The entry timeline stays scrub:true — numeric scrub there

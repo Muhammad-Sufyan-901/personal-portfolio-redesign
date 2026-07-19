@@ -16,6 +16,7 @@ interface ParallaxImageProps {
   parallax?: ParallaxConfig;
   withScrim?: boolean;
   className?: string;
+  imageFit?: "contain" | "cover" | "fill" ;
 }
 
 /** Clip-inset reveal (once) + scrub parallax (design_system §7.2). Renders a
@@ -29,6 +30,7 @@ export function ParallaxImage({
   parallax,
   withScrim = false,
   className,
+  imageFit = "cover",
 }: ParallaxImageProps) {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -79,7 +81,7 @@ export function ParallaxImage({
         loading="lazy"
         onError={() => setErrored(true)}
         className={cn(
-          "h-full w-full object-cover",
+          `h-full w-full ${imageFit === "contain" ? "object-contain" : imageFit === "cover" ? "object-cover" : "object-fill"}`,
           // scale headroom so the parallax never exposes edges
           !prefersReducedMotion && "scale-[1.2]",
           // not-yet-supplied asset: hide the broken glyph, keep the raised
