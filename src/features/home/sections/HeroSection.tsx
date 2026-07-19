@@ -156,6 +156,7 @@ export function HeroSection() {
           className="hero-item max-w-[34ch] text-body text-paper"
         >
           {taglinePre}
+          <br />
           {profile.taglineEmphasis && (
             <Box
               as="span"
