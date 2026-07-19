@@ -10,7 +10,9 @@ interface PathDrawProps {
   d: string;
   /** ScrollTrigger trigger element (defaults to own wrapper) */
   trigger?: RefObject<HTMLElement | null>;
-  strokeWidth?: number;
+  /** number → SVG attribute; string → CSS stroke-width, which accepts
+   *  vw/clamp() for viewport-tracking widths (non-scaling-stroke keeps it) */
+  strokeWidth?: number | string;
   className?: string;
   viewBox?: string;
   preserveAspectRatio?: string;
@@ -43,8 +45,14 @@ export function PathDraw({
       const path = ref.current.querySelector("path");
       if (!path) return;
 
-      const length = path.getTotalLength();
-      gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+      // pathLength={1000} normalizes dash math (getTotalLength() is user-space
+      // but non-scaling-stroke dashes render in screen space). 1000 — not 1 —
+      // because GSAP's CSS layer rounds stroke-dashoffset to whole px, which
+      // quantizes a 0–1 range into a binary step. Chrome also tiles screen-space
+      // dashes on anisotropically stretched viewBoxes — callers that scrub a
+      // stretched path must pass a pixel-space `d` + matching viewBox (1:1),
+      // as CraftSection does.
+      gsap.set(path, { strokeDasharray: 1000, strokeDashoffset: 1000 });
       gsap.to(path, {
         strokeDashoffset: 0,
         ease: "none",
@@ -57,7 +65,7 @@ export function PathDraw({
         },
       });
     },
-    { scope: ref, dependencies: [prefersReducedMotion, d] },
+    { scope: ref, dependencies: [prefersReducedMotion, d], revertOnUpdate: true },
   );
 
   return (
@@ -74,9 +82,11 @@ export function PathDraw({
       >
         <path
           d={d}
+          pathLength={1000}
           fill="none"
           stroke="currentColor"
-          strokeWidth={strokeWidth}
+          strokeWidth={typeof strokeWidth === "number" ? strokeWidth : undefined}
+          style={typeof strokeWidth === "string" ? { strokeWidth } : undefined}
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
         />

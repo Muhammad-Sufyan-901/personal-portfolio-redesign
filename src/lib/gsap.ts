@@ -22,4 +22,10 @@ if (typeof document !== "undefined" && "fonts" in document) {
   document.fonts.ready.then(() => ScrollTrigger.refresh());
 }
 
+// Dev-only handle for chrome-devtools MCP smoke probes (trigger positions,
+// progress) — stripped from production builds.
+if (import.meta.env.DEV) {
+  (window as unknown as Record<string, unknown>).__ScrollTrigger = ScrollTrigger;
+}
+
 export { gsap, ScrollTrigger };

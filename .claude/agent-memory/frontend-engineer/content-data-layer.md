@@ -19,7 +19,7 @@ All PRD §2–§3 content is in typed constants. **Reuse these — never re-tran
 
 ## Data files (named exports)
 - `src/features/home/data/profile.data.ts` — `profile` (verbatim bio; cvUrl `/assets/pdf/Muhammad Sufyan CV.pdf` — PDF not yet in `public/`).
-- `src/features/home/data/skills.data.ts` — `skills` (21), `webPillar` = React, TypeScript, Tailwind, shadcn/ui, Laravel, Livewire; `mobilePillar` = Flutter, React Native; `tools` (6).
+- `src/features/home/data/skills.data.ts` — `skills` (21) + `tools` (6) ONLY. (There are NO `webPillar`/`mobilePillar` exports — the pillar lists live on `profile.favoredStacks.{web,mobile}` in profile.data.ts; CraftSection cross-refs them against `skills` levels via its `LEVEL_ALIAS` map `{ React: "React JS", Tailwind: "Tailwind CSS" }` — shadcn/ui + Livewire have no skills entry, hence no level chip.)
 - `src/features/home/data/journey.data.ts` — `journey` (9 items, most-recent-first by start date; PRD order for ties).
 - `src/features/home/data/contact.data.ts` — `contactChannels` (WhatsApp/Gmail/Telegram).
 - `src/data/projects.data.ts` — `projects` (**shared across features**). Slugs: `kna-landing-page`, `khass-e-ticketing`, `personal-portfolio`, `phantom-landing-page`, `petabyte-landing-page`, `hoobank-landing-page`. Featured = all except `personal-portfolio`. No thumbnails/years yet.

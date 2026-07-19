@@ -29,6 +29,12 @@ Gotchas found 2026-07-18 (about refine):
 - Instant `window.scrollTo` is fine for scrub-only chapters (Lenis adopts native jumps); only `once` triggers need the scroll-to-element dance (ch.03 note). Numeric scrub needs a catch-up wait (~3× the scrub seconds) before asserting rest state.
 - Preloader-done poll: absence of `lenis-stopped` on `<html>` + require >3s elapsed (the class doesn't exist pre-lock, so a bare absence check passes instantly at t=0).
 
+Gotchas found 2026-07-20 (ch.04 craft):
+- SVG path-draw checks MUST include a screenshot — computed-style probes (dasharray/dashoffset/pathLength) all read "correct" while the rendered stroke is fragmented into capsule chunks (non-scaling-stroke + preserveAspectRatio:none screen-space dash bug). `page.screenshot` is the only reliable assert.
+- Crossfade-vs-snap probes: trigger the state change, sample BOTH the outgoing layer and the container ~120ms in — a true crossfade shows container ≈1 and old layer mid-fade; a revertOnUpdate snap shows old layer at 0 instantly and the container re-fading from 0.
+- Tailwind v4 scale checks: read `getComputedStyle(el).scale` (standalone property), not `.transform` — transform reads "none" even when scale-105 is applied. Cross-check `transitionProperty` actually lists `scale`.
+- Focus-start-point quirk: after `el.focus()` + `blur()`, the next Tab continues from the blurred element, not document top — fine for sequential-order checks, wrong for "first tabbable" checks.
+
 Gotchas found 2026-07-16 (hero one-line refine):
 - Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
 - Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.
