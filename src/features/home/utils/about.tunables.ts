@@ -29,24 +29,12 @@ export const ABOUT_REFINE = {
    *  fires — retune with any height change. */
   finale: { start: "top 90%", end: "top 70%" },
   portrait: {
-    glow: {
-      /** Halo spread: the radial-gradient layer is oversized by 3× this
-       *  (no CSS filter — the softness lives in the gradient falloff).
-       *  The halo is an ENTRY-ONLY bell riding the veil-resolve span
-       *  (in over its first 40%, out by its end) — past 20% traversal the
-       *  box is fully orange with no glow/blur overlay at all. */
-      blurPx: 56,
-    },
     /** Token NAMES (no raw hex) — resolved as var(--color-<stop>). Opaque
      *  accent stops + mix-blend-color = the FULL orange duotone grade (photo
-     *  luminance preserved, hue pulled entirely into the ember family). */
+     *  luminance preserved, hue pulled entirely into the ember family).
+     *  v8: the portrait is the static fully-orange box at ALL times — the
+     *  entry blur/vignette/halo overlays were removed by owner request. */
     tint: { stops: ["accent-deep", "accent"] },
-    /** Focus beat: the portrait is blurred (edge vignette feathers it into
-     *  the ink) ONLY during the section's entry — blur + vignette clear
-     *  over the first `resolveSpan` fraction of the section's total
-     *  traversal (sectionHeight + vh from `top bottom`), leaving the clean
-     *  orange box for the bio + finale views (reference Images #10–12). */
-    veil: { blurFromPx: 16, resolveSpan: 0.2 },
   },
   /** Damped feel for the description/finale scrubs (numeric scrub = 3/damp
    *  seconds). The entry timeline stays scrub:true — numeric scrub there
@@ -55,7 +43,7 @@ export const ABOUT_REFINE = {
   damp: 5,
   /** Pre-reveal floor for H1 words + H2 lines — veiled, not invisible. */
   veiledOpacity: 0.35,
-  /** Single low-perf switch: false ⇒ blur channels degrade to opacity+y,
-   *  portrait focus blur + halo off. */
+  /** Single low-perf switch: false ⇒ text blur channels degrade to
+   *  opacity+y reveals. */
   blurEnabled: true,
 } as const;

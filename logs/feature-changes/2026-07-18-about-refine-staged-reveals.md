@@ -83,7 +83,15 @@ Owner asks vs the reference stills (Images #10–12): reduce the section to the 
 
 ## v7 revision (2026-07-19) — REVERTED same day
 
-Three changes (portrait overlays removed entirely, CV link at `text-item` + underline, staircase stat cards) were built, verified, and then **reverted at owner request** — the section stands at the v6 state: entry-only portrait blur/vignette/halo bell, `text-eyebrow` CV link, single-row glass bubbles.
+Three changes (portrait overlays removed entirely, CV link at `text-item` + underline, staircase stat cards) were built, verified, and then **reverted at owner request** — the v6 state was committed as `a22866e`.
+
+## v8 revision (2026-07-19, post-commit) — v7 re-applied with a text-zone cap
+
+The owner re-requested the v7 trio with one refinement:
+
+- **Portrait overlays removed** (exact v7 edits re-applied): no `ptl`, no `.about-halo`/`.about-vignette`, no `portrait.veil`/`glow` tunables — the portrait is the static primarily-orange box (duotone + wash) at all times, riding only the `.about-item` entry stagger. Verified `filter: none` at entry, zero overlay nodes, settle audit ZERO.
+- **CV link**: `text-item` (28 px ≡ the description's size) + `underline decoration-1 underline-offset-8`.
+- **Staircase stats, capped to the text zone**: one card per row (`self-start`/`self-center`/`self-end`, intrinsic size) inside `lg:max-w-[calc(60vw_-_2*var(--spacing-page-x))]` — the portrait rail owns the right 40 vw and the inner column is padded by `--spacing-page-x`, so the right-aligned card ends exactly one page-x short of the panel (verified card-3 right 792 px vs panel left 864 px @1440).
 
 ## Follow-ups
 

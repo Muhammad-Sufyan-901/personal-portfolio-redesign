@@ -42,24 +42,14 @@ const TINT_GRADIENT = `linear-gradient(to top, var(--color-${P.tint.stops[0]}), 
 /** Bio reveal length — own-position scrub over a viewport fraction. */
 const descEnd = () => `+=${D.reveal.spanVh * window.innerHeight}`;
 
-/** D4 ember composition: entry-only glow halo behind (radial gradient — no
- *  CSS filter, softness lives in the falloff; a scrubbed BELL that is gone
- *  past ~20% traversal) + a rounded clip wrapper owning the corner radius
- *  (tint + wash + vignette clip with the image; the focus-blur tweens THIS
- *  wrapper, ParallaxImage stays untouched). Tint = orange duotone (opaque
- *  accent stops + mix-blend-color) under a normal-blend ember wash — the box
- *  reads fully orange even over the 404 placeholder. The vignette feathers
- *  the blurred portrait into the ink during entry only. */
+/** D4 ember composition (v8 — no motion overlays): a rounded clip wrapper
+ *  owning the corner radius; inside it the image under the orange duotone
+ *  (opaque accent stops + mix-blend-color) and a normal-blend ember wash —
+ *  the box reads primarily orange even over the 404 placeholder, at all
+ *  times. ParallaxImage stays untouched. */
 function EmberPortrait({ className, rounding }: { className?: string; rounding: string }) {
   return (
     <Box className={cn("relative", className)}>
-      {/* Entry-only glow bell — default HIDDEN (the settled state has no
-          glow/blur overlay past 20% traversal). */}
-      <Box
-        aria-hidden
-        className="about-halo pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--color-ember-glow-deep),transparent_70%)]"
-        style={{ opacity: 0 }}
-      />
       <Box className={cn("about-clip relative h-full overflow-hidden", rounding)}>
         <ParallaxImage
           src={PORTRAIT_SRC}
@@ -74,11 +64,6 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
         <Box
           aria-hidden
           className="from-accent-deep/70 to-accent/45 pointer-events-none absolute inset-0 bg-linear-to-t"
-        />
-        <Box
-          aria-hidden
-          className="about-vignette pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,var(--color-ink)_98%)]"
-          style={{ opacity: 0 }}
         />
       </Box>
     </Box>
@@ -104,9 +89,6 @@ export function AboutSection() {
       const finalEl = section.querySelector<HTMLElement>(".about-final");
       const items = gsap.utils.toArray<HTMLElement>(".about-item", section);
       const words = gsap.utils.toArray<HTMLElement>(".about-word", section);
-      const halos = gsap.utils.toArray<HTMLElement>(".about-halo", section);
-      const clips = gsap.utils.toArray<HTMLElement>(".about-clip", section);
-      const vignettes = gsap.utils.toArray<HTMLElement>(".about-vignette", section);
       if (!inner || !finalEl) return;
 
       // Markup defaults are the SETTLED state (reduced motion renders
@@ -118,7 +100,6 @@ export function AboutSection() {
       };
       gsap.set(items, { autoAlpha: 0, y: 24 });
       gsap.set(words, wordVeil);
-      gsap.set(halos, { inset: -P.glow.blurPx * 3 });
 
       // §4.6 grammar: ONE scrubbed, reversible entry timeline coupled to the
       // veil tail (trigger geometry = the seam contract, scrub:true only).
@@ -175,34 +156,9 @@ export function AboutSection() {
         scrub: 3 / damp,
       });
 
-      if (blurEnabled) {
-        // Focus beat: blur + vignette + the halo glow live ONLY in the
-        // section's entry — everything clears over the first `resolveSpan`
-        // fraction of the total traversal, leaving the clean fully-orange
-        // box (no glow/blur overlay) through the bio + finale views. The
-        // halo rides the same timeline as a bell (in over the first 40%,
-        // gone by the end) — no breath, no gating, reversible by scrub.
-        const portraitVeil = { filter: `blur(${P.veil.blurFromPx}px)` };
-        gsap.set(clips, portraitVeil);
-        gsap.set(vignettes, { opacity: 1 });
-        const ptl = gsap.timeline({ defaults: { ease: "none" } });
-        ptl
-          .fromTo(clips, { ...portraitVeil }, { filter: "blur(0px)", duration: 1 }, 0)
-          .fromTo(vignettes, { opacity: 1 }, { opacity: 0, duration: 1 }, 0)
-          .fromTo(halos, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0)
-          .fromTo(halos, { opacity: 1 }, { opacity: 0, duration: 0.5 }, 0.5)
-          .set(clips, { filter: "none" }, 1);
-        ScrollTrigger.create({
-          animation: ptl,
-          trigger: section,
-          start: "top bottom",
-          end: () => `+=${P.veil.resolveSpan * (section.offsetHeight + window.innerHeight)}`,
-          scrub: 3 / damp,
-          invalidateOnRefresh: true,
-        });
-      }
-      // (!blurEnabled: nothing to do — the halo's markup default is hidden,
-      // the box renders as the static fully-orange settled state.)
+      // v8: the portrait has NO motion overlays — it renders as the static
+      // primarily-orange box at all times (owner request; blur/vignette/halo
+      // removed). Its wrapper still rides the .about-item entry stagger.
     },
     { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
   );
@@ -276,7 +232,7 @@ export function AboutSection() {
           <MagneticButton>
             <Link
               href={profile.cvUrl}
-              className="magnetic-label text-eyebrow text-paper hover:text-accent group inline-flex items-center gap-3 font-mono uppercase transition-colors"
+              className="magnetic-label text-item text-paper hover:text-accent group inline-flex items-center gap-3 font-mono uppercase underline decoration-1 underline-offset-8 transition-colors"
             >
               Download CV
               <Box
@@ -298,12 +254,19 @@ export function AboutSection() {
             closing beat. */}
         <Box className="about-final mt-[12svh] lg:mt-[14svh] lg:mb-[24svh]">
           {/* Glass bubbles — MenuButton's glass-pill grammar: translucent
-              paper wash + hairline + static backdrop blur. */}
-          <Box className="flex flex-wrap items-stretch gap-x-5 gap-y-5">
-            {profile.stats.map((stat) => (
+              paper wash + hairline + static backdrop blur. v8: one card per
+              row, staircasing left → center → right at intrinsic size; the
+              container is capped to the TEXT ZONE (the portrait rail owns
+              the right 40vw, the inner column is padded by --spacing-page-x)
+              so no card crosses into the portrait. */}
+          <Box className="flex flex-col gap-y-5 lg:max-w-[calc(60vw_-_2*var(--spacing-page-x))]">
+            {profile.stats.map((stat, i) => (
               <Box
                 key={stat.label}
-                className="border-paper/10 bg-paper/5 rounded-2xl border px-7 py-5 backdrop-blur-md"
+                className={cn(
+                  "border-paper/10 bg-paper/5 rounded-2xl border px-7 py-5 backdrop-blur-md",
+                  i % 3 === 0 ? "self-start" : i % 3 === 1 ? "self-center" : "self-end",
+                )}
               >
                 <Box
                   as="p"
