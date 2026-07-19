@@ -157,7 +157,15 @@ export function RevealText({
         end,
         scrub,
         invalidateOnRefresh: true,
-        onRefresh: () => rebuild(true),
+        onRefresh: (self) => {
+          rebuild(true);
+          // Rebuilt children don't render while the playhead is parked — a
+          // refresh past the trigger (resize at page bottom) leaves forward
+          // progress clamped at 1, so nothing ever moves the playhead and
+          // the fresh splits keep their veil set. Force one render at the
+          // trigger's current progress (found in odometer QA 2026-07-19).
+          tl.progress(self.progress);
+        },
       });
 
       return () => split.revert();

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
  *  graceful-hide until the real photo lands in public/assets/images/. */
 const PORTRAIT_SRC = "/assets/images/portrait.webp";
 
-const { headline: H, description: D, finale: F, portrait: P, damp, veiledOpacity, blurEnabled } = ABOUT_REFINE;
+const { headline: H, description: D, stats: S, portrait: P, damp, veiledOpacity, blurEnabled } = ABOUT_REFINE;
 const { overlap } = MANIFESTO_ENTRY.veil.aboutResolve;
 
 type StatementWord = { text: string; emphasized: boolean };
@@ -89,13 +89,118 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
   );
 }
 
+/** Odometer strip for one digit: 0..d for the visible roll; a 0 digit rolls
+ *  the full cycle 0..9..0 (the ones slot of "10" — the finale crescendo).
+ *  The final entry is always index len−1, so the settled markup offset and
+ *  the scrubbed target share one formula: −100·(len−1)/len %. */
+function digitStrip(digit: number): number[] {
+  return digit > 0 ? Array.from({ length: digit + 1 }, (_, i) => i) : [...Array.from({ length: 10 }, (_, i) => i), 0];
+}
+
+/** Overdrive stat card (odometer ignition, 2026-07-19): markup is the
+ *  SETTLED state — strips show the final digit via inline transform, the
+ *  SVG rect renders a full clean border (dash channels exist only on the
+ *  motion path), the glare band is parked at opacity-0. The finale timeline
+ *  veils everything pre-paint and scrubs it back, so reduced motion renders
+ *  this complete with zero JS. rx falls back to 1rem: rounded-2xl resolves
+ *  Tailwind's default-theme --radius-2xl, which our @theme doesn't redefine. */
+function StatCard({ value, label, className }: { value: number; label: string; className?: string }) {
+  const strips = String(value)
+    .split("")
+    .map((d) => digitStrip(Number(d)));
+  const inset = S.border.strokePx / 2;
+  return (
+    <Box
+      className={cn("stat-card bg-paper/5 relative overflow-hidden rounded-2xl px-7 py-5 backdrop-blur-md", className)}
+    >
+      <svg
+        aria-hidden
+        focusable="false"
+        className="text-paper/10 pointer-events-none absolute inset-0 h-full w-full"
+      >
+        <rect
+          className="stat-border"
+          pathLength={100}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={S.border.strokePx}
+          style={{
+            x: inset,
+            y: inset,
+            width: `calc(100% - ${S.border.strokePx}px)`,
+            height: `calc(100% - ${S.border.strokePx}px)`,
+            rx: `calc(var(--radius-2xl, 1rem) - ${inset}px)`,
+          }}
+        />
+      </svg>
+      <Box
+        aria-hidden
+        className={cn(
+          "stat-glare pointer-events-none absolute inset-y-0 left-0 w-[55%] opacity-0",
+          "from-paper/0 via-paper/20 to-paper/0 bg-linear-to-r",
+        )}
+      />
+      <Box
+        as="p"
+        aria-label={`${value}+`}
+        className="font-display-lead text-chapter text-paper flex items-end tabular-nums"
+      >
+        <Box
+          as="span"
+          aria-hidden
+          className="flex items-end"
+        >
+          {strips.map((strip, slot) => (
+            <Box
+              key={slot}
+              as="span"
+              className="stat-slot block h-[1em] min-w-[1ch] overflow-hidden text-center"
+            >
+              <Box
+                as="span"
+                className="stat-strip block"
+                style={{ transform: `translateY(${(-100 * (strip.length - 1)) / strip.length}%)` }}
+              >
+                {strip.map((digit, row) => (
+                  <Box
+                    key={row}
+                    as="span"
+                    className="block h-[1em]"
+                  >
+                    {digit}
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          ))}
+          <Box
+            as="span"
+            className="font-display-tail text-accent self-start text-[0.5em] leading-none italic"
+          >
+            +
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        as="p"
+        className="text-eyebrow text-muted mt-1 font-mono uppercase"
+      >
+        {label}
+      </Box>
+    </Box>
+  );
+}
+
 /** 03 — About: the factual persona block on the reference's About beat.
  *  v4 (2026-07-19): the section scrolls past 100vh with beats in document
  *  order — word-blur headline → description (+CV) → version + statistics
  *  finale — while the portrait STICKS on the right until the section ends
  *  (reference passage). Portrait keeps the orange duotone grade + focus
  *  blur; the finale beat sharpens it. Still the manifesto veil's landing
- *  target — entry trigger geometry is the G seam contract. */
+ *  target — entry trigger geometry is the G seam contract.
+ *  v5 (2026-07-19, /impeccable overdrive): odometer-ignition stats finale —
+ *  display-scale digit rolls, self-drawing borders, glare sweeps (StatCard +
+ *  ABOUT_REFINE.stats). */
 export function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -152,26 +257,101 @@ export function AboutSection() {
         scrub: true,
       });
 
-      // Finale beat — version + statistics resolve on their own position.
-      const finaleVeil = {
+      // Finale — odometer ignition (v5): ONE scrubbed master timeline; cards
+      // ignite in staircase/DOM order (shell → border draw → digit roll →
+      // glare sweep), the version line rides the tail. Markup is the settled
+      // state — the sets below veil the visibility-critical elements
+      // pre-paint (fromTo from-states cover the card innards: while a card
+      // is autoAlpha-0 its strips/border/glare are moot), and every hygiene
+      // .set lives INSIDE the timeline so it re-renders on reverse.
+      const cards = gsap.utils.toArray<HTMLElement>(".stat-card", section);
+      const version = section.querySelector<HTMLElement>(".about-version");
+      const cardVeil = {
         autoAlpha: 0,
-        y: 24,
+        y: S.yDrift,
         ...(blurEnabled && { filter: `blur(${D.blurFromPx}px)` }),
       };
-      gsap.set(finalEl, finaleVeil);
+      const settle = { autoAlpha: 1, y: 0, ...(blurEnabled && { filter: "blur(0px)" }) };
+      gsap.set(cards, cardVeil);
+      if (version) gsap.set(version, cardVeil);
+
       const ftl = gsap.timeline({ defaults: { ease: "none" } });
-      ftl.fromTo(
-        finalEl,
-        { ...finaleVeil },
-        { autoAlpha: 1, y: 0, ...(blurEnabled && { filter: "blur(0px)" }), duration: 1 },
-        0,
-      );
-      if (blurEnabled) ftl.set(finalEl, { filter: "none" }, 1);
+      let base = 0;
+      let versionAt = 0;
+      cards.forEach((card, i) => {
+        const span = S.spans[i] ?? 1;
+        const at = (f: number) => base + f * span;
+        const dur = (w: readonly number[]) => ((w[1] ?? 0) - (w[0] ?? 0)) * span;
+
+        ftl.fromTo(card, { ...cardVeil }, { ...settle, duration: dur(S.beat.shell) }, at(S.beat.shell[0]));
+        if (blurEnabled) ftl.set(card, { filter: "none" }, at(S.beat.shell[1]));
+
+        const rect = card.querySelector<SVGRectElement>(".stat-border");
+        if (rect) {
+          ftl.fromTo(
+            rect,
+            { strokeDasharray: 100, strokeDashoffset: 100 },
+            { strokeDashoffset: 0, duration: dur(S.beat.border) },
+            at(S.beat.border[0]),
+          );
+          // Dash-seam hygiene — a scrubbed .set re-renders on reverse, so
+          // scrolling back re-applies the dash for the un-draw.
+          ftl.set(rect, { strokeDasharray: "none" }, at(S.beat.border[1]));
+        }
+
+        // Digit roll — the LAST slot spins the whole beat with the decel
+        // ease (easing lives only here; timeline defaults stay ease:"none"
+        // per scrub grammar). Higher-order slots ("10"'s tens) flip
+        // linearly across the final tensFlipFrac, riding the 9→0 carry.
+        const strips = gsap.utils.toArray<HTMLElement>(".stat-strip", card);
+        const rollStart = at(S.beat.roll[0]);
+        const rollDur = dur(S.beat.roll);
+        strips.forEach((strip, slot) => {
+          const len = strip.children.length;
+          const last = slot === strips.length - 1;
+          const flipDur = last ? rollDur : rollDur * S.roll.tensFlipFrac;
+          ftl.fromTo(
+            strip,
+            // BOTH transform channels — GSAP parses the settled % transform
+            // as px into `y`; zeroing only yPercent leaves the strip offset.
+            { y: 0, yPercent: 0 },
+            {
+              yPercent: (-100 * (len - 1)) / len,
+              duration: flipDur,
+              ...(last && { ease: S.roll.ease }),
+            },
+            rollStart + rollDur - flipDur,
+          );
+        });
+
+        const glare = card.querySelector<HTMLElement>(".stat-glare");
+        if (glare) {
+          // Parked outside the overflow-clip at opacity 1 → the sweep is a
+          // pure composited transform, reversible inside the scrub.
+          ftl.fromTo(
+            glare,
+            { opacity: 1, xPercent: S.glare.fromX, skewX: -12 },
+            { xPercent: S.glare.toX, duration: dur(S.beat.glare) },
+            at(S.beat.glare[0]),
+          );
+        }
+
+        versionAt = at(S.version.at);
+        base += span * S.cardStagger;
+      });
+
+      if (version) {
+        ftl.fromTo(version, { ...cardVeil }, { ...settle, duration: S.version.dur }, versionAt);
+        // The timeline's final act — the piece the last-section anchor
+        // (stats.trigger comment in about.tunables.ts) guards.
+        if (blurEnabled) ftl.set(version, { filter: "none" }, versionAt + S.version.dur);
+      }
+
       ScrollTrigger.create({
         animation: ftl,
         trigger: finalEl,
-        start: F.start,
-        end: F.end,
+        start: S.trigger.start,
+        end: S.trigger.end,
         scrub: 3 / damp,
       });
 
@@ -272,39 +452,26 @@ export function AboutSection() {
             (About is the last section) and holds the stuck portrait for a
             closing beat. */}
         <Box className="about-final mt-[12svh] lg:mt-[14svh] lg:mb-[24svh]">
-          {/* Glass bubbles — MenuButton's glass-pill grammar: translucent
-              paper wash + hairline + static backdrop blur. v8: one card per
-              row, staircasing left → center → right at intrinsic size; the
-              container is capped to the TEXT ZONE (the portrait rail owns
-              the right 40vw, the inner column is padded by --spacing-page-x)
-              so no card crosses into the portrait. */}
+          {/* Odometer cards (v5) — the glass-pill grammar overdriven:
+              display-scale digit slots that roll like a machine counter, a
+              self-drawing SVG hairline, one glare sweep each. Still one card
+              per row, staircasing left → center → right at intrinsic size;
+              the container is capped to the TEXT ZONE (the portrait rail
+              owns the right 40vw, the inner column is padded by
+              --spacing-page-x) so no card crosses into the portrait. */}
           <Box className="flex flex-col gap-y-5 lg:max-w-[calc(60vw_-_2*var(--spacing-page-x))]">
             {profile.stats.map((stat, i) => (
-              <Box
+              <StatCard
                 key={stat.label}
-                className={cn(
-                  "border-paper/10 bg-paper/5 rounded-2xl border px-7 py-5 backdrop-blur-md",
-                  i % 3 === 0 ? "self-start" : i % 3 === 1 ? "self-center" : "self-end",
-                )}
-              >
-                <Box
-                  as="p"
-                  className="font-display-lead text-item text-paper"
-                >
-                  {stat.value}
-                </Box>
-                <Box
-                  as="p"
-                  className="text-eyebrow text-muted mt-1 font-mono uppercase"
-                >
-                  {stat.label}
-                </Box>
-              </Box>
+                value={stat.value}
+                label={stat.label}
+                className={i % 3 === 0 ? "self-start" : i % 3 === 1 ? "self-center" : "self-end"}
+              />
             ))}
           </Box>
           <Box
             as="p"
-            className="font-display-lead text-chapter text-paper mt-10"
+            className="about-version font-display-lead text-chapter text-paper mt-10"
           >
             <Box
               as="span"
