@@ -14,8 +14,8 @@ const HUD_END = 100_000;
 const HUD_START = 0.45;
 
 /** Fixed scroll wayfinding, hidden over the hero (same choreography as
- *  MenuPopout): left-edge "(22)" overall page-scroll percentage (railed with
- *  About's "(3+)" gutter echo at left-6), and a right-edge rail segmented
+ *  MenuPopout): left-edge "(22)" overall page-scroll percentage, and a
+ *  right-edge rail segmented
  *  proportionally to each chapter's scroll length — elapsed portions fill
  *  bright, and the current-chapter label rides the rail at overall progress.
  *  Keys off whichever navLinks anchors are live in the DOM, so future

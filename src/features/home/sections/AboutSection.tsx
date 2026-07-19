@@ -593,15 +593,6 @@ export function AboutSection() {
           />
         </Box>
       </Box>
-
-      {/* Left-gutter marker — the reference's "(23)" echo. */}
-      <Box
-        as="span"
-        aria-label={`${profile.stats[0].value}+ ${profile.stats[0].label}`}
-        className="about-item text-meta text-muted absolute left-6 top-[55%] hidden font-mono lg:block"
-      >
-        ({profile.stats[0].value}+)
-      </Box>
     </Box>
   );
 }
