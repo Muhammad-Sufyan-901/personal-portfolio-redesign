@@ -131,7 +131,12 @@ export function HeroSection() {
       as="section"
       id="hero"
       ref={ref}
-      className="relative isolate flex min-h-svh flex-col px-page-x pb-6"
+      // overflow-x-CLIP (no scroll container): the manifesto zoom-exit leaves
+      // the h1 scaled page-wide — unclipped it widens the document, and
+      // phones zoom out to fit + lose the last ~370px of scroll (the About
+      // finale tail/mobile portrait never reveal). Clipping at the full-width
+      // section edge = the viewport edge, so the zoom beat looks identical.
+      className="relative isolate flex min-h-svh flex-col overflow-x-clip px-page-x pb-6"
     >
       {/* Wrapper so the P4 ramp never touches AuroraBackground's own root
           (its scroll scrub-fade records that element's start alpha). */}
