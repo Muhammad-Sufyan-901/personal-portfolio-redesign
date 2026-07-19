@@ -19,8 +19,9 @@ const SPLIT_TYPES: Record<RevealMode, string> = {
 };
 
 /** Slight rise for the scrubbed blur variant — blur must not be clipped, so
- *  no yPercent-in-clip-wrapper; a small unclipped drift instead. */
-const SCRUB_Y = 12;
+ *  no yPercent-in-clip-wrapper; a small unclipped drift instead. Exported for
+ *  siblings that mirror this grammar on unsplittable targets (About's CV). */
+export const SCRUB_Y = 12;
 
 type RevealElement = "div" | "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 

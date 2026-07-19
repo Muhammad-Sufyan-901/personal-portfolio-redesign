@@ -21,7 +21,7 @@ export const profile: Profile = {
   },
   stats: [
     { value: 3, label: "Years of Experience" },
-    { value: 7, label: "Frameworks & Tech Stacks Used" },
+    { value: 7, label: "Frameworks & \nTech Stacks Used" },
     { value: 10, label: "Successful Projects" },
   ],
   favoredStacks: {

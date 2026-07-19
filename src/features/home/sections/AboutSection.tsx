@@ -2,6 +2,7 @@ import { Fragment, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { Box, ChapterEyebrow, Link, MagneticButton, ParallaxImage, RevealText } from "@/components/common";
+import { SCRUB_Y } from "@/components/common/RevealText";
 import { profile } from "@/features/home/data/profile.data";
 import { siteConfig } from "@/config/site";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -11,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 /** Portrait is a PLAN §8 externality — the path 404s into the primitive's
  *  graceful-hide until the real photo lands in public/assets/images/. */
-const PORTRAIT_SRC = "/assets/images/portrait.webp";
+const PORTRAIT_SRC = "/assets/images/profile/about-profile.png";
 
 const { headline: H, description: D, stats: S, portrait: P, damp, veiledOpacity, blurEnabled } = ABOUT_REFINE;
 const { overlap } = MANIFESTO_ENTRY.veil.aboutResolve;
@@ -64,7 +65,7 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
         <ParallaxImage
           src={PORTRAIT_SRC}
           alt="Portrait of Muhammad Sufyan"
-          className="h-full"
+          className="h-full w-full"
         />
         <Box
           aria-hidden
@@ -80,8 +81,8 @@ function EmberPortrait({ className, rounding }: { className?: string; rounding: 
           className={cn(
             "about-glare pointer-events-none absolute inset-0 motion-reduce:hidden",
             "bg-linear-[-45deg] from-transparent from-55% via-paper/25 via-70% to-transparent to-85%",
-            "[background-position:-100%_-100%] [background-size:250%_250%] [background-repeat:no-repeat]",
-            "transition-[background-position] duration-700 ease-out group-hover:[background-position:100%_100%]",
+            "bg-position-[-100%_-100%] bg-size-[250%_250%] bg-no-repeat",
+            "transition-[background-position] duration-700 ease-out group-hover:bg-position-[100%_100%]",
           )}
         />
       </Box>
@@ -103,89 +104,113 @@ function digitStrip(digit: number): number[] {
  *  motion path), the glare band is parked at opacity-0. The finale timeline
  *  veils everything pre-paint and scrubs it back, so reduced motion renders
  *  this complete with zero JS. rx falls back to 1rem: rounded-2xl resolves
- *  Tailwind's default-theme --radius-2xl, which our @theme doesn't redefine. */
+ *  Tailwind's default-theme --radius-2xl, which our @theme doesn't redefine.
+ *  Glass-with-color chrome (React Bits GlassIcons, adapted per
+ *  animated-ui-references): an ember plate rotated behind a smoked-glass
+ *  front — bg-ink/40, not the source's light glass, which fails AA under
+ *  the label over the plate. Hover is pure CSS (--ease-inout IS the source
+ *  curve), gated motion-safe:. `.stat-card` is the WRAPPER so the shell
+ *  beat ignites plate+glass as one; the wrapper, .stat-strip and
+ *  .stat-glare stay transition-free (GSAP writes them every scrub frame).
+ *  Plate sits at 6°, not the source's 15° — these wide cards would cross
+ *  the previous staircase card. */
 function StatCard({ value, label, className }: { value: number; label: string; className?: string }) {
   const strips = String(value)
     .split("")
     .map((d) => digitStrip(Number(d)));
   const inset = S.border.strokePx / 2;
   return (
-    <Box
-      className={cn("stat-card bg-paper/5 relative overflow-hidden rounded-2xl px-7 py-5 backdrop-blur-md", className)}
-    >
-      <svg
-        aria-hidden
-        focusable="false"
-        className="text-paper/10 pointer-events-none absolute inset-0 h-full w-full"
-      >
-        <rect
-          className="stat-border"
-          pathLength={100}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={S.border.strokePx}
-          style={{
-            x: inset,
-            y: inset,
-            width: `calc(100% - ${S.border.strokePx}px)`,
-            height: `calc(100% - ${S.border.strokePx}px)`,
-            rx: `calc(var(--radius-2xl, 1rem) - ${inset}px)`,
-          }}
-        />
-      </svg>
+    <Box className={cn("stat-card group relative", className)}>
       <Box
         aria-hidden
         className={cn(
-          "stat-glare pointer-events-none absolute inset-y-0 left-0 w-[55%] opacity-0",
-          "from-paper/0 via-paper/20 to-paper/0 bg-linear-to-r",
+          "pointer-events-none absolute inset-0 origin-bottom-right rotate-6 rounded-2xl",
+          "bg-linear-to-b from-accent to-accent-deep",
+          "shadow-[0_0_40px_-8px_var(--color-ember-glow-deep)]",
+          "transition-transform duration-(--dur-fast) ease-inout",
+          "motion-safe:group-hover:rotate-10 motion-safe:group-hover:-translate-x-2 motion-safe:group-hover:-translate-y-2",
         )}
       />
       <Box
-        as="p"
-        aria-label={`${value}+`}
-        className="font-display-lead text-chapter text-paper flex items-end tabular-nums"
+        className={cn(
+          "relative overflow-hidden rounded-2xl bg-ink/40 px-7 py-5 backdrop-blur-md",
+          "transition-transform duration-(--dur-fast) ease-inout motion-safe:group-hover:scale-[1.03]",
+        )}
       >
-        <Box
-          as="span"
+        <svg
           aria-hidden
-          className="flex items-end"
+          focusable="false"
+          className="text-paper/30 pointer-events-none absolute inset-0 h-full w-full"
         >
-          {strips.map((strip, slot) => (
-            <Box
-              key={slot}
-              as="span"
-              className="stat-slot block h-[1em] min-w-[1ch] overflow-hidden text-center"
-            >
-              <Box
-                as="span"
-                className="stat-strip block"
-                style={{ transform: `translateY(${(-100 * (strip.length - 1)) / strip.length}%)` }}
-              >
-                {strip.map((digit, row) => (
-                  <Box
-                    key={row}
-                    as="span"
-                    className="block h-[1em]"
-                  >
-                    {digit}
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          ))}
+          <rect
+            className="stat-border"
+            pathLength={100}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={S.border.strokePx}
+            style={{
+              x: inset,
+              y: inset,
+              width: `calc(100% - ${S.border.strokePx}px)`,
+              height: `calc(100% - ${S.border.strokePx}px)`,
+              rx: `calc(var(--radius-2xl, 1rem) - ${inset}px)`,
+            }}
+          />
+        </svg>
+        <Box
+          aria-hidden
+          className={cn(
+            "stat-glare pointer-events-none absolute inset-y-0 left-0 w-[55%] opacity-0",
+            "from-paper/0 via-paper/20 to-paper/0 bg-linear-to-r",
+          )}
+        />
+        <Box
+          as="p"
+          aria-label={`${value}+`}
+          className="font-display-tail text-chapter text-paper flex items-end italic tabular-nums"
+        >
           <Box
             as="span"
-            className="font-display-tail text-accent self-start text-[0.5em] leading-none italic"
+            aria-hidden
+            className="flex items-end"
           >
-            +
+            {strips.map((strip, slot) => (
+              <Box
+                key={slot}
+                as="span"
+                className="stat-slot block h-[1em] min-w-[1ch] overflow-x-visible overflow-y-clip text-center"
+              >
+                <Box
+                  as="span"
+                  className="stat-strip block"
+                  style={{ transform: `translateY(${(-100 * (strip.length - 1)) / strip.length}%)` }}
+                >
+                  {strip.map((digit, row) => (
+                    <Box
+                      key={row}
+                      as="span"
+                      className="block h-[1em]"
+                    >
+                      {digit}
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            ))}
+            <Box
+              as="span"
+              className="self-start text-[0.5em] leading-none"
+            >
+              +
+            </Box>
           </Box>
         </Box>
-      </Box>
-      <Box
-        as="p"
-        className="text-eyebrow text-muted mt-1 font-mono uppercase"
-      >
-        {label}
+        <Box
+          as="p"
+          className="text-eyebrow text-paper/75 mt-1 font-mono whitespace-pre-line uppercase"
+        >
+          {label}
+        </Box>
       </Box>
     </Box>
   );
@@ -256,6 +281,37 @@ export function AboutSection() {
         end: () => `top ${overlap * 100}%`,
         scrub: true,
       });
+
+      // CV action — the bio's veiled blur→sharp grammar on ONE unsplittable
+      // target (nested Link + arrow; split-type would atomize it), so the
+      // same veil fromTo inline. Own-position trigger like the bio; span ≈
+      // one bio line's resolve distance (targetDur ≈ half the line
+      // timeline). NOT an .about-item — the veil IS its pre-state, and
+      // double-tweening opacity with the entry stagger would conflict.
+      const cv = section.querySelector<HTMLElement>(".about-cv");
+      if (cv) {
+        const cvVeil = {
+          opacity: veiledOpacity,
+          y: SCRUB_Y,
+          ...(blurEnabled && { filter: `blur(${D.blurFromPx}px)` }),
+        };
+        gsap.set(cv, cvVeil);
+        const ctl = gsap.timeline({ defaults: { ease: "none" } });
+        ctl.fromTo(
+          cv,
+          { ...cvVeil },
+          { opacity: 1, y: 0, ...(blurEnabled && { filter: "blur(0px)" }), duration: 1 },
+          0,
+        );
+        if (blurEnabled) ctl.set(cv, { filter: "none" }, 1);
+        ScrollTrigger.create({
+          animation: ctl,
+          trigger: cv,
+          start: D.reveal.start,
+          end: () => `+=${(D.reveal.spanVh / 2) * window.innerHeight}`,
+          scrub: 3 / damp,
+        });
+      }
 
       // Finale — odometer ignition (v5): ONE scrubbed master timeline; cards
       // ignite in staircase/DOM order (shell → border draw → digit roll →
@@ -426,8 +482,9 @@ export function AboutSection() {
           {profile.bio}
         </RevealText>
 
-        {/* The reference's "INFO" spot — our info action is the CV. */}
-        <Box className="about-item mt-12 lg:ml-[20%]">
+        {/* The reference's "INFO" spot — our info action is the CV; resolves
+            with the bio's veiled-blur grammar (.about-cv scrub, not an item). */}
+        <Box className="about-cv mt-12 lg:ml-[20%]">
           <MagneticButton>
             <Link
               href={profile.cvUrl}
@@ -459,7 +516,7 @@ export function AboutSection() {
               the container is capped to the TEXT ZONE (the portrait rail
               owns the right 40vw, the inner column is padded by
               --spacing-page-x) so no card crosses into the portrait. */}
-          <Box className="flex flex-col gap-y-5 lg:max-w-[calc(60vw_-_2*var(--spacing-page-x))]">
+          <Box className="flex flex-col gap-y-5 lg:max-w-[calc(60vw-2*var(--spacing-page-x))]">
             {profile.stats.map((stat, i) => (
               <StatCard
                 key={stat.label}
