@@ -175,7 +175,7 @@ function StatCard({ value, label, className }: { value: number; label: string; c
         <Box
           as="p"
           aria-label={`${value}+`}
-          className="font-display-tail text-chapter text-paper flex items-end italic tabular-nums"
+          className="font-display-tail text-chapter text-paper flex items-end justify-center italic tabular-nums"
         >
           <Box
             as="span"
@@ -215,7 +215,7 @@ function StatCard({ value, label, className }: { value: number; label: string; c
         </Box>
         <Box
           as="p"
-          className="text-eyebrow text-paper/75 mt-1 font-mono whitespace-pre-line uppercase"
+          className="text-eyebrow text-paper/75 mt-1 text-center font-mono whitespace-pre-line uppercase"
         >
           {label}
         </Box>
