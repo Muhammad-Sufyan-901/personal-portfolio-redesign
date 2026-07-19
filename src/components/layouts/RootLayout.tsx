@@ -1,6 +1,7 @@
 import { Outlet } from "@tanstack/react-router";
 import { Box } from "@/components/common";
 import { MenuPopout } from "@/components/shared/MenuPopout";
+import { ScrollProgressHUD } from "@/components/shared/ScrollProgressHUD";
 import { SiteMenu } from "@/components/shared/SiteMenu";
 import { useUIStore } from "@/store/useUIStore";
 
@@ -20,6 +21,7 @@ export function RootLayout() {
       <SiteMenu />
       <Box inert={menuOpen}>
         <MenuPopout />
+        <ScrollProgressHUD />
         <Outlet />
       </Box>
     </Box>
