@@ -19,7 +19,7 @@ Output styles are not inherited by subagents, so this rule is the durable enforc
 - **`Box`** — polymorphic: `as` (default `"div"`), `className`, spreads native props. No styling of its own.
 - **`Container`** — `as` (default `"div"`), `maxWidth` `"sm"|"md"|"lg"|"xl"|"2xl"|"3xl"|"4xl"|"5xl"|"6xl"|"7xl"|"full"` (default `"7xl"`), `centerContent` (default `false`, adds `flex flex-col items-center`). Always applies `mx-auto px-4 sm:px-6 lg:px-8`.
 - **`Text`** — `as` `"p"|"span"|"div"` (default `"p"`), `variant` `"default"|"lead"|"large"|"small"|"muted"` (default `"default"`).
-- **`Heading`** — `level` `1–6` (default `1`) or `as` `"h1"…"h6"`, `variant` `"default"|"display"|"title"|"subtitle"|"section"` (default `"default"`; `display` = Fraunces `font-display text-display`).
+- **`Heading`** — `level` `1–6` (default `1`) or `as` `"h1"…"h6"`, `variant` `"default"|"display"|"title"|"subtitle"|"section"` (default `"default"`; `display` = Instrument Serif `font-display text-display`).
 - **`Link`** — `href` (required), `replace` (default `false`), `scroll` (default `true`), `target`, `rel`. Classifies the href itself: external/`mailto:`/`tel:` → raw `<a>` (external `_blank` auto-sets `rel="noopener noreferrer"`); hash `#id` → smooth-scroll via `lenis.scrollTo` + `history.pushState` (native `scrollIntoView` under reduced motion); internal → TanStack `<RouterLink>`.
 - **`Image`** — `src`/`alt` required; `width`/`height`, `objectFit`, `priority` `"eager"|"lazy"` (default `"lazy"`), `quality` (default `75`), `placeholder` `"blur"|"empty"` (default `"empty"`), `blurDataURL`, `sizes`, `fallback` (defaults to an inline gray SVG). Builds a `srcset` (breakpoints 640→3840) only when `width` is set; skeleton = `bg-raised animate-pulse`.
 

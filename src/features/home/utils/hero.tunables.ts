@@ -12,7 +12,7 @@ export const HERO_REFINE = {
      *  public/fonts/{apparel,factory-grotesk}/, add the FontFace + CSS-var
      *  repoint wiring and this flag swaps the hero faces. */
     useReferenceFaces: false,
-    lead: { family: "Switzer", file: "/fonts/switzer/Switzer-Medium.woff2", weight: 500 },
+    lead: { family: "Switzer", file: "/fonts/switzer/Switzer-Variable.woff2", weight: 500 },
     tail: {
       family: "Instrument Serif",
       file: "/fonts/instrument-serif/InstrumentSerif-Italic-latin.woff2",

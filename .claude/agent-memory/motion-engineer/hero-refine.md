@@ -26,7 +26,7 @@
 
 ## Fonts + chrome (v2.1 amendment — design_system.md §3.1/§3.2/§4 has the tables)
 
-- `public/fonts/switzer/Switzer-Medium.woff2` (20 KB, Fontshare official zip, FFL.txt beside) + `public/fonts/instrument-serif/InstrumentSerif-Italic-latin.woff2` (16 KB, fonts.gstatic.com official latin subset, OFL.txt beside). `@font-face` in globals.css (`font-display: swap`) + 2 preloads in index.html. Tokens `--font-display-lead/tail` with fallbacks General Sans / Fraunces (the pre-refine "Fraunces italic" hero was a faux-slant — the true italic was never imported).
+- `public/fonts/switzer/Switzer-Variable.woff2` (Fontshare official, FFL.txt beside — replaced the Medium static on 2026-07-20 when the pairing went site-wide) + `public/fonts/instrument-serif/InstrumentSerif-Italic-latin.woff2` (16 KB, fonts.gstatic.com official latin subset, OFL.txt beside). `@font-face` in globals.css (`font-display: swap`) + 2 preloads in index.html. Tokens `--font-display-lead/tail` now alias the site-wide body/display faces (fallbacks system-ui/serif); `font-display italic` is a true italic since the 2026-07-20 swap.
 - Chrome: bar hairline `border-line-strong #8A8A8A` (sampled frame_0001 y986), role+anchors `text-paper`, anchor hover `text-paper-bright #F0F0F0`; contrast 15.6/17.4:1. `--color-flash #66EACC` (sampled tail-word mint) only feeds surnameHoverFlash (OFF).
 
 ## Hero entrance gating (morph handoff — moved from MEMORY.md index 2026-07-19)

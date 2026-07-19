@@ -17,7 +17,7 @@
 ## Build config (mirrors `.agents/skills/vite-setup`)
 
 - Vite `^7.3.1` plugin order in `vite.config.ts`: `tanstackRouter({ autoCodeSplitting: true })` → `react()` → `tailwindcss()`.
-- Fonts are bundled: `@fontsource-variable/fraunces` + `@fontsource/jetbrains-mono` (npm) and self-hosted General Sans woff2 in `src/assets/fonts/`, all wired through `src/styles/globals.css`.
+- Fonts are bundled (3-family stack, 2026-07-20): `@fontsource/instrument-serif` + `@fontsource-variable/inter` (npm) and self-hosted Switzer variable + Instrument Serif italic woff2 in `public/fonts/`, all wired through `src/styles/globals.css`.
 - EmailJS keys (`VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, `VITE_EMAILJS_PUBLIC_KEY`) live in gitignored `.env`, read via `src/config/env.ts`. Never commit or `Read` `.env*` (denied in `.claude/settings.json`).
 
 **Why this matters here:** this project has shipped chapters 00–03 twice over (the pre-reset pass and the current build, `4d3c399` preloader → `db6731f` about) under these exact conventions — data in `src/features/home/data/*.data.ts` typed against `src/types/portfolio.ts`, zero cross-feature imports, all tokens from `src/styles/globals.css`. Deviating now creates two dialects in one small codebase.

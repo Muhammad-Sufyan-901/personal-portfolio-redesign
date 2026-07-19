@@ -1,31 +1,16 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces";
-@import "@fontsource/jetbrains-mono/400.css";
-@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource-variable/inter";
 
-@font-face {
-  font-family: "General Sans";
-  src: url("../assets/fonts/GeneralSans-Variable.woff2") format("woff2");
-  font-weight: 200 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "General Sans";
-  src: url("../assets/fonts/GeneralSans-VariableItalic.woff2") format("woff2");
-  font-weight: 200 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* Hero display faces (design_system v2.1 amendment, owner-approved 2026-07-16).
-   Self-hosted in public/fonts/<family>/ beside their licenses; preloaded from
-   index.html. Fallback chains land on the settled faces (General Sans /
-   Fraunces), never system-ui. */
+/* Site-wide 3-family stack (2026-07-20, supersedes the v2.1 hero-only pairing):
+   Instrument Serif (display) · Switzer (body) · Inter (labels). Switzer is
+   self-hosted in public/fonts/<family>/ beside its license and preloaded from
+   index.html; Instrument Serif roman + Inter come from fontsource, the
+   Instrument Serif italic stays the self-hosted latin subset below. */
 @font-face {
   font-family: "Switzer";
-  src: url("/fonts/switzer/Switzer-Medium.woff2") format("woff2");
-  font-weight: 500;
+  src: url("/fonts/switzer/Switzer-Variable.woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -93,14 +78,17 @@
   --color-input: var(--color-line);
   --color-ring: var(--color-accent);
 
-  /* === Typography (§4) — Fraunces display (PLAN v3 decision #5) === */
-  --font-display: "Fraunces Variable", "Fraunces", serif;
-  --font-sans: "General Sans", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  /* Hero name faces (v2.1 amendment, owner pick 2026-07-16): grotesk lead +
-     serif-italic tail; fallbacks degrade to the settled faces, not system-ui. */
-  --font-display-lead: "Switzer", "General Sans", system-ui, sans-serif;
-  --font-display-tail: "Instrument Serif", "Fraunces Variable", serif;
+  /* === Typography (§4) — 3-family stack (2026-07-20 owner decision):
+     Instrument Serif display · Switzer body · Inter labels. `--font-mono`
+     keeps its utility name (font-mono) but renders Inter — the labels are no
+     longer monospace by design. */
+  --font-display: "Instrument Serif", serif;
+  --font-sans: "Switzer", system-ui, sans-serif;
+  --font-mono: "Inter Variable", "Inter", system-ui, sans-serif;
+  /* Hero name faces (v2.1 amendment, owner pick 2026-07-16) — now aliases of
+     the site-wide display/body faces; kept as distinct tokens for semantics. */
+  --font-display-lead: "Switzer", system-ui, sans-serif;
+  --font-display-tail: "Instrument Serif", serif;
 
   /* Fluid type scale (§4.3) */
   --text-display: clamp(3.5rem, 12vw, 11rem);

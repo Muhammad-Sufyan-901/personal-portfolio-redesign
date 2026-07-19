@@ -12,7 +12,8 @@ const headingVariants = cva("text-foreground", {
       display: "font-display font-normal text-display",
       title: "font-display font-normal text-chapter",
       subtitle: "text-xl font-medium tracking-tight md:text-2xl",
-      section: "font-display font-light text-statement",
+      // Instrument Serif ships 400 only — no 300 to fall to (2026-07-20 stack)
+      section: "font-display font-normal text-statement",
     },
   },
   defaultVariants: { variant: "default" },
