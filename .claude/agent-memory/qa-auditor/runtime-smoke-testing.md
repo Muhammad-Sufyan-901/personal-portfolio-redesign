@@ -35,6 +35,12 @@ Gotchas found 2026-07-20 (ch.04 craft):
 - Tailwind v4 scale checks: read `getComputedStyle(el).scale` (standalone property), not `.transform` — transform reads "none" even when scale-105 is applied. Cross-check `transitionProperty` actually lists `scale`.
 - Focus-start-point quirk: after `el.focus()` + `blur()`, the next Tab continues from the blurred element, not document top — fine for sequential-order checks, wrong for "first tabbable" checks.
 
+Gotchas found 2026-07-20 (ch.07 gallery — Lighthouse in qa threads):
+- Lighthouse works from the scratchpad: `npm i lighthouse chrome-launcher`, then `npx lighthouse <url> --chrome-flags="--headless=new" --chrome-path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --output=json`. Parse `categories` from the JSON.
+- Dev-server perf scores are NOT representative (35 dev vs 62 prod on the same page) — run `npm run build` + `npm run preview -- --port 5199 --strictPort` and audit that. a11y/BP/SEO are stable across both.
+- Recent Lighthouse adds `agentic-browsing` / `llms-txt` audits — ignore for the DoD (not one of the four categories).
+- Page-level perf ledger (as of ch.07): LCP/TTI ~24s because the every-load preloader gates the hero paint + one 500kB+ chunk (bundle split deferred to final QA) — perf 62. Don't re-attribute this to whichever chapter is being audited; it predates them.
+
 Gotchas found 2026-07-16 (hero one-line refine):
 - Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
 - Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.
