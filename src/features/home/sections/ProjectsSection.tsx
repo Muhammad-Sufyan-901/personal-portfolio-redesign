@@ -262,7 +262,7 @@ export function ProjectsSection() {
                             <Box
                               as="span"
                               aria-hidden
-                              className="text-accent transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                              className="text-white transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                             >
                               ↗
                             </Box>
