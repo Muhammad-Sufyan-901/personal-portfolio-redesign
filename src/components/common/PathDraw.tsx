@@ -51,7 +51,7 @@ export function PathDraw({
       // quantizes a 0–1 range into a binary step. Chrome also tiles screen-space
       // dashes on anisotropically stretched viewBoxes — callers that scrub a
       // stretched path must pass a pixel-space `d` + matching viewBox (1:1),
-      // as CraftSection does.
+      // as ProjectsSection does.
       gsap.set(path, { strokeDasharray: 1000, strokeDashoffset: 1000 });
       gsap.to(path, {
         strokeDashoffset: 0,

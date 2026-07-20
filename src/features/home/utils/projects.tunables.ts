@@ -1,10 +1,10 @@
-/** Chapter 04 Craft tunables — scroll-activated project index + path thread.
+/** Chapter 04 Projects tunables — scroll-activated project index + path thread.
  *
  *  Path geometry is normalized to the index wrapper (viewBox "0 0 100 100" +
  *  preserveAspectRatio "none" — coordinates are percentages of the wrapper).
  *  Stroke width is a CSS length so it can track the viewport like the
  *  reference (~5vw: ≈96px @1920, ≈20px @390; non-scaling-stroke keeps it). */
-export const CRAFT = {
+export const PROJECTS = {
   /** viewport-height fraction of the activation focal line (reference ≈ 0.55–0.6) */
   focal: 0.62,
   /** preview crossfade duration (s) — mirrors --dur-fast */
@@ -17,10 +17,13 @@ export const CRAFT = {
   indents: [0, 1.5, 3.25, 2.25, 4.25, 5.5],
   /** path-only handoff beat after the last row (owner decision e — full finale) */
   finaleRunway: "90svh",
+  /** sticky-preview mouse tilt — max deg per axis · quickTo lerp (s) ·
+   *  px transformPerspective (bigger = subtler) */
+  tilt: { max: 7, duration: 0.6, perspective: 500 },
   path: {
-    /** Normalized 0–100 coordinates (absolute M/C only) — CraftSection scales
-     *  them into pixel space against the measured layer (scalePathD), because
-     *  Chrome's screen-space dashing fragments on stretched viewBoxes.
+    /** Normalized 0–100 coordinates (absolute M/C only) — ProjectsSection
+     *  scales them into pixel space against the measured layer (scalePathD),
+     *  because Chrome's screen-space dashing fragments on stretched viewBoxes.
      *  Shape: enters off-canvas left near the list top, S-curves down the
      *  left/center behind the rows, then sweeps full-width through the finale
      *  runway and exits off-canvas right (reference: list → gallery handoff). */
