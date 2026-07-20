@@ -4,10 +4,12 @@ import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { Box } from "@/components/common/Box";
+import { cn } from "@/lib/utils";
 
 /** Custom cursor: 8px dot + 40px trailing ring, z-100 (design_system §7.3).
- *  Ring scales 1.6 over interactive targets; 2.4 + label when [data-cursor]
- *  provides one. Null on coarse pointers / reduced motion. */
+ *  Ring scales 1.6 over interactive targets; morphs into a paper pill with the
+ *  label when [data-cursor] provides one (no mix-blend — the pill stays white
+ *  on any background). Null on coarse pointers / reduced motion. */
 export function Cursor() {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -57,7 +59,9 @@ export function Cursor() {
         const target = (e.target as HTMLElement).closest("a, button, [data-cursor]");
         const cursorLabel = target instanceof HTMLElement ? (target.dataset.cursor ?? "") : "";
         setLabel(cursorLabel);
-        gsap.to(ring, { scale: target ? (cursorLabel ? 2.4 : 1.6) : 1, duration: 0.3 });
+        // Labeled targets stay at scale 1 — the pill sizes itself via w-auto;
+        // scaling it would blur the label text.
+        gsap.to(ring, { scale: target && !cursorLabel ? 1.6 : 1, duration: 0.3 });
       };
 
       // Fade out when the pointer leaves the viewport; back on next move.
@@ -78,6 +82,22 @@ export function Cursor() {
     { scope: ref, dependencies: [active], revertOnUpdate: true },
   );
 
+  // Separate block — keying the main one on `label` would tear down the
+  // pointer listeners (revertOnUpdate) on every hover.
+  useGSAP(
+    () => {
+      if (!active) return;
+      const ring = ref.current?.querySelector(".cursor-ring");
+      if (!ring) return;
+      // Re-bake centering: GSAP caches element width for xPercent, and the
+      // pill's auto width ≠ the 40px circle — without this it sits off-center
+      // until the next pointermove.
+      gsap.set(ring, { xPercent: -50, yPercent: -50 });
+      if (label) gsap.from(ring, { scale: 0.7, duration: 0.3, ease: "back.out(2)", overwrite: "auto" });
+    },
+    { scope: ref, dependencies: [label, active] },
+  );
+
   if (!active) return null;
 
   return (
@@ -87,11 +107,18 @@ export function Cursor() {
       className="pointer-events-none fixed inset-0 z-100"
     >
       <Box className="cursor-dot fixed top-0 left-0 h-2 w-2 rounded-full bg-paper" />
-      <Box className="cursor-ring fixed top-0 left-0 flex h-10 w-10 items-center justify-center rounded-full border border-paper/50 mix-blend-difference">
+      <Box
+        className={cn(
+          "cursor-ring fixed top-0 left-0 flex items-center justify-center rounded-full",
+          label
+            ? "bg-paper h-10 w-auto px-5 whitespace-nowrap"
+            : "border-paper/50 h-10 w-10 border mix-blend-difference",
+        )}
+      >
         {label && (
           <Box
             as="span"
-            className="font-mono text-meta text-paper"
+            className="font-mono text-meta text-ink font-bold uppercase tracking-wider"
           >
             {label}
           </Box>

@@ -14,7 +14,7 @@ export const PROJECTS = {
   /** enter-reveal rise distance (px) */
   revealY: 28,
   /** per-row left-indent cascade (rem) — the reference's organic left-edge wander */
-  indents: [0, 1.5, 3.25, 2.25, 4.25, 5.5],
+  indents: [0, 1.5, 3.25, 2.25, 4.25, 5.5, 4.5, 2.75, 1.25, 3.5, 5, 6.25],
   /** path-only handoff beat after the last row (owner decision e — full finale) */
   finaleRunway: "90svh",
   /** sticky-preview mouse tilt — max deg per axis · quickTo lerp (s) ·

@@ -2,19 +2,29 @@ import type { IconType } from "react-icons";
 import {
   SiBootstrap,
   SiCss,
+  SiDart,
+  SiExpo,
   SiExpress,
+  SiFlutter,
   SiFramer,
+  SiGsap,
   SiHtml5,
+  SiInertia,
   SiJavascript,
+  SiLaravel,
   SiNextdotjs,
+  SiNodedotjs,
+  SiPhp,
   SiReact,
+  SiSupabase,
   SiTailwindcss,
+  SiTypescript,
   SiVite,
 } from "react-icons/si";
 
-/** techStack label (PRD spelling) → Simple Icons brand logo. Unmapped strings
- *  render as text-only pills. ponytail: feature-local; promote to src/lib if
- *  Skills (06) reuses it. */
+/** techStack label (PRD/GitHub spelling) → Simple Icons brand logo. Unmapped
+ *  strings render as text-only pills ("Blade" has no Simple Icon — deliberate).
+ *  ponytail: feature-local; promote to src/lib if Skills (06) reuses it. */
 export const TECH_ICONS: Record<string, IconType> = {
   "Next JS": SiNextdotjs,
   Tailwind: SiTailwindcss,
@@ -26,4 +36,15 @@ export const TECH_ICONS: Record<string, IconType> = {
   "React JS": SiReact,
   Vite: SiVite,
   "Framer Motion": SiFramer,
+  Flutter: SiFlutter,
+  Dart: SiDart,
+  Laravel: SiLaravel,
+  PHP: SiPhp,
+  Inertia: SiInertia,
+  "React Native": SiReact,
+  Expo: SiExpo,
+  TypeScript: SiTypescript,
+  Supabase: SiSupabase,
+  "Node JS": SiNodedotjs,
+  GSAP: SiGsap,
 };

@@ -127,15 +127,15 @@ export function ProjectsSection() {
     () => {
       if (prefersReducedMotion) return;
       const section = sectionRef.current;
-      const frame = section?.querySelector<HTMLElement>(".projects-preview-frame");
-      if (!section || !frame) return;
+      const tiltGroup = section?.querySelector<HTMLElement>(".projects-preview-tilt");
+      if (!section || !tiltGroup) return;
 
-      gsap.set(frame, { transformPerspective: PROJECTS.tilt.perspective });
-      const rx = gsap.quickTo(frame, "rotationX", { duration: PROJECTS.tilt.duration, ease: "power3.out" });
-      const ry = gsap.quickTo(frame, "rotationY", { duration: PROJECTS.tilt.duration, ease: "power3.out" });
+      gsap.set(tiltGroup, { transformPerspective: PROJECTS.tilt.perspective });
+      const rx = gsap.quickTo(tiltGroup, "rotationX", { duration: PROJECTS.tilt.duration, ease: "power3.out" });
+      const ry = gsap.quickTo(tiltGroup, "rotationY", { duration: PROJECTS.tilt.duration, ease: "power3.out" });
 
       const onMove = (e: MouseEvent) => {
-        const r = frame.getBoundingClientRect();
+        const r = tiltGroup.getBoundingClientRect();
         const nx = gsap.utils.clamp(-1, 1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2));
         const ny = gsap.utils.clamp(-1, 1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2));
         ry(nx * PROJECTS.tilt.max);
@@ -207,8 +207,8 @@ export function ProjectsSection() {
                 <Box
                   as="span"
                   className={cn(
-                    "projects-row-title text-statement block origin-left font-sans transition-[color,scale] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
-                    active ? "text-paper-bright scale-105" : "text-muted",
+                    "projects-row-title text-statement text-paper-bright block origin-left font-sans transition-[scale] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
+                    active && "scale-105",
                   )}
                 >
                   {project.title}
@@ -236,7 +236,7 @@ export function ProjectsSection() {
                           <Box
                             as="li"
                             key={tech}
-                            className="border-line bg-raised text-muted flex items-center gap-1.5 rounded border px-2.5 py-1"
+                            className="border-paper/15 bg-paper/10 text-muted flex items-center gap-1.5 rounded-full border px-3 py-1 backdrop-blur-md"
                           >
                             {TechIcon && (
                               <TechIcon
@@ -268,7 +268,7 @@ export function ProjectsSection() {
                 {href ? (
                   <Link
                     href={href}
-                    data-cursor="VIEW"
+                    data-cursor="View Project"
                     className={rowPad}
                     onFocus={() => activate(i)}
                   >
@@ -296,39 +296,44 @@ export function ProjectsSection() {
             staticMode ? "hidden" : "invisible hidden opacity-0 lg:block",
           )}
         >
-          <Box className="sticky top-[32svh]">
-            <Box className="font-mono text-meta text-muted flex items-baseline justify-between pb-2 uppercase tracking-wider">
-              <Box as="span">{pad2(displayIndex + 1)}</Box>
-              <Box as="span">Preview</Box>
-            </Box>
-            <Box className="projects-preview-frame bg-raised relative aspect-[4/3] overflow-hidden rounded-lg">
-              {projects.map((project) => (
-                <Box
-                  key={project.slug}
-                  className="projects-preview-layer invisible absolute inset-0 opacity-0"
-                >
-                  {project.thumbnail ? (
-                    <Image
-                      src={project.thumbnail}
-                      alt=""
-                      width={720}
-                      height={540}
-                      objectFit="cover"
-                      className="h-full w-full"
-                    />
-                  ) : (
-                    /* Owner-approved placeholder until real shots arrive (a) */
-                    <Box className="flex h-full w-full items-end bg-[radial-gradient(120%_120%_at_28%_18%,var(--color-accent)_0%,var(--color-accent-deep)_42%,var(--color-ink)_88%)] p-4">
-                      <Box
-                        as="span"
-                        className="font-mono text-meta text-paper-bright/80 uppercase tracking-wider"
-                      >
-                        {project.title}
+          <Box
+            className="pointer-events-auto sticky top-[32svh]"
+            data-cursor="See Project"
+          >
+            <Box className="projects-preview-tilt">
+              <Box className="font-mono text-meta text-muted flex items-baseline justify-between pb-2 uppercase tracking-wider">
+                <Box as="span">{projects[displayIndex]?.year ?? pad2(displayIndex + 1)}</Box>
+                <Box as="span">Preview</Box>
+              </Box>
+              <Box className="projects-preview-frame bg-raised relative aspect-[4/3] overflow-hidden rounded-lg">
+                {projects.map((project) => (
+                  <Box
+                    key={project.slug}
+                    className="projects-preview-layer invisible absolute inset-0 opacity-0"
+                  >
+                    {project.thumbnail ? (
+                      <Image
+                        src={project.thumbnail}
+                        alt=""
+                        width={720}
+                        height={540}
+                        objectFit="cover"
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      /* Owner-approved placeholder until real shots arrive (a) */
+                      <Box className="flex h-full w-full items-end bg-[radial-gradient(120%_120%_at_28%_18%,var(--color-accent)_0%,var(--color-accent-deep)_42%,var(--color-ink)_88%)] p-4">
+                        <Box
+                          as="span"
+                          className="font-mono text-meta text-paper-bright/80 uppercase tracking-wider"
+                        >
+                          {project.title}
+                        </Box>
                       </Box>
-                    </Box>
-                  )}
-                </Box>
-              ))}
+                    )}
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Box>
         </Box>
