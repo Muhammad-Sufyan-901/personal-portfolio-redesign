@@ -18,8 +18,8 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    slug: "phantom-landing-page",
-    title: "Phantom Landing Page",
+    slug: "phantom",
+    title: "Phantom",
     description:
       "A product site for the Phantom smartphone brand, built as a web-design competition entry. Hand-coded in HTML, CSS, and JavaScript around a polished product showcase.",
     techStack: ["HTML", "CSS", "JS"],
@@ -28,8 +28,8 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    slug: "petabyte-landing-page",
-    title: "Petabyte Landing Page",
+    slug: "petabyte",
+    title: "Petabyte",
     description:
       "A landing page for Petabyte, a software house focused on education. Built with HTML, CSS, and JavaScript on the Bootstrap grid system.",
     techStack: ["HTML", "CSS", "Bootstrap", "JS"],
@@ -38,16 +38,16 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    slug: "hoobank-landing-page",
-    title: "HooBank Landing Page",
+    slug: "hoobank",
+    title: "HooBank",
     description:
       "A landing page for a modern banking product with a dark, gradient-driven interface. Built with React JS and Tailwind on the Vite toolchain.",
     techStack: ["React JS", "Tailwind", "Vite"],
     featured: true,
   },
   {
-    slug: "kna-landing-page",
-    title: "KNA Landing Page",
+    slug: "kna",
+    title: "Keanu Abimanyu Construction",
     description:
       "A company profile for a construction business covering its services, project portfolio, and client testimonials. Includes a consultation flow so prospects can get in touch directly.",
     techStack: ["HTML", "CSS", "Tailwind", "JS"],
@@ -63,8 +63,8 @@ export const projects: Project[] = [
     featured: false,
   },
   {
-    slug: "opto-mobile",
-    title: "Opto Mobile",
+    slug: "opto",
+    title: "Opto",
     description:
       "An accessibility-first super app designed for blind, low-vision, and ocular-prosthesis users in Indonesia. Built with Flutter as a single hub for assistive day-to-day tools.",
     techStack: ["Flutter", "Dart"],

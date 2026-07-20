@@ -11,9 +11,6 @@ import { PROJECTS } from "@/features/home/utils/projects.tunables";
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-/** Shared by the Link and no-href row branches so their rhythm can't drift. */
-const rowPad = "block py-10 pl-(--row-indent) md:py-14";
-
 /** Scale the tunables' normalized (0–100) `d` into pixel coordinates so the
  *  SVG renders 1:1 — Chrome tiles screen-space dashes into disconnected
  *  segments on anisotropically stretched viewBoxes (see PathDraw note).
@@ -200,14 +197,13 @@ export function ProjectsSection() {
           className="projects-rows border-line relative z-10 mt-6 border-b lg:pr-[40%]"
         >
           {projects.map((project, i) => {
-            const href = project.livePreviewURL ?? project.repositoryURL;
             const active = staticMode || activeIndex === i;
             const inner = (
               <>
                 <Box
                   as="span"
                   className={cn(
-                    "projects-row-title text-statement block origin-left font-mono font-semibold transition-[scale,color] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
+                    "projects-row-title text-statement block origin-left font-mono font-semibold transition-[scale,color] duration-(--dur-fast) ease-out motion-reduce:transition-none",
                     active ? "text-paper-bright scale-105" : "text-muted",
                   )}
                 >
@@ -215,20 +211,14 @@ export function ProjectsSection() {
                 </Box>
                 <Box
                   className={cn(
-                    "grid transition-[grid-template-rows,opacity] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
+                    "grid transition-[grid-template-rows,opacity] duration-(--dur-fast) ease-out motion-reduce:transition-none",
                     active ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                   )}
                 >
                   <Box className="overflow-hidden">
                     <Box
-                      as="p"
-                      className="font-mono text-body text-muted max-w-[52ch] pt-2"
-                    >
-                      {project.description}
-                    </Box>
-                    <Box
                       as="ul"
-                      className="flex flex-wrap gap-2 pt-3"
+                      className="flex flex-wrap gap-2 pt-2"
                     >
                       {project.techStack.map((tech) => {
                         const TechIcon = TECH_ICONS[tech];
@@ -236,7 +226,7 @@ export function ProjectsSection() {
                           <Box
                             as="li"
                             key={tech}
-                            className="border-paper/15 bg-paper/10 text-muted flex items-center gap-1.5 rounded-full border px-3 py-1 backdrop-blur-md"
+                            className="border-paper/15 bg-paper/10 text-paper-bright flex items-center gap-1.5 rounded-full border px-3 py-1 backdrop-blur-md"
                           >
                             {TechIcon && (
                               <TechIcon
@@ -254,6 +244,48 @@ export function ProjectsSection() {
                         );
                       })}
                     </Box>
+                    <Box
+                      as="p"
+                      className="font-mono text-body text-muted max-w-[52ch] pt-3"
+                    >
+                      {project.description}
+                    </Box>
+                    {(project.livePreviewURL || project.repositoryURL) && (
+                      <Box className="flex flex-wrap gap-6 pt-4">
+                        {project.livePreviewURL && (
+                          <Link
+                            href={project.livePreviewURL}
+                            onFocus={() => activate(i)}
+                            className="text-meta text-paper hover:text-accent group inline-flex items-center gap-1.5 font-mono uppercase tracking-wider underline decoration-1 underline-offset-4 transition-colors"
+                          >
+                            Live Preview
+                            <Box
+                              as="span"
+                              aria-hidden
+                              className="text-accent transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                            >
+                              ↗
+                            </Box>
+                          </Link>
+                        )}
+                        {project.repositoryURL && (
+                          <Link
+                            href={project.repositoryURL}
+                            onFocus={() => activate(i)}
+                            className="text-meta text-paper hover:text-accent group inline-flex items-center gap-1.5 font-mono uppercase tracking-wider underline decoration-1 underline-offset-4 transition-colors"
+                          >
+                            GitHub
+                            <Box
+                              as="span"
+                              aria-hidden
+                              className="text-whiteß transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                            >
+                              ↗
+                            </Box>
+                          </Link>
+                        )}
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </>
@@ -265,18 +297,7 @@ export function ProjectsSection() {
                 className="projects-row border-line border-t"
                 style={{ "--row-indent": `${PROJECTS.indents[i] ?? 0}rem` } as CSSProperties}
               >
-                {href ? (
-                  <Link
-                    href={href}
-                    data-cursor="View Project"
-                    className={rowPad}
-                    onFocus={() => activate(i)}
-                  >
-                    {inner}
-                  </Link>
-                ) : (
-                  <Box className={rowPad}>{inner}</Box>
-                )}
+                <Box className="block py-10 pl-(--row-indent) md:py-14">{inner}</Box>
               </Box>
             );
           })}
@@ -305,7 +326,7 @@ export function ProjectsSection() {
                 <Box as="span">{projects[displayIndex]?.year ?? pad2(displayIndex + 1)}</Box>
                 <Box as="span">Preview</Box>
               </Box>
-              <Box className="projects-preview-frame bg-raised relative aspect-[4/3] overflow-hidden rounded-lg">
+              <Box className="projects-preview-frame bg-raised relative aspect-4/3 overflow-hidden rounded-lg">
                 {projects.map((project) => (
                   <Box
                     key={project.slug}
