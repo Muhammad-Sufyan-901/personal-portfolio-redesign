@@ -162,7 +162,7 @@ export function ProjectsSection() {
       as="section"
       id="projects"
       ref={sectionRef}
-      className="bg-ink px-page-x py-section relative"
+      className="bg-ink px-page-x py-section mt-section relative"
     >
       <ChapterEyebrow
         index="04"
@@ -207,8 +207,8 @@ export function ProjectsSection() {
                 <Box
                   as="span"
                   className={cn(
-                    "projects-row-title text-statement text-paper-bright block origin-left font-sans transition-[scale] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
-                    active && "scale-105",
+                    "projects-row-title text-statement block origin-left font-mono font-semibold transition-[scale,color] duration-(--dur-fast) ease-(--ease-out) motion-reduce:transition-none",
+                    active ? "text-paper-bright scale-105" : "text-muted",
                   )}
                 >
                   {project.title}
@@ -222,7 +222,7 @@ export function ProjectsSection() {
                   <Box className="overflow-hidden">
                     <Box
                       as="p"
-                      className="text-body text-muted max-w-[52ch] pt-2"
+                      className="font-mono text-body text-muted max-w-[52ch] pt-2"
                     >
                       {project.description}
                     </Box>
