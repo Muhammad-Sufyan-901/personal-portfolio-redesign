@@ -246,7 +246,7 @@ export function ProjectsSection() {
                     </Box>
                     <Box
                       as="p"
-                      className="font-mono text-body text-muted max-w-[52ch] pt-3"
+                      className="font-mono text-body text-white max-w-[52ch] pt-3"
                     >
                       {project.description}
                     </Box>
