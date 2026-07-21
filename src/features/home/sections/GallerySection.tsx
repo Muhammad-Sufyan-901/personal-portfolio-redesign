@@ -242,7 +242,7 @@ export function GallerySection() {
       className="bg-ink relative isolate flex h-svh items-center justify-center overflow-hidden"
     >
       <ChapterEyebrow
-        index="07"
+        index="06"
         label="Selected Work"
         className="left-page-x absolute top-8 z-50"
       />

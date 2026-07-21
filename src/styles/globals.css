@@ -144,6 +144,28 @@
   --dur-fast: 0.4s;
   --dur-base: 0.8s;
   --dur-slow: 1.2s;
+
+  /* Radix accordion height transition (06 Skills) — tw-animate-css is
+     uninstalled, so the two keyframes live below. */
+  --animate-accordion-down: accordion-down var(--dur-fast) var(--ease-out);
+  --animate-accordion-up: accordion-up var(--dur-fast) var(--ease-out);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 /* Base */

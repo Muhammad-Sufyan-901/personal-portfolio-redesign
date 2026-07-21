@@ -3,6 +3,7 @@ import { HeroSection } from "@/features/home/sections/HeroSection";
 import { ManifestoSection } from "@/features/home/sections/ManifestoSection";
 import { AboutSection } from "@/features/home/sections/AboutSection";
 import { ProjectsSection } from "@/features/home/sections/ProjectsSection";
+import { SkillsSection } from "@/features/home/sections/SkillsSection";
 import { GallerySection } from "@/features/home/sections/GallerySection";
 
 export function HomePage() {
@@ -12,9 +13,8 @@ export function HomePage() {
       <ManifestoSection />
       <AboutSection />
       <ProjectsSection />
-      {/* 05 Journey + 06 Skills slot in between here later — the gallery
-          self-registers (own pin + #gallery anchor), no coupling to 04. */}
       <GallerySection />
+      <SkillsSection />
     </Box>
   );
 }

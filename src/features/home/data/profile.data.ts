@@ -15,6 +15,11 @@ export const profile: Profile = {
   bio: "Hello everyone! I am Muhammad Sufyan, a frontend, mobile and website developer. I have intermediate experience and I hope to always keep learning something new, to build digital applications that can help many people in the future. I can work independently or in a team.",
   aboutStatement: "A software engineer from Indonesia, building web and mobile applications with precision and care.",
   aboutStatementEmphasis: ["software engineer", "precision and care"],
+  // 06 Skills — owner-requested three-clause re-voice (2026-07-21): role +
+  // location verbatim, "web and mobile" from role, "help many people" from
+  // the tagline/bio. No invented facts.
+  skillsStatement:
+    "Software engineer from Indonesia, specialized in web and mobile development, passionate about building digital applications that help many people.",
   manifesto: {
     lines: ["A Software Engineer who solves your problems"],
     focalWord: "Problems",

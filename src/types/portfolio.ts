@@ -62,6 +62,9 @@ export interface Profile {
   /** Substrings of `aboutStatement` rendered italic-serif in the About
    *  chapter (the same focal-phrase device as `taglineEmphasis`). */
   aboutStatementEmphasis?: string[];
+  /** Chapter 06 Skills positioning statement — persona §2 re-voiced into the
+   *  reference's three-clause shape; facts only (role, location, tagline). */
+  skillsStatement: string;
   manifesto: {
     lines: string[];
     focalWord: string;

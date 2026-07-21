@@ -22,9 +22,10 @@ import {
   SiVite,
 } from "react-icons/si";
 
-/** techStack label (PRD/GitHub spelling) → Simple Icons brand logo. Unmapped
- *  strings render as text-only pills ("Blade" has no Simple Icon — deliberate).
- *  ponytail: feature-local; promote to src/lib if Skills (06) reuses it. */
+/** techStack label (PRD/GitHub spelling) → Simple Icons brand logo. Used by
+ *  04 Projects badges only — 06 Skills uses the owner-supplied SVGs in
+ *  `src/assets/icons` (see `skill-icons.ts`). Unmapped strings render as
+ *  text-only pills ("Blade" has no Simple Icon — deliberate). */
 export const TECH_ICONS: Record<string, IconType> = {
   "Next JS": SiNextdotjs,
   Tailwind: SiTailwindcss,
