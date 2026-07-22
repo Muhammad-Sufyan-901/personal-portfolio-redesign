@@ -23,6 +23,12 @@ This is **Muhammad Sufyan's portfolio** — a software engineer (Indonesia) work
 - **Workflow**: `/plan-redesign` → `PLAN.md` (whole-site) → **stop for approval** → `/build-section <chapter>` one section at a time with a **stop-for-approval gate after every section** → `/qa-audit` per section and at the end. Chapters 00–03 shipped this way, one `feat(<chapter>):` commit each.
 - **Chapters**: `00 Preloader · 01 Hero · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` (PLAN v3.1 §0 — supersedes design_system §11's older 7-chapter order; 00–03 built). **Journey (05)** merges work experience + education + awards into one timeline — don't drop awards. Sections live in `src/features/home/sections/*`, content in `src/features/home/data/*` typed against `src/types/portfolio.ts`.
 
+## Design context (impeccable)
+
+- **`PRODUCT.md`** (root) — strategic summary (register `brand`, users, anti-references, design principles) that the impeccable skill reads before any design work.
+- **`DESIGN.md`** (root) + **`.impeccable/design.json`** sidecar — the visual spec (North Star "The Scroll Cinema", Void & Ember tokens, named rules, component snippets) for keeping AI-generated screens on-brand.
+- `.agents/context/product_requirements.md` and `.agents/context/design_system.md` remain the canonical deep specs; the two root files summarize, never fork them.
+
 ## Commands
 
 - `npm run dev` — start Vite dev server (HMR)

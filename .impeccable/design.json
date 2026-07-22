@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-22T03:32:57Z",
+  "title": "Design System: Muhammad Sufyan — Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "ember": {
+        "role": "primary",
+        "displayName": "Ember",
+        "canonical": "#E8380F",
+        "tonalRamp": [
+          "oklch(15% 0.06 30)",
+          "oklch(26% 0.1 30)",
+          "oklch(38% 0.14 30)",
+          "oklch(49% 0.17 30)",
+          "oklch(60% 0.19 30)",
+          "oklch(72% 0.15 30)",
+          "oklch(83% 0.1 30)",
+          "oklch(95% 0.03 30)"
+        ]
+      },
+      "ember-deep": {
+        "role": "primary",
+        "displayName": "Ember Deep",
+        "canonical": "#B32C0B",
+        "tonalRamp": [
+          "oklch(15% 0.06 30)",
+          "oklch(24% 0.09 30)",
+          "oklch(33% 0.12 30)",
+          "oklch(42% 0.15 30)",
+          "oklch(51% 0.17 30)",
+          "oklch(62% 0.14 30)",
+          "oklch(76% 0.09 30)",
+          "oklch(90% 0.04 30)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#0A0A0A",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(38% 0 0)",
+          "oklch(49% 0 0)",
+          "oklch(60% 0 0)",
+          "oklch(72% 0 0)",
+          "oklch(83% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#141414",
+        "tonalRamp": [
+          "oklch(17% 0 0)",
+          "oklch(24% 0 0)",
+          "oklch(32% 0 0)",
+          "oklch(41% 0 0)",
+          "oklch(52% 0 0)",
+          "oklch(64% 0 0)",
+          "oklch(78% 0 0)",
+          "oklch(92% 0 0)"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised",
+        "canonical": "#1C1C1C",
+        "tonalRamp": [
+          "oklch(19% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(36% 0 0)",
+          "oklch(46% 0 0)",
+          "oklch(57% 0 0)",
+          "oklch(69% 0 0)",
+          "oklch(81% 0 0)",
+          "oklch(93% 0 0)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#E4E4E4",
+        "tonalRamp": [
+          "oklch(20% 0 0)",
+          "oklch(32% 0 0)",
+          "oklch(44% 0 0)",
+          "oklch(56% 0 0)",
+          "oklch(68% 0 0)",
+          "oklch(79% 0 0)",
+          "oklch(89% 0 0)",
+          "oklch(96% 0 0)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#9A9A9A",
+        "tonalRamp": [
+          "oklch(18% 0 0)",
+          "oklch(29% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(62% 0 0)",
+          "oklch(73% 0 0)",
+          "oklch(84% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#242424",
+        "tonalRamp": [
+          "oklch(16% 0 0)",
+          "oklch(22% 0 0)",
+          "oklch(30% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(52% 0 0)",
+          "oklch(66% 0 0)",
+          "oklch(80% 0 0)",
+          "oklch(94% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Instrument Serif)",
+        "purpose": "Hero/footer name and display moments only; hero steps --text-hero / --text-hero-line extend this role."
+      },
+      "headline": {
+        "displayName": "Headline (Switzer)",
+        "purpose": "Chapter-scale statements — manifesto, gallery heading."
+      },
+      "title": {
+        "displayName": "Title / Statement (Switzer)",
+        "purpose": "Section statements and accordion group titles; skills titles run this token −6px via tunable."
+      },
+      "body": { "displayName": "Body (Switzer)", "purpose": "Prose, capped ≤68ch." },
+      "label": {
+        "displayName": "Label (Inter)",
+        "purpose": "Eyebrows, nav, meta — served by the font-mono utility name; deliberately not monospace."
+      }
+    },
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default ease (≈ GSAP power4.out) for reveals and state changes."
+      },
+      {
+        "name": "ease-inout",
+        "value": "cubic-bezier(0.83, 0, 0.17, 1)",
+        "purpose": "Curtains and two-sided choreography (SiteMenu, preloader sheets)."
+      },
+      { "name": "dur-fast", "value": "0.4s", "purpose": "Micro state changes; the accordion height keyframes." },
+      { "name": "dur-base", "value": "0.8s", "purpose": "Standard reveal duration (GSAP default)." },
+      { "name": "dur-slow", "value": "1.2s", "purpose": "Large clip reveals (ParallaxImage figure)." },
+      {
+        "name": "lenis-lerp",
+        "value": "0.09",
+        "purpose": "Smooth-scroll interpolation — the timeline's damping; scrub effects add per-tick exponential chase (damp 4.5–5) on the single gsap.ticker."
+      }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "shadcn Button restyled onto the palette — ember fill, white text, 4px radius.",
+      "html": "<button class=\"ds-btn-primary\">Send Message</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 8px 16px; background: var(--color-accent, #E8380F); color: #ffffff; border: none; border-radius: 4px; font-family: \"Switzer\", system-ui, sans-serif; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background 0.2s; } .ds-btn-primary:hover { background: rgba(232, 56, 15, 0.9); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-accent, #E8380F); outline-offset: 2px; }"
+    },
+    {
+      "name": "Menu Glass Pill",
+      "kind": "nav",
+      "refersTo": "menu-pill",
+      "description": "The floating chrome trigger — translucent paper glass, uppercase Inter label, magnetic on hover in-site.",
+      "html": "<button class=\"ds-menu-pill\">Menu</button>",
+      "css": ".ds-menu-pill { display: inline-flex; align-items: center; height: 40px; padding: 0 24px; border-radius: 9999px; border: 1px solid rgba(228, 228, 228, 0.15); background: rgba(228, 228, 228, 0.1); backdrop-filter: blur(12px); color: var(--color-paper, #E4E4E4); font-family: \"Inter Variable\", \"Inter\", system-ui, sans-serif; font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.2s, color 0.2s; } .ds-menu-pill:hover { background: rgba(228, 228, 228, 0.2); color: var(--color-paper-bright, #F0F0F0); } .ds-menu-pill:focus-visible { outline: 2px solid var(--color-accent, #E8380F); outline-offset: 2px; }"
+    },
+    {
+      "name": "Chapter Eyebrow",
+      "kind": "custom",
+      "refersTo": "eyebrow",
+      "description": "The numbered-chapter signature: ember index, muted uppercase label. The only section-label device.",
+      "html": "<p class=\"ds-eyebrow\"><span class=\"ds-eyebrow-index\">06</span><span class=\"ds-eyebrow-dash\"> — </span><span class=\"ds-eyebrow-label\">Toolkit</span></p>",
+      "css": ".ds-eyebrow { font-family: \"Inter Variable\", \"Inter\", system-ui, sans-serif; font-size: 0.8125rem; line-height: 1.4; letter-spacing: 0.08em; color: var(--color-muted, #9A9A9A); margin: 0; } .ds-eyebrow-index { color: var(--color-accent, #E8380F); } .ds-eyebrow-label { text-transform: uppercase; }"
+    },
+    {
+      "name": "Accordion Trigger",
+      "kind": "custom",
+      "refersTo": "accordion-trigger",
+      "description": "Skills group header — statement-scale Switzer title, thin +/− indicator far right, hairline-free.",
+      "html": "<button class=\"ds-accordion-trigger\" aria-expanded=\"true\"><span>Frontend</span><svg class=\"ds-accordion-icon\" viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\"><path d=\"M5 12h14\"/></svg></button>",
+      "css": ".ds-accordion-trigger { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; background: none; border: none; text-align: left; color: var(--color-paper, #E4E4E4); font-family: \"Switzer\", system-ui, sans-serif; font-size: calc(clamp(1.75rem, 4vw, 3.25rem) - 6px); font-weight: 400; line-height: 1.15; letter-spacing: -0.01em; cursor: pointer; transition: color 0.2s; } .ds-accordion-trigger:hover { color: var(--color-paper-bright, #F0F0F0); } .ds-accordion-trigger:focus-visible { outline: 2px solid var(--color-accent, #E8380F); outline-offset: 2px; } .ds-accordion-icon { flex-shrink: 0; color: var(--color-muted, #9A9A9A); transition: opacity 0.2s; }"
+    },
+    {
+      "name": "Tech Badge Pill",
+      "kind": "chip",
+      "refersTo": "badge-pill",
+      "description": "Light-glass tech-stack badge (icon + name) from the projects index.",
+      "html": "<span class=\"ds-badge\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"5\"/></svg>React JS</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; border: 1px solid rgba(228, 228, 228, 0.15); background: rgba(228, 228, 228, 0.1); backdrop-filter: blur(12px); color: var(--color-paper-bright, #F0F0F0); font-family: \"Inter Variable\", \"Inter\", system-ui, sans-serif; font-size: 0.75rem; letter-spacing: 0.04em; line-height: 1.4; white-space: nowrap; }"
+    },
+    {
+      "name": "Cursor Pill",
+      "kind": "custom",
+      "refersTo": "eyebrow",
+      "description": "The labelled cursor state — white pill with uppercase ink label, shown over data-cursor targets.",
+      "html": "<span class=\"ds-cursor-pill\">View Project</span>",
+      "css": ".ds-cursor-pill { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 9999px; background: var(--color-paper, #E4E4E4); color: var(--color-ink, #0A0A0A); font-family: \"Inter Variable\", \"Inter\", system-ui, sans-serif; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Scroll Cinema",
+    "overview": "The page is a film strip and scroll is its timeline. Every beat — the preloader's name morph, the manifesto's pinned fill, the skills arrow's damped drift — is scrubbed to scroll progress: it plays forward, freezes when the visitor pauses, and retraces exactly in reverse. Nothing autoplays past the visitor; the visitor is the projectionist. The surfaces are a dark, quiet theater (near-black ink, neutral paper text) and a single ember accent marks moments the way a light hits a stage — rarely, precisely, never as a wash.",
+    "keyCharacteristics": [
+      "Dark-only Void & Ember palette; depth from hairlines and tonal layering, never shadows.",
+      "One ember accent (#E8380F) used like a scalpel — marking moments, never washing surfaces.",
+      "Scrubbed, reversible, damped motion; scroll is the only timeline; every effect ships a reduced-motion fallback.",
+      "Three-family type stack: Instrument Serif (display), Switzer (body/statements), Inter (labels).",
+      "Every color, size, and ease comes from the @theme contract in src/styles/globals.css — tokens or nothing."
+    ],
+    "rules": [
+      {
+        "name": "The Ember Scalpel Rule",
+        "body": "The accent appears on well under 10% of any viewport, always marking a moment (an index, a focal word, one moving object). An ember background, an ember gradient, or two ember moments competing in one fold are all forbidden. Its rarity is the voice.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tokens-or-Nothing Rule",
+        "body": "Every color is written as a token utility (bg-ink, text-paper, text-accent) resolved from @theme in src/styles/globals.css. Raw hex in component code fails QA.",
+        "section": "colors"
+      },
+      {
+        "name": "The Statement Grammar Rule",
+        "body": "Emphasis inside a statement is never bold and never colored by default: the focal phrase switches face — Switzer roman → Instrument Serif italic — as React-owned word spans. One focal phrase per statement.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fluid Token Rule",
+        "body": "Type sizes come only from the --text-* clamp scale; any new step must also be registered in src/lib/utils.ts's twMerge font-size groups or it silently drops in class merges.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Depth Rule",
+        "body": "If a boundary needs asserting, it gets a 1px line rule or a one-step tonal lift — never a shadow, never a border thicker than 1px, never a side-stripe.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do style exclusively through token utilities from @theme (bg-ink, text-paper, text-accent, font-display); the QA gate greps for raw hex and fails on any hit.",
+      "Do ship a prefers-reduced-motion fallback with every effect — opacity-only reveals, no pins, no scrub, native scroll — before the effect is considered built.",
+      "Do keep the ember accent under the Scalpel Rule: one marked moment per fold, ≤10% of any viewport.",
+      "Do use the numbered ChapterEyebrow as the only section-label device, and keep chapter numbers in narrative order.",
+      "Do make scroll effects scrubbed, damped, and reversible (ScrollTrigger progress → damp applier on gsap.ticker); a scroll effect that cannot play backward is off-voice.",
+      "Do convey depth with 1px line hairlines and the ink→surface→raised tonal steps."
+    ],
+    "donts": [
+      "Don't use SaaS landing-page grammar: hero-metric stat rows, identical icon-card grids, gradient text, glassmorphism as default.",
+      "Don't build template developer-portfolio furniture: skill progress bars, three-column feature grids, testimonial carousels.",
+      "Don't drift toward light, airy, pastel designer-resume aesthetics — the site is dark-only by identity; the single permitted light surface is the 08 Contact invert.",
+      "Don't write raw hex, magic px, or bespoke easing curves in components — tokens or nothing.",
+      "Don't install framer-motion or import gsap/ScrollTrigger outside src/lib/gsap.ts; one GSAP source, one Lenis owner, one RAF.",
+      "Don't add box shadows, side-stripe accents, borders >1px, or gradient text — the flat hairline system is the identity.",
+      "Don't let the ember wash a surface: no ember backgrounds, no two ember moments in one fold, no ember body text."
+    ]
+  }
+}
