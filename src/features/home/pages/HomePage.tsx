@@ -3,6 +3,7 @@ import { HeroSection } from "@/features/home/sections/HeroSection";
 import { ManifestoSection } from "@/features/home/sections/ManifestoSection";
 import { AboutSection } from "@/features/home/sections/AboutSection";
 import { ProjectsSection } from "@/features/home/sections/ProjectsSection";
+import { JourneySection } from "@/features/home/sections/JourneySection";
 import { SkillsSection } from "@/features/home/sections/SkillsSection";
 import { GallerySection } from "@/features/home/sections/GallerySection";
 
@@ -15,6 +16,7 @@ export function HomePage() {
       <ProjectsSection />
       <GallerySection />
       <SkillsSection />
+      <JourneySection />
     </Box>
   );
 }

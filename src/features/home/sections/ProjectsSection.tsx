@@ -6,22 +6,11 @@ import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { cn } from "@/lib/utils";
 import { projects } from "@/data/projects.data";
+import { scalePathD } from "@/features/home/utils/path";
 import { TECH_ICONS } from "@/features/home/utils/tech-icons";
 import { PROJECTS } from "@/features/home/utils/projects.tunables";
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
-
-/** Scale the tunables' normalized (0–100) `d` into pixel coordinates so the
- *  SVG renders 1:1 — Chrome tiles screen-space dashes into disconnected
- *  segments on anisotropically stretched viewBoxes (see PathDraw note).
- *  Only absolute M/C commands: coordinates alternate x,y throughout. */
-function scalePathD(d: string, w: number, h: number) {
-  let i = 0;
-  return d.replace(/-?\d+(?:\.\d+)?/g, (n) => {
-    const v = (parseFloat(n) / 100) * (i++ % 2 === 0 ? w : h);
-    return String(Math.round(v * 10) / 10);
-  });
-}
 
 /** 04 Projects — the reference's scroll-activated project index: the row
  *  crossing the focal band lights up, reveals its description + stack badges,

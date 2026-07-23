@@ -36,6 +36,9 @@ export interface JourneyItem {
   period: string;
   employmentType?: string;
   summary?: string;
+  /** Responsibility bullets for the Journey cards — the PRD `summary` facts
+   *  re-voiced as a list (owner overdrive 2026-07-22); never new facts. */
+  highlights?: string[];
   stack?: TechStack[];
 }
 
@@ -65,6 +68,9 @@ export interface Profile {
   /** Chapter 06 Skills positioning statement — persona §2 re-voiced into the
    *  reference's three-clause shape; facts only (role, location, tagline). */
   skillsStatement: string;
+  /** Journey chapter intro line — the PRD career arc re-voiced (stats §2 +
+   *  work §3.3 facts only). */
+  journeyStatement: string;
   manifesto: {
     lines: string[];
     focalWord: string;

@@ -137,6 +137,9 @@
   --radius-md: 4px;
   --radius-lg: 8px;
   --radius-xl: 8px;
+  /* Journey reference-card silhouette (owner overdrive 2026-07-22) — the one
+     approved departure from the 8px cap; don't reach for it elsewhere. */
+  --radius-card: 24px;
 
   /* === Motion (§7.1) === */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

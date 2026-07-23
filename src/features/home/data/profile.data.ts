@@ -20,6 +20,10 @@ export const profile: Profile = {
   // the tagline/bio. No invented facts.
   skillsStatement:
     "Software engineer from Indonesia, specialized in web and mobile development, passionate about building digital applications that help many people.",
+  // Journey intro (owner overdrive 2026-07-22) — re-voiced from PRD facts
+  // only: 3-years stat (§2), ZettaByte internships → GDV full-time (§3.3).
+  journeyStatement:
+    "Three years of shipping — from QA and frontend internships at ZettaByte to full-time web and mobile engineering at Global Digital Verse.",
   manifesto: {
     lines: ["A Software Engineer who solves your problems"],
     focalWord: "Problems",
