@@ -1,17 +1,22 @@
 import type { IconType } from "react-icons";
 import {
+  SiAngular,
   SiBootstrap,
   SiCss,
   SiDart,
   SiExpo,
   SiExpress,
+  SiFirebase,
   SiFlutter,
   SiFramer,
+  SiGraphql,
   SiGsap,
   SiHtml5,
   SiInertia,
   SiJavascript,
+  SiJira,
   SiLaravel,
+  SiMysql,
   SiNextdotjs,
   SiNodedotjs,
   SiPhp,
@@ -23,9 +28,10 @@ import {
 } from "react-icons/si";
 
 /** techStack label (PRD/GitHub spelling) → Simple Icons brand logo. Used by
- *  04 Projects badges only — 06 Skills uses the owner-supplied SVGs in
- *  `src/assets/icons` (see `skill-icons.ts`). Unmapped strings render as
- *  text-only pills ("Blade" has no Simple Icon — deliberate). */
+ *  04 Projects badges and 08 Journey stack pills — 06 Skills uses the
+ *  owner-supplied SVGs in `src/assets/icons` (see `skill-icons.ts`). Unmapped
+ *  strings render as text-only pills ("Blade", "Docs" have no Simple Icon —
+ *  deliberate). */
 export const TECH_ICONS: Record<string, IconType> = {
   "Next JS": SiNextdotjs,
   Tailwind: SiTailwindcss,
@@ -48,4 +54,10 @@ export const TECH_ICONS: Record<string, IconType> = {
   Supabase: SiSupabase,
   "Node JS": SiNodedotjs,
   GSAP: SiGsap,
+  // 08 Journey stacks (2026-07-25)
+  Firebase: SiFirebase,
+  MySQL: SiMysql,
+  Angular: SiAngular,
+  GraphQL: SiGraphql,
+  Jira: SiJira,
 };

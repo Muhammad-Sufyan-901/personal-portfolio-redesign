@@ -24,43 +24,33 @@ export const JOURNEY = {
     wordStagger: 0.1,
     blurFrom: 6,
   },
+  /** Gradient-card treatment (owner reference match 2026-07-24, adapted from
+   *  a borrowed 21st.dev "gradient card" per the animated-ui-references rule —
+   *  recolored purple→ember, static CSS only; it retires the 2026-07-23 frame
+   *  lines + orbiting dot). Ink card, ember bloom rising from the bottom
+   *  corners, paper edge highlight, halo via box-shadow on the card itself. */
   card: {
     /** glass sheen wash (2026-07-23, owner-approved) — diagonal paper-tint
      *  gradient stop %, clipped to the card; brightens slightly on hover
      *  via group-hover (CSS-only, no GSAP needed) */
     sheenPaper: 10,
-  },
-  /** "Moving dot card" frame (owner reference-image match, 2026-07-23) —
-   *  a single top-left light source + 4 FULL-SPAN guide lines (the corner
-   *  L-brackets they replaced are retired, owner ask same day: a solid border
-   *  that fully surrounds the content, not just the corners), adapted from a
-   *  borrowed 21st.dev idea per the animated-ui-references adaptation rule
-   *  (GSAP, our tokens/primitives — no framer-motion, no tw-animate-css). */
-  frame: {
-    /** top-left radial light — color-mix % of accent into transparent */
-    glowAccent: 30,
-    glowSize: "70% 70%",
-    /** inset of the 4 full-span guide lines from the card edge — this IS the
-     *  "padding outside the border" the owner asked to grow (was 14px) */
-    inset: "20px",
-    /** full-span lines read heavier than the old fading stubs did, so both
-     *  thickness and opacity come down (was 1.5px / 55) */
-    thickness: "1px",
-    opacity: 45,
-  },
-  /** perimeter-orbiting dot (owner: animate, 2026-07-23) — GSAP loop visiting
-   *  the same 4 points `frame.inset` anchors the guide lines to (not a
-   *  separate %-based inset — that put the dot's straight-edge legs right
-   *  through the card's text padding), so it now rides ALONG those lines and
-   *  parks on their intersections, as the reference image does; reduced
-   *  motion renders it parked bottom-center, static, instead of running the
-   *  loop. */
-  dot: {
-    size: "8px",
-    fillOpacity: 90,
-    glowOpacity: 60,
-    /** seconds per leg — 4 legs per full loop */
-    legDuration: 1.4,
+    /** bottom bloom radials — color-mix % of ember into transparent:
+     *  bottom-right ellipse (accent), bottom-left ellipse (accent-deep),
+     *  bottom-center circle (accent-deep) */
+    bloomCornerAccent: 45,
+    bloomCornerDeep: 55,
+    bloomCenterDeep: 50,
+    bloomBlur: "40px",
+    /** The rim: ONE ring (border-only element + `RIM_FADE` mask) that follows
+     *  the card's 24px radius — it replaces both the neutral `border-line`
+     *  and the straight paper edge bar/ticks a rounded corner always clipped
+     *  (owner ask 2026-07-24: brown, thicker, wrapping the bottom corners). */
+    rimWidth: "2px",
+    /** brown strength at the bottom — color-mix % of accent-deep. Tuned
+     *  in-browser 2026-07-24: 85 read as a vivid orange-red outline, 55
+     *  blended into the bloom; 70 keeps a defined edge that still reads
+     *  brown. */
+    rimOpacity: 70,
   },
   /** mouse-follow 3D tilt + hover lift (2026-07-23, adapted from
    *  ProjectsSection's preview-tilt recipe — quickTo on rotationX/rotationY,
@@ -87,8 +77,9 @@ export const JOURNEY = {
     /** off-canvas entry (left) / exit (right) columns, fraction of w */
     entryX: -0.06,
     exitX: 1.08,
-    /** center-column thread — lighter than the old full-bleed sweep */
-    strokeWidth: "clamp(0.75rem, 2.5vw, 3rem)",
+    /** center-column thread. Re-weighted 2026-07-25 (owner ask: thicker) from
+     *  `clamp(0.75rem, 2.5vw, 3rem)` — the gradient cards outweighed it. */
+    strokeWidth: "clamp(1rem, 3.5vw, 4rem)",
     start: "top 65%",
     end: "bottom 85%",
     /** path-only intro runway BEFORE the first row (owner ask 2026-07-23) —

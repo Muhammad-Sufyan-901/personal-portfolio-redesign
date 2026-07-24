@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, type CSSProperties } from "react";
+import { Fragment, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { Box, ChapterEyebrow, PathDraw } from "@/components/common";
@@ -9,23 +9,19 @@ import { cn } from "@/lib/utils";
 import { journey } from "@/features/home/data/journey.data";
 import { profile } from "@/features/home/data/profile.data";
 import { JOURNEY } from "@/features/home/utils/journey.tunables";
+import { TECH_ICONS } from "@/features/home/utils/tech-icons";
 import { buildZigzagPath, type ZigzagTip } from "@/features/home/utils/path";
 
 /** Card ordinal per journey index (awards excluded) — decides which side a
  *  card's sweep arrives at. Module-scope: `journey` is a static constant. */
 const cardOrdinal = journey.map((_, i) => journey.slice(0, i).filter((j) => j.kind !== "award").length);
 
-/** The card frame: 4 FULL-SPAN hairlines at `frame.inset` (owner ask
- *  2026-07-23 — a solid border that fully surrounds the content, replacing the
- *  4 L-shaped corner brackets). They read as a complete rectangle plus short
- *  tails, which the card's `rounded-card overflow-hidden` clips at the rounded
- *  edge — exactly the reference image. */
-const CARD_FRAME_LINES: CSSProperties[] = [
-  { top: JOURNEY.frame.inset, left: 0, right: 0, height: JOURNEY.frame.thickness },
-  { bottom: JOURNEY.frame.inset, left: 0, right: 0, height: JOURNEY.frame.thickness },
-  { left: JOURNEY.frame.inset, top: 0, bottom: 0, width: JOURNEY.frame.thickness },
-  { right: JOURNEY.frame.inset, top: 0, bottom: 0, width: JOURNEY.frame.thickness },
-];
+/** Rim fade (owner ask 2026-07-24): solid brown across the bottom + both
+ *  corners, easing to a faint warm hairline that carries the rest of the
+ *  perimeter (it replaces the card's neutral `border-line`). Alpha mask —
+ *  `black` = fully painted; keyword/`rgb()` only, so the QA hex grep stays
+ *  clean. */
+const RIM_FADE = "linear-gradient(to top, black 0%, black 18%, rgb(0 0 0 / 0.12) 62%, rgb(0 0 0 / 0.12) 100%)";
 
 /** Gallery-clone statement (owner overdrive 2026-07-22): PRD-transcribed
  *  journeyStatement re-set in the reference grammar — roman lead + italic-serif
@@ -176,39 +172,6 @@ export function JourneySection() {
     { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
   );
 
-  // Perimeter-orbiting dot (owner: animate, 2026-07-23, adapted from a
-  // borrowed 21st.dev "moving dot card" idea per animated-ui-references —
-  // reimplemented as a plain GSAP loop, no framer-motion/tw-animate-css). One
-  // unscrubbed, ever-repeating timeline per card, visiting the same 4 points
-  // the frame's guide lines are anchored to (frame.inset), so the dot rides
-  // ALONG those lines and parks on their intersections — a %-based inset put
-  // the dot's straight-edge legs through the card's text padding.
-  // `.journey-dot`'s markup default (bottom-center) already renders; reduced
-  // motion skips the loop entirely, leaving that static position.
-  useGSAP(
-    () => {
-      if (prefersReducedMotion) return;
-      const inset = JOURNEY.frame.inset;
-      // ponytail: top/left (not transforms) — layout cost is negligible for
-      // 6 tiny dots; revisit only if this ever measures as a scroll-jank hot spot.
-      const corners = [
-        { top: inset, left: `calc(100% - ${inset})` },
-        { top: inset, left: inset },
-        { top: `calc(100% - ${inset})`, left: inset },
-        { top: `calc(100% - ${inset})`, left: `calc(100% - ${inset})` },
-      ];
-      gsap.utils.toArray<HTMLElement>(".journey-dot").forEach((dot) => {
-        gsap.set(dot, corners[0]);
-        const loop = gsap.timeline({ repeat: -1 });
-        corners
-          .slice(1)
-          .concat(corners[0])
-          .forEach((pos) => loop.to(dot, { ...pos, duration: JOURNEY.dot.legDuration, ease: "none" }));
-      });
-    },
-    { scope: sectionRef, dependencies: [prefersReducedMotion], revertOnUpdate: true },
-  );
-
   return (
     <Box
       as="section"
@@ -313,20 +276,48 @@ export function JourneySection() {
                 )}
               >
                 <Box className="journey-reveal relative w-full md:w-[35vw]">
-                  {/* p-9/md:p-12 (was p-6/md:p-8) keeps the content clear of
-                      the frame lines at `frame.inset` (owner: more padding
-                      outside the border, 2026-07-23). */}
-                  <Box className="journey-card-tilt group border-line bg-raised rounded-card relative overflow-hidden border p-9 md:p-12">
-                    {/* Top-left light source (owner reference-image match,
-                        2026-07-23 — replaces the old bottom bloom/aura with
-                        the "moving dot card" frame's single corner glow;
-                        adapted per animated-ui-references, ember not
-                        white). */}
+                  {/* Connector node (owner ask 2026-07-25) — marks where the
+                      drawn line meets the card. Sibling of the tilt box (that
+                      box is overflow-hidden) and inside `.journey-reveal`, so
+                      it rides the scrub slide-in and arrives ON the line with
+                      the card. Its y needs no measurement: the row is
+                      `items-center`, so `top-1/2` here IS the measured tip y.
+                      Desktop-only — below md the card is w-full while the tips
+                      stay at 0.4w/0.6w, so the card edge isn't near the line. */}
+                  <Box
+                    aria-hidden
+                    className={cn(
+                      "pointer-events-none absolute top-1/2 z-10 hidden size-4 -translate-y-1/2 md:block",
+                      side === "right" ? "left-0 -translate-x-1/2" : "right-0 translate-x-1/2",
+                    )}
+                  >
+                    {/* `ring-ink` is load-bearing: dot and stroke are both
+                        ember, so without an ink gap the node dissolves into
+                        the line it is meant to mark. */}
+                    <Box className="bg-accent ring-ink absolute inset-0 rounded-full ring-[3px]" />
+                    <Box className="border-accent motion-safe:animate-ping absolute inset-0 rounded-full border-2" />
+                  </Box>
+                  {/* Gradient-card restyle (owner reference match 2026-07-24):
+                      ink card, deep bottom padding = the empty lower zone the
+                      ember bloom rises through. The halo is a box-shadow on
+                      THIS element — never clipped by its own overflow-hidden,
+                      and it tilts with the card; keep its spread inside
+                      px-page-x or the section's load-bearing overflow-x-clip
+                      hard-crops it on side cards. */}
+                  <Box className="journey-card-tilt group bg-ink rounded-card shadow-[0_-8px_50px_6px_var(--color-ember-glow-soft),0_0_16px_2px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] hover:shadow-[0_-8px_60px_10px_var(--color-ember-glow-soft),0_0_20px_3px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] duration-(--dur-fast) relative overflow-hidden p-9 pb-32 transition-shadow ease-out md:p-12 md:pb-40">
+                    {/* Bottom bloom — the reference's two blurred glow layers
+                        collapsed into one (3 radials, ember not purple),
+                        under the content in DOM so text stays on top. */}
                     <Box
                       aria-hidden
-                      className="pointer-events-none absolute inset-0"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3"
                       style={{
-                        background: `radial-gradient(${JOURNEY.frame.glowSize} at 0% 0%, color-mix(in oklab, var(--color-accent) ${JOURNEY.frame.glowAccent}%, transparent), transparent 70%)`,
+                        background: [
+                          `radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--color-accent) ${JOURNEY.card.bloomCornerAccent}%, transparent) -10%, transparent 70%)`,
+                          `radial-gradient(ellipse at bottom left, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCornerDeep}%, transparent) -10%, transparent 70%)`,
+                          `radial-gradient(circle at bottom center, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCenterDeep}%, transparent) -20%, transparent 60%)`,
+                        ].join(", "),
+                        filter: `blur(${JOURNEY.card.bloomBlur})`,
                       }}
                     />
                     {/* Glass sheen — faint diagonal paper wash, brightens on
@@ -340,7 +331,7 @@ export function JourneySection() {
                         background: `linear-gradient(135deg, color-mix(in oklab, var(--color-paper) ${JOURNEY.card.sheenPaper}%, transparent) 0%, transparent 45%, transparent 78%, color-mix(in oklab, var(--color-paper) ${Math.round(JOURNEY.card.sheenPaper * 0.6)}%, transparent) 100%)`,
                       }}
                     />
-                    <Box className="border-line bg-ink mb-5 inline-flex size-12 items-center justify-center rounded-full border">
+                    <Box className="border-line bg-raised mb-5 inline-flex size-12 items-center justify-center rounded-full border">
                       {item.kind === "education" ? (
                         <GraduationCap
                           aria-hidden
@@ -355,7 +346,7 @@ export function JourneySection() {
                     </Box>
                     <Box
                       as="h3"
-                      className="text-item text-paper font-sans font-medium"
+                      className="text-[length:calc(var(--text-body)*1.5)] text-paper font-sans font-semibold leading-tight"
                     >
                       {item.title}
                     </Box>
@@ -387,7 +378,7 @@ export function JourneySection() {
                     {item.highlights && (
                       <Box
                         as="ul"
-                        className="text-body text-muted marker:text-faint mt-5 grid list-disc gap-2 pl-5"
+                        className="text-body text-muted marker:text-accent mt-5 grid list-disc gap-2 pl-5"
                       >
                         {item.highlights.map((line) => (
                           <Box
@@ -404,46 +395,42 @@ export function JourneySection() {
                         as="ul"
                         className="mt-5 flex flex-wrap gap-2"
                       >
-                        {item.stack.map((tech) => (
-                          <Box
-                            as="li"
-                            key={tech}
-                            className="border-line font-mono text-meta text-muted rounded-full border px-2.5 py-0.5"
-                          >
-                            {tech}
-                          </Box>
-                        ))}
+                        {item.stack.map((tech) => {
+                          const TechIcon = TECH_ICONS[tech];
+                          return (
+                            <Box
+                              as="li"
+                              key={tech}
+                              className="border-line font-mono text-meta text-muted flex items-center gap-1.5 rounded-full border px-2.5 py-0.5"
+                            >
+                              {TechIcon && (
+                                <TechIcon
+                                  aria-hidden
+                                  className="size-3"
+                                />
+                              )}
+                              {tech}
+                            </Box>
+                          );
+                        })}
                       </Box>
                     )}
-                    {/* Card frame (owner reference-image match, 2026-07-23) —
-                        4 solid full-span ember hairlines that fully surround
-                        the content, replacing the 4 fading corner brackets. */}
-                    {CARD_FRAME_LINES.map((line, i) => (
-                      <Box
-                        key={i}
-                        aria-hidden
-                        className="pointer-events-none absolute"
-                        style={{
-                          ...line,
-                          background: `color-mix(in oklab, var(--color-accent) ${JOURNEY.frame.opacity}%, transparent)`,
-                        }}
-                      />
-                    ))}
-                    {/* Perimeter-orbiting dot (owner: animate, 2026-07-23) —
-                        GSAP loop below drives it around the 4 corner insets;
-                        markup default parks it bottom-center, static — the
-                        reduced-motion fallback (see the tilt hook's sibling
-                        below for the loop). */}
+                    {/* The rim (owner ask 2026-07-24) — ONE ring, because a
+                        rounded corner needs one: the straight bottom bar +
+                        1px side ticks this replaces were cut off by the
+                        card's own `rounded-card overflow-hidden` exactly
+                        where the curve starts, leaving the corners bare.
+                        Border-only element + a vertical mask fade IS a
+                        gradient border (no `mask-composite` punch-out needed
+                        — there's no background to subtract), and it follows
+                        the radius for free. */}
                     <Box
                       aria-hidden
-                      className="journey-dot pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+                      className="rounded-card pointer-events-none absolute inset-0"
                       style={{
-                        top: "100%",
-                        left: "50%",
-                        width: JOURNEY.dot.size,
-                        height: JOURNEY.dot.size,
-                        background: `color-mix(in oklab, var(--color-accent) ${JOURNEY.dot.fillOpacity}%, transparent)`,
-                        boxShadow: `0 0 calc(${JOURNEY.dot.size} * 1.5) color-mix(in oklab, var(--color-accent) ${JOURNEY.dot.glowOpacity}%, transparent)`,
+                        border: `${JOURNEY.card.rimWidth} solid color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.rimOpacity}%, transparent)`,
+                        maskImage: RIM_FADE,
+                        WebkitMaskImage: RIM_FADE,
                       }}
                     />
                   </Box>
