@@ -367,7 +367,11 @@ export function JourneySection() {
                         </Box>
                       )}
                     </Box>
-                    {!item.highlights && item.summary && (
+                    {/* Overview, then the titled list (owner ask 2026-07-25).
+                        The overview is no longer a fallback for a missing
+                        list — every card leads with it, and the two no longer
+                        restate each other (see the data file's header note). */}
+                    {item.summary && (
                       <Box
                         as="p"
                         className="text-body text-muted mt-5 max-w-[52ch]"
@@ -377,8 +381,16 @@ export function JourneySection() {
                     )}
                     {item.highlights && (
                       <Box
+                        as="h4"
+                        className="font-mono text-eyebrow text-paper mt-6 uppercase"
+                      >
+                        {item.kind === "education" ? "Focus Areas" : "Responsibilities"}
+                      </Box>
+                    )}
+                    {item.highlights && (
+                      <Box
                         as="ul"
-                        className="text-body text-muted marker:text-accent mt-5 grid list-disc gap-2 pl-5"
+                        className="text-body text-muted marker:text-accent mt-3 grid list-disc gap-2 pl-5"
                       >
                         {item.highlights.map((line) => (
                           <Box

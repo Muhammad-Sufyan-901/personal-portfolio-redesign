@@ -11,6 +11,14 @@ Files: `sections/JourneySection.tsx` + `features/home/utils/journey.tunables.ts`
 - `TECH_ICONS` (`utils/tech-icons.ts`) is now shared by **04 Projects and 08 Journey** stack pills — same `flex items-center gap-1.5` pill + `{TechIcon && <TechIcon aria-hidden className="size-3" />}` shape. Add labels there, never a second lookup map; unmapped labels (`Blade`, `Docs`) fall through to text-only by design.
 - Bullets are `marker:text-accent` (was `text-faint`, near-invisible on ink). `line.strokeWidth` re-weighted to `clamp(1rem, 3.5vw, 4rem)`.
 
+## Card content contract (owner ask 2026-07-25)
+
+- **`JourneyItem.summary` = the card's OVERVIEW line; `highlights` = the titled list under it.** Both render on every card now — `summary` is NO LONGER a fallback for a missing list (the old `!item.highlights && item.summary` guard is gone).
+- **The two must sit at different altitudes.** `highlights` was authored 2026-07-22 as a re-voicing of the then-verbatim PRD `summary`, so showing both restated every bullet. The 4 work summaries were rewritten one level up (duration + employer + role framing, all PRD-derivable); the specifics — app names, platforms, ownership — stay in the bullets. **Any new Journey item must respect this split**, or the card says everything twice.
+- `summary` is authored re-voicing, NOT PRD-verbatim, on both education (2026-07-22) and work (2026-07-25) items. PRD §3.3/§3.4 stays the fact source; never add a fact the PRD doesn't carry. A separate `overview` field was rejected — `summary` already means exactly this.
+- List label = `Box as="h4"` reading **"Responsibilities"** (work) / **"Focus Areas"** (education), in the card's mono/uppercase eyebrow grammar but `text-paper` so it outranks the muted body and doesn't read as another meta row. `h4` is deliberate: section h2 → card h3 → label h4 keeps heading order legal.
+- **The two education `highlights` arrays are PLACEHOLDER content, not PRD facts.** PRD §3.4 carries institution/major/period only — no coursework — so on owner instruction (2026-07-25) they were drafted as generic curricula to show the shape, marked with a `PLACEHOLDER — owner to replace` comment on each entry (same convention as `GallerySection`'s statement const). **Do not treat them as transcribed, and do not quote them elsewhere.** Owner replaces the strings 1:1; PRD §3.4 should gain the real subjects first so the data file returns to transcription-only.
+
 ## Gradient-card state (2026-07-24 — `logs/feature-changes/2026-07-24-journey-gradient-card.md`)
 
 Owner reference match: a 21st.dev "gradient card", purple/cyan recolored to ember per the standing rule; its framer-motion hover was already covered by the existing GSAP tilt, so all new dressing is static CSS.

@@ -36,8 +36,9 @@ export interface JourneyItem {
   period: string;
   employmentType?: string;
   summary?: string;
-  /** Responsibility bullets for the Journey cards — the PRD `summary` facts
-   *  re-voiced as a list (owner overdrive 2026-07-22); never new facts. */
+  /** The Journey card's list under the overview — "Responsibilities" on work
+   *  items, "Focus Areas" on education. PRD facts re-voiced as a list (owner
+   *  overdrive 2026-07-22); never new facts. */
   highlights?: string[];
   stack?: TechStack[];
 }
