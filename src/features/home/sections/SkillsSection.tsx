@@ -116,7 +116,7 @@ export function SkillsSection() {
       as="section"
       id="skills"
       ref={sectionRef}
-      className="bg-ink px-page-x py-section relative"
+      className="bg-ink px-page-x py-section my-section relative"
     >
       <Box className="grid gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] lg:gap-20">
         {/* Left — sticky viewport panel (reference f050/f120: identical left
