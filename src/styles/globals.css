@@ -152,6 +152,10 @@
      uninstalled, so the two keyframes live below. */
   --animate-accordion-down: accordion-down var(--dur-fast) var(--ease-out);
   --animate-accordion-up: accordion-up var(--dur-fast) var(--ease-out);
+
+  /* Radix hover-card entrance (08 Journey award panels) — same reason as the
+     accordion above: no tw-animate-css, so no `animate-in`/`zoom-in-95`. */
+  --animate-hover-card: hover-card-in var(--dur-fast) var(--ease-out);
 }
 
 @keyframes accordion-down {
@@ -168,6 +172,30 @@
   }
   to {
     height: 0;
+  }
+}
+
+@keyframes hover-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Reduced-motion branch: redefining the keyframe inside the query beats a
+   `motion-safe:`/`motion-reduce:` class pair — one utility, one token, and the
+   panel still reveals on opacity alone (house rule: opacity-only, no transforms). */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes hover-card-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 

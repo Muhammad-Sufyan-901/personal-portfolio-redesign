@@ -1,7 +1,8 @@
 import { Fragment, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { Award, Briefcase, GraduationCap } from "lucide-react";
 import { Box, ChapterEyebrow, PathDraw } from "@/components/common";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { gsap } from "@/lib/gsap";
@@ -242,24 +243,107 @@ export function JourneySection() {
                   key={`${item.title}-${item.period}`}
                   className="journey-row flex justify-center py-10"
                 >
-                  <Box className="journey-reveal group border-line bg-surface hover:bg-invert-bg hover:text-invert-text text-paper flex items-center gap-3 rounded-full border px-5 py-2.5 transition-colors">
-                    <Box
-                      aria-hidden
-                      className="bg-accent size-2.5 shrink-0 rounded-full"
-                    />
-                    <Box
-                      as="span"
-                      className="text-body font-medium"
+                  {/* The pill keeps its hover-invert micro-echo (design_system
+                      §450) and gains a panel explaining the achievement (owner
+                      ask 2026-07-25). `tabIndex` is load-bearing: Radix
+                      HoverCard opens on FOCUS as well as hover, so one
+                      attribute buys keyboard access AND touch access (a tap
+                      focuses) for an otherwise pointer-only primitive — and it
+                      gives the pill the keyboard affordance it never had.
+
+                      Hover = FULL EMBER (owner ask 2026-07-25), replacing the
+                      near-white `invert-bg` echo; `--color-invert-*` now has no
+                      consumer in src/ and is reserved for 08 Contact. Two knock-
+                      ons that are load-bearing, not polish: the ember dot must
+                      flip to ink or it dissolves into its own pill, and
+                      `ring-ink` does for the pill exactly what it does for the
+                      card's connector node above — an ember pill sits ON the
+                      ember zigzag (this `<ul>` is z-10 over the line layer), so
+                      without an ink gap the two fuse where the stroke crosses.
+                      The ring is transparent at rest so only its colour
+                      transitions, and it is invisible against the ink page. */}
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <Box
+                        tabIndex={0}
+                        className="journey-reveal group border-line bg-surface hover:bg-accent hover:border-accent hover:text-ink hover:ring-ink text-paper flex items-center gap-3 rounded-full border px-5 py-2.5 ring-[3px] ring-transparent transition-colors"
+                      >
+                        {/* The dot inverts to ink on hover — it is ember at
+                            rest, so on the ember pill it would otherwise
+                            dissolve into its own background. */}
+                        <Box
+                          aria-hidden
+                          className="bg-accent group-hover:bg-ink size-2.5 shrink-0 rounded-full transition-colors"
+                        />
+                        <Box
+                          as="span"
+                          className="text-body font-medium"
+                        >
+                          {item.title}
+                        </Box>
+                        {/* Full ink on hover, not the old `/70`: ink at 70% over
+                            ember lands ~3.5:1, under AA for 12px text. The
+                            hierarchy is already carried by the mono/uppercase/
+                            size shift, so the opacity was buying nothing. */}
+                        <Box
+                          as="span"
+                          className="font-mono text-meta text-muted group-hover:text-ink uppercase transition-colors"
+                        >
+                          {item.org} · {item.period}
+                        </Box>
+                      </Box>
+                    </HoverCardTrigger>
+                    {/* A shrunken sibling of the journey card — same icon
+                        badge, same type ramp, same ember halo at lower spread.
+                        Portalled by the primitive, so the section's
+                        overflow-x-clip can't crop it. */}
+                    <HoverCardContent
+                      side="top"
+                      className="shadow-[0_-6px_36px_4px_var(--color-ember-glow-soft),0_0_12px_1px_var(--color-ember-glow-deep)]"
                     >
-                      {item.title}
-                    </Box>
-                    <Box
-                      as="span"
-                      className="font-mono text-meta text-muted group-hover:text-invert-text/70 uppercase transition-colors"
-                    >
-                      {item.org} · {item.period}
-                    </Box>
-                  </Box>
+                      <Box className="border-line bg-raised mb-4 inline-flex size-9 items-center justify-center rounded-full border">
+                        <Award
+                          aria-hidden
+                          className="text-accent size-4"
+                        />
+                      </Box>
+                      <Box
+                        as="h3"
+                        className="text-body text-paper font-sans font-semibold leading-tight"
+                      >
+                        {item.title}
+                      </Box>
+                      <Box
+                        as="p"
+                        className="font-mono text-meta text-muted mt-1.5 uppercase"
+                      >
+                        {item.org} · {item.period}
+                      </Box>
+                      {item.summary && (
+                        <Box
+                          as="p"
+                          className="border-line text-body text-muted mt-4 border-t pt-4"
+                        >
+                          {item.summary}
+                        </Box>
+                      )}
+                      {item.highlights && (
+                        <Box
+                          as="ul"
+                          className="text-body text-muted marker:text-accent mt-3 grid list-disc gap-1.5 pl-4"
+                        >
+                          {item.highlights.map((line) => (
+                            <Box
+                              as="li"
+                              key={line}
+                            >
+                              {line}
+                            </Box>
+                          ))}
+                        </Box>
+                      )}
+                    </HoverCardContent>
+                  </HoverCard>
                 </Box>
               );
             }

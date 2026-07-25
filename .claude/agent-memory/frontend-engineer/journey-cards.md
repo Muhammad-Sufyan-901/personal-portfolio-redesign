@@ -33,7 +33,15 @@ Owner reference match: a 21st.dev "gradient card", purple/cyan recolored to embe
 - Outer halo = **box-shadow on the `overflow-hidden` card box itself**: a box-shadow escapes its own clip AND rides the tilt transform — for a single-hue halo prefer this over the unclipped-wrapper aura split (below), but keep its spread inside `px-page-x` or the section's `overflow-x-clip` hard-crops it on side cards. Hover intensify via `hover:shadow-[…] transition-shadow`.
 - Glass sheen kept (CSS-only `group-hover:opacity-*`, `color-mix` over `--color-paper`, `JOURNEY.card.sheenPaper`).
 - The 2026-07-23 chrome is RETIRED: `CARD_FRAME_LINES`, `JOURNEY.frame.*`, `JOURNEY.dot.*`, `.journey-dot` + its GSAP orbit loop are dead names.
-- Awards = 3 hover-invert pills (`bg-surface hover:bg-invert-bg`); `JourneyItem.highlights` = PRD summaries re-voiced as bullets.
+- Awards = 3 pills, `bg-surface` at rest → **FULL EMBER on hover** (`hover:bg-accent hover:border-accent hover:text-ink`, owner ask 2026-07-25). This REPLACED the near-white `hover:bg-invert-bg` echo of design_system §450, so `--color-invert-bg/-text` now have **no consumer in `src/`** — they stay defined, reserved for the 08 Contact section invert. `JourneyItem.highlights` = PRD summaries re-voiced as bullets.
+- Two knock-ons of the ember hover, both load-bearing rather than polish — expect them for ANY ember-on-ember element here:
+  - The pill's dot is ember at rest and must flip `group-hover:bg-ink`, or it dissolves into its own pill.
+  - The pill needs `ring-[3px] ring-transparent hover:ring-ink`. Same fix, same reason as the card's connector node: the `<ul>` is `z-10` OVER the line layer, so an ember pill sits on the ember zigzag and the two fuse where the stroke crosses. Transparent at rest means only the colour transitions.
+  - Hover text is **full ink, not `ink/70`** — 70% ink over ember measures ~3.5:1, under AA for the 12px meta line. Full ink measures **4.72:1** (verified in-browser 2026-07-25). Ember is a dark-enough orange that ink passes AA but paper does NOT (3.30:1) — never put `text-paper` on an `bg-accent` fill at body size.
+- **Award pills gained a hover panel 2026-07-25** (`HoverCard`/`HoverCardTrigger asChild`/`HoverCardContent` from `@/components/ui/hover-card`): a shrunken sibling of the card — `Award` badge, title, issuer · date, divider, summary, ember-marker bullets. Three things about it are load-bearing:
+  - **`tabIndex={0}` on the pill.** Radix HoverCard opens on FOCUS as well as hover, so that one attribute is simultaneously the keyboard path, the touch path (a tap focuses), and the fix for the pill's original lack of any keyboard affordance. It supersedes the 2026-07-22 note that award rows are deliberately non-focusable — that held only while nothing was hover-gated.
+  - **The panel must stay portalled** (it is, by default in `HoverCardContent`). The section's `overflow-x-clip` is load-bearing for the scrubbed ±120px nudges and would crop any in-flow panel on the pill row.
+  - **Awards now carry `summary` + `highlights`, all PLACEHOLDER.** PRD §3.5 is title/issuer/date only, so unlike work/education there is no text to re-voice — these are shaped copy, not transcription. Do not treat them as facts; do not "improve" the wording. Owner replaces them, ideally after PRD §3.5 grows.
 
 ## Reusable patterns proven here
 
