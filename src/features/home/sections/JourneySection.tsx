@@ -276,158 +276,177 @@ export function JourneySection() {
                 )}
               >
                 <Box className="journey-reveal relative w-full md:w-[35vw]">
-                  {/* Connector node (owner ask 2026-07-25) — marks where the
-                      drawn line meets the card. Sibling of the tilt box (that
-                      box is overflow-hidden) and inside `.journey-reveal`, so
-                      it rides the scrub slide-in and arrives ON the line with
-                      the card. Its y needs no measurement: the row is
-                      `items-center`, so `top-1/2` here IS the measured tip y.
-                      Desktop-only — below md the card is w-full while the tips
-                      stay at 0.4w/0.6w, so the card edge isn't near the line. */}
-                  <Box
-                    aria-hidden
-                    className={cn(
-                      "pointer-events-none absolute top-1/2 z-10 hidden size-4 -translate-y-1/2 md:block",
-                      side === "right" ? "left-0 -translate-x-1/2" : "right-0 translate-x-1/2",
-                    )}
-                  >
-                    {/* `ring-ink` is load-bearing: dot and stroke are both
-                        ember, so without an ink gap the node dissolves into
-                        the line it is meant to mark. */}
-                    <Box className="bg-accent ring-ink absolute inset-0 rounded-full ring-[3px]" />
-                    <Box className="border-accent motion-safe:animate-ping absolute inset-0 rounded-full border-2" />
-                  </Box>
-                  {/* Gradient-card restyle (owner reference match 2026-07-24):
-                      ink card, deep bottom padding = the empty lower zone the
-                      ember bloom rises through. The halo is a box-shadow on
-                      THIS element — never clipped by its own overflow-hidden,
-                      and it tilts with the card; keep its spread inside
-                      px-page-x or the section's load-bearing overflow-x-clip
-                      hard-crops it on side cards. */}
-                  <Box className="journey-card-tilt group bg-ink rounded-card shadow-[0_-8px_50px_6px_var(--color-ember-glow-soft),0_0_16px_2px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] hover:shadow-[0_-8px_60px_10px_var(--color-ember-glow-soft),0_0_20px_3px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] duration-(--dur-fast) relative overflow-hidden p-9 pb-32 transition-shadow ease-out md:p-12 md:pb-40">
-                    {/* Bottom bloom — the reference's two blurred glow layers
-                        collapsed into one (3 radials, ember not purple),
-                        under the content in DOM so text stays on top. */}
+                  {/* Tilt wrapper (owner ask 2026-07-25: the node must stick to
+                      the card when it tilts). The tilt lives HERE rather than on
+                      the card box below, so the connector node is a child of the
+                      rotating element and rides it. It cannot go inside the card
+                      box itself — that box is `overflow-hidden` and would clip a
+                      node sitting half outside the edge — so this wrapper must
+                      never gain an overflow class. Absolutely-positioned children
+                      don't size a parent, so this box's rect still equals the
+                      card's and the tilt's pointer maths is unchanged. */}
+                  <Box className="journey-card-tilt relative">
+                    {/* Connector node — marks where the drawn line meets the
+                        card. Its y needs no measurement: the row is
+                        `items-center`, so `top-1/2` here IS the measured tip y.
+                        Desktop-only — below md the card is w-full while the tips
+                        stay at 0.4w/0.6w, so the card edge isn't near the line. */}
                     <Box
                       aria-hidden
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3"
-                      style={{
-                        background: [
-                          `radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--color-accent) ${JOURNEY.card.bloomCornerAccent}%, transparent) -10%, transparent 70%)`,
-                          `radial-gradient(ellipse at bottom left, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCornerDeep}%, transparent) -10%, transparent 70%)`,
-                          `radial-gradient(circle at bottom center, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCenterDeep}%, transparent) -20%, transparent 60%)`,
-                        ].join(", "),
-                        filter: `blur(${JOURNEY.card.bloomBlur})`,
-                      }}
-                    />
-                    {/* Glass sheen — faint diagonal paper wash, brightens on
+                      className={cn(
+                        "pointer-events-none absolute top-1/2 z-10 hidden size-4 -translate-y-1/2 md:block",
+                        side === "right" ? "left-0 -translate-x-1/2" : "right-0 translate-x-1/2",
+                      )}
+                    >
+                      {/* `ring-ink` is load-bearing: dot and stroke are both
+                          ember, so without an ink gap the node dissolves into
+                          the line it is meant to mark. */}
+                      <Box className="bg-accent ring-ink absolute inset-0 rounded-full ring-[3px]" />
+                      <Box className="border-accent motion-safe:animate-ping absolute inset-0 rounded-full border-2" />
+                    </Box>
+                    {/* Gradient-card restyle (owner reference match 2026-07-24):
+                        ink card, deep bottom padding = the empty lower zone the
+                        ember bloom rises through. The halo is a box-shadow on
+                        THIS element — never clipped by its own overflow-hidden,
+                        and it still rides the tilt as a child of the wrapper;
+                        keep its spread inside px-page-x or the section's
+                        load-bearing overflow-x-clip hard-crops it on side cards. */}
+                    <Box className="group bg-ink rounded-card shadow-[0_-8px_50px_6px_var(--color-ember-glow-soft),0_0_16px_2px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] hover:shadow-[0_-8px_60px_10px_var(--color-ember-glow-soft),0_0_20px_3px_var(--color-ember-glow-deep),0_0_10px_0_var(--color-overlay-scrim)] duration-(--dur-fast) relative overflow-hidden p-9 pb-32 transition-shadow ease-out md:p-12 md:pb-40">
+                      {/* Bottom bloom — the reference's two blurred glow layers
+                        collapsed into one (3 radials, ember not purple),
+                        under the content in DOM so text stays on top. */}
+                      <Box
+                        aria-hidden
+                        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3"
+                        style={{
+                          background: [
+                            `radial-gradient(ellipse at bottom right, color-mix(in oklab, var(--color-accent) ${JOURNEY.card.bloomCornerAccent}%, transparent) -10%, transparent 70%)`,
+                            `radial-gradient(ellipse at bottom left, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCornerDeep}%, transparent) -10%, transparent 70%)`,
+                            `radial-gradient(circle at bottom center, color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.bloomCenterDeep}%, transparent) -20%, transparent 60%)`,
+                          ].join(", "),
+                          filter: `blur(${JOURNEY.card.bloomBlur})`,
+                        }}
+                      />
+                      {/* Glass sheen — faint diagonal paper wash, brightens on
                         hover (owner-approved 2026-07-23, adapted from the
                         reference's glass reflection layer; CSS-only via
                         group-hover, recolored to the paper token). */}
-                    <Box
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-(--dur-fast) ease-out group-hover:opacity-80"
-                      style={{
-                        background: `linear-gradient(135deg, color-mix(in oklab, var(--color-paper) ${JOURNEY.card.sheenPaper}%, transparent) 0%, transparent 45%, transparent 78%, color-mix(in oklab, var(--color-paper) ${Math.round(JOURNEY.card.sheenPaper * 0.6)}%, transparent) 100%)`,
-                      }}
-                    />
-                    <Box className="border-line bg-raised mb-5 inline-flex size-12 items-center justify-center rounded-full border">
-                      {item.kind === "education" ? (
-                        <GraduationCap
-                          aria-hidden
-                          className="text-paper size-5"
-                        />
-                      ) : (
-                        <Briefcase
-                          aria-hidden
-                          className="text-paper size-5"
-                        />
-                      )}
-                    </Box>
-                    <Box
-                      as="h3"
-                      className="text-[length:calc(var(--text-body)*1.5)] text-paper font-sans font-semibold leading-tight"
-                    >
-                      {item.title}
-                    </Box>
-                    <Box
-                      as="p"
-                      className="text-body text-muted mt-1"
-                    >
-                      {item.org}
-                    </Box>
-                    <Box className="font-mono text-eyebrow text-muted mt-3 flex flex-wrap items-center gap-3 uppercase">
-                      <Box as="span">{item.period}</Box>
-                      {item.employmentType && (
-                        <Box
-                          as="span"
-                          className="border-line rounded-full border px-2.5 py-0.5 normal-case"
-                        >
-                          {item.employmentType}
-                        </Box>
-                      )}
-                    </Box>
-                    {/* Overview, then the titled list (owner ask 2026-07-25).
+                      <Box
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-(--dur-fast) ease-out group-hover:opacity-80"
+                        style={{
+                          background: `linear-gradient(135deg, color-mix(in oklab, var(--color-paper) ${JOURNEY.card.sheenPaper}%, transparent) 0%, transparent 45%, transparent 78%, color-mix(in oklab, var(--color-paper) ${Math.round(JOURNEY.card.sheenPaper * 0.6)}%, transparent) 100%)`,
+                        }}
+                      />
+                      <Box className="border-line bg-raised mb-5 inline-flex size-12 items-center justify-center rounded-full border">
+                        {item.kind === "education" ? (
+                          <GraduationCap
+                            aria-hidden
+                            className="text-paper size-5"
+                          />
+                        ) : (
+                          <Briefcase
+                            aria-hidden
+                            className="text-paper size-5"
+                          />
+                        )}
+                      </Box>
+                      <Box
+                        as="h3"
+                        className="text-[calc(var(--text-body)*1.5)] text-paper font-sans font-semibold leading-tight"
+                      >
+                        {item.title}
+                      </Box>
+                      <Box
+                        as="p"
+                        className="text-body text-muted mt-1"
+                      >
+                        {item.org}
+                      </Box>
+                      <Box className="font-mono text-eyebrow text-muted mt-3 flex flex-wrap items-center gap-3 uppercase">
+                        <Box as="span">{item.period}</Box>
+                        {item.employmentType && (
+                          <Box
+                            as="span"
+                            className="border-line rounded-full border px-2.5 py-0.5 normal-case"
+                          >
+                            {item.employmentType}
+                          </Box>
+                        )}
+                      </Box>
+                      {/* Overview, then the titled list (owner ask 2026-07-25).
                         The overview is no longer a fallback for a missing
                         list — every card leads with it, and the two no longer
                         restate each other (see the data file's header note). */}
-                    {item.summary && (
-                      <Box
-                        as="p"
-                        className="text-body text-muted mt-5 max-w-[52ch]"
-                      >
-                        {item.summary}
-                      </Box>
-                    )}
-                    {item.highlights && (
-                      <Box
-                        as="h4"
-                        className="font-mono text-eyebrow text-paper mt-6 uppercase"
-                      >
-                        {item.kind === "education" ? "Focus Areas" : "Responsibilities"}
-                      </Box>
-                    )}
-                    {item.highlights && (
-                      <Box
-                        as="ul"
-                        className="text-body text-muted marker:text-accent mt-3 grid list-disc gap-2 pl-5"
-                      >
-                        {item.highlights.map((line) => (
-                          <Box
-                            as="li"
-                            key={line}
-                          >
-                            {line}
-                          </Box>
-                        ))}
-                      </Box>
-                    )}
-                    {item.stack && (
-                      <Box
-                        as="ul"
-                        className="mt-5 flex flex-wrap gap-2"
-                      >
-                        {item.stack.map((tech) => {
-                          const TechIcon = TECH_ICONS[tech];
-                          return (
+                      {item.summary && (
+                        <Box
+                          as="p"
+                          className="text-body text-muted mt-5 max-w-[52ch]"
+                        >
+                          {item.summary}
+                        </Box>
+                      )}
+                      {item.highlights && (
+                        <Box
+                          as="h4"
+                          className="font-mono text-eyebrow text-paper mt-6 uppercase"
+                        >
+                          {item.kind === "education" ? "Focus Areas" : "Responsibilities"}
+                        </Box>
+                      )}
+                      {item.highlights && (
+                        <Box
+                          as="ul"
+                          className="text-body text-muted marker:text-accent mt-3 grid list-disc gap-2 pl-5"
+                        >
+                          {item.highlights.map((line) => (
                             <Box
                               as="li"
-                              key={tech}
-                              className="border-line font-mono text-meta text-muted flex items-center gap-1.5 rounded-full border px-2.5 py-0.5"
+                              key={line}
                             >
-                              {TechIcon && (
-                                <TechIcon
-                                  aria-hidden
-                                  className="size-3"
-                                />
-                              )}
-                              {tech}
+                              {line}
                             </Box>
-                          );
-                        })}
-                      </Box>
-                    )}
-                    {/* The rim (owner ask 2026-07-24) — ONE ring, because a
+                          ))}
+                        </Box>
+                      )}
+                      {item.stack && (
+                        <Box
+                          as="h4"
+                          className="font-mono text-eyebrow text-paper mt-6 uppercase"
+                        >
+                          Tools &amp; Stack
+                        </Box>
+                      )}
+                      {item.stack && (
+                        <Box
+                          as="ul"
+                          className="mt-3 flex flex-wrap gap-2"
+                        >
+                          {item.stack.map((tech) => {
+                            const TechIcon = TECH_ICONS[tech];
+                            return (
+                              /* Light-glass pill lifted verbatim from 04 Projects
+                               (owner ask 2026-07-25: white badges) — one badge
+                               language across both chapters, as the icons
+                               already share `TECH_ICONS`. */
+                              <Box
+                                as="li"
+                                key={tech}
+                                className="border-paper/15 bg-paper/10 text-paper-bright font-mono text-meta flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 backdrop-blur-md"
+                              >
+                                {TechIcon && (
+                                  <TechIcon
+                                    aria-hidden
+                                    className="size-3"
+                                  />
+                                )}
+                                {tech}
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      )}
+                      {/* The rim (owner ask 2026-07-24) — ONE ring, because a
                         rounded corner needs one: the straight bottom bar +
                         1px side ticks this replaces were cut off by the
                         card's own `rounded-card overflow-hidden` exactly
@@ -436,15 +455,16 @@ export function JourneySection() {
                         gradient border (no `mask-composite` punch-out needed
                         — there's no background to subtract), and it follows
                         the radius for free. */}
-                    <Box
-                      aria-hidden
-                      className="rounded-card pointer-events-none absolute inset-0"
-                      style={{
-                        border: `${JOURNEY.card.rimWidth} solid color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.rimOpacity}%, transparent)`,
-                        maskImage: RIM_FADE,
-                        WebkitMaskImage: RIM_FADE,
-                      }}
-                    />
+                      <Box
+                        aria-hidden
+                        className="rounded-card pointer-events-none absolute inset-0"
+                        style={{
+                          border: `${JOURNEY.card.rimWidth} solid color-mix(in oklab, var(--color-accent-deep) ${JOURNEY.card.rimOpacity}%, transparent)`,
+                          maskImage: RIM_FADE,
+                          WebkitMaskImage: RIM_FADE,
+                        }}
+                      />
+                    </Box>
                   </Box>
                 </Box>
               </Box>
