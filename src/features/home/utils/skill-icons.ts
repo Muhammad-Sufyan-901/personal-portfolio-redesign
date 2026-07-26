@@ -32,6 +32,16 @@ const ALIASES: Record<string, string> = {
   "React JS": "react",
   "Vue.js": "vue",
   "Tailwind CSS": "tailwind",
+  // dark-bg variants (owner request 2026-07-26) — supersede "next js.svg" / "github.svg"
+  "Next JS": "nextdotjs",
+  GitHub: "github-dark",
+  // owner-added items (2026-07-26); the rest resolve by lowercase
+  "Three.js": "threedotjs",
+  "Inertia.js": "inertiajs-wordmark",
+  "Claude Code": "claude-code",
+  // supersedes "framer motion.svg" — that file is a mislabeled SVG-Repo
+  // "fluent-design" icon, not the Framer mark
+  "Framer Motion": "framer",
 };
 
 export function skillIconUrl(name: string): string | undefined {

@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import { Box, ChapterEyebrow, Image, Link, MagneticButton, RevealText } from "@/components/common";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { profile } from "@/features/home/data/profile.data";
 import { skillGroups } from "@/features/home/data/skills.data";
@@ -204,7 +205,7 @@ export function SkillsSection() {
                             width={SKILLS_SECTION.logos.sizePx}
                             height={SKILLS_SECTION.logos.sizePx}
                             objectFit="contain"
-                            className="shrink-0 bg-transparent"
+                            className={cn("shrink-0 bg-transparent", item.invert && "invert")}
                           />
                         ) : (
                           /* icon-less fallback: empty slot keeps the name

@@ -35,12 +35,15 @@ export const tools: string[] = ["Visual Studio Code", "GitHub", "Figma", "XAMPP"
 
 /** Presentation regrouping for the 06 Skills accordion (owner taxonomy,
  *  2026-07-21) — items pulled from the verbatim `skills`/`tools` arrays above:
- *  regrouped, never invented. The owner taxonomy's "Animation & 3D" group is
- *  DEFERRED — the PRD has no animation/3D skills to back it. */
+ *  regrouped, never invented. "Animation & 3D" is no longer deferred: the
+ *  owner approved it plus nine other non-PRD entries on 2026-07-26 (see
+ *  `ownerItems`), the same owner-addition precedent as `projects.data.ts`. */
 export interface SkillGroupItem {
   name: string;
   /** present on §3.1 skills, absent on §3.2 tools */
   level?: SkillLevel;
+  /** near-black brand mark (expo) — invert it so it reads on the ink bg */
+  invert?: boolean;
 }
 
 export interface SkillGroup {
@@ -54,11 +57,27 @@ const byCategory = (category: Skill["category"]): SkillGroupItem[] => skills.fil
 const toolItems = (names: string[]): SkillGroupItem[] =>
   tools.filter((t) => names.includes(t)).map((name) => ({ name }));
 
+/** Owner-approved additions (2026-07-26) — NOT PRD §3.1/§3.2, so they live
+ *  apart from the verbatim arrays above. Levels are omitted deliberately: the
+ *  accordion renders names only. Each has a brand SVG in `src/assets/icons`. */
+const ownerItems = {
+  animation: [{ name: "GSAP" }, { name: "Three.js" }, { name: "WebGL" }, { name: "Framer Motion" }],
+  backend: [{ name: "Inertia.js" }],
+  database: [{ name: "Supabase" }],
+  devops: [{ name: "Claude Code" }, { name: "Laragon" }],
+  mobile: [{ name: "Expo", invert: true }],
+  design: [{ name: "Canva" }],
+} satisfies Record<string, SkillGroupItem[]>;
+
 export const skillGroups: SkillGroup[] = [
   { label: "Frontend", items: byCategory("Frontend") },
-  { label: "Backend", items: byCategory("Backend") },
-  { label: "Databases", items: byCategory("Database") },
-  { label: "DevOps & Tools", items: toolItems(["Visual Studio Code", "GitHub", "XAMPP", "Git"]) },
-  { label: "Mobile", items: [...byCategory("Mobile"), ...toolItems(["Android Studio"])] },
-  { label: "Design", items: toolItems(["Figma"]) },
+  { label: "Animation & 3D", items: ownerItems.animation },
+  { label: "Backend", items: [...byCategory("Backend"), ...ownerItems.backend] },
+  { label: "Databases", items: [...byCategory("Database"), ...ownerItems.database] },
+  {
+    label: "DevOps & Tools",
+    items: [...toolItems(["Visual Studio Code", "GitHub", "XAMPP", "Git"]), ...ownerItems.devops],
+  },
+  { label: "Mobile", items: [...byCategory("Mobile"), ...toolItems(["Android Studio"]), ...ownerItems.mobile] },
+  { label: "Design", items: [...toolItems(["Figma"]), ...ownerItems.design] },
 ];
