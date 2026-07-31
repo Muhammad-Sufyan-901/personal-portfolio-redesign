@@ -44,6 +44,17 @@ export const ARTICLES_AUTHOR = {
   avatar: "/assets/images/profile/about-profile.png",
 } as const;
 
+/** Destination for the chapter's "View All Articles" action.
+ *
+ *  PLACEHOLDER, and deliberately an `example.com` url like the entries — there
+ *  is no articles index to point at. The PRD lists no blog, Medium, dev.to or
+ *  Hashnode profile anywhere (§5/§6 defer a blog entirely), and this site is a
+ *  single page with no `/articles` route, so there is nothing real to link.
+ *  The owner replaces this with whatever the shelf actually lives behind — a
+ *  Medium profile, a personal blog index — and the common `Link` will classify
+ *  it as external and open it in a new tab automatically. */
+export const ARTICLES_INDEX_URL = "https://example.com/placeholder-articles-index";
+
 export const articles: Article[] = [
   {
     title: "The re-render you cannot see",

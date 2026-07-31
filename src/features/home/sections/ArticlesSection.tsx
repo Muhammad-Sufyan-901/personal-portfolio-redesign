@@ -1,12 +1,12 @@
 import { Fragment, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { Box, ChapterEyebrow, Image, Link } from "@/components/common";
+import { Box, ChapterEyebrow, Image, Link, MagneticButton } from "@/components/common";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useLenis } from "@/hooks/useLenis";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
-import { articles, ARTICLES_AUTHOR, ARTICLES_STATEMENT } from "@/features/home/data/articles.data";
+import { articles, ARTICLES_AUTHOR, ARTICLES_INDEX_URL, ARTICLES_STATEMENT } from "@/features/home/data/articles.data";
 import { ARTICLES } from "@/features/home/utils/articles.tunables";
 
 // Word-span statement grammar (Journey/Gallery precedent): RevealText can't
@@ -223,33 +223,64 @@ export function ArticlesSection() {
         staticMode ? "py-section" : "h-svh overflow-hidden",
       )}
     >
-      <Box className="px-page-x pt-[10svh]">
-        <ChapterEyebrow
-          index="09"
-          label="Writing"
-        />
-        <Box
-          as="h2"
-          /* The 26ch measure is the reading width this statement wants, but on
-             a short viewport it costs four lines, and every line it takes comes
-             straight off the rail below — at 1024×600 that starved the cards
-             down to 234px and squeezed the photograph out of a photo-led card.
-             Horizontal room is exactly what is abundant at that size, so trade
-             measure for height there and let it run to two lines. */
-          className="articles-statement font-display-lead text-statement text-paper mt-6 max-w-[26ch] [@media(max-height:768px)]:max-w-[58ch] lg:[@media(max-height:768px)]:text-item"
-        >
-          {statementWords.map((word, i) => (
-            <Fragment key={i}>
-              <Box
-                as="span"
-                className={cn("articles-word inline-block", isFocalWord(word) && "font-display-tail italic")}
-              >
-                {word}
-              </Box>
-              {i < statementWords.length - 1 ? " " : ""}
-            </Fragment>
-          ))}
+      {/* Header row. `justify-between` parks the action opposite the statement
+          (owner ask 2026-08-01); `items-end` sits it on the statement's last
+          baseline rather than floating at the top of a four-line block.
+          `flex-wrap` is what makes that safe below lg — the action drops under
+          the statement instead of crushing its measure.
+          The svh padding is deliberately lean: this section is PINNED, so every
+          pixel spent above the eyebrow comes straight out of the card height in
+          the rail below. */}
+      <Box className="px-page-x flex flex-wrap items-end justify-between gap-x-10 gap-y-6 pt-[6svh]">
+        <Box className="min-w-0">
+          <ChapterEyebrow
+            index="09"
+            label="Writing"
+          />
+          <Box
+            as="h2"
+            /* The 26ch measure is the reading width this statement wants, but on
+               a short viewport it costs four lines, and every line it takes comes
+               straight off the rail below — at 1024×600 that starved the cards
+               down to 234px and squeezed the photograph out of a photo-led card.
+               Horizontal room is exactly what is abundant at that size, so trade
+               measure for height there and let it run to two lines. */
+            className="articles-statement font-display-lead text-statement text-paper mt-6 max-w-[26ch] [@media(max-height:768px)]:max-w-[58ch] lg:[@media(max-height:768px)]:text-item"
+          >
+            {statementWords.map((word, i) => (
+              <Fragment key={i}>
+                <Box
+                  as="span"
+                  className={cn("articles-word inline-block", isFocalWord(word) && "font-display-tail italic")}
+                >
+                  {word}
+                </Box>
+                {i < statementWords.length - 1 ? " " : ""}
+              </Fragment>
+            ))}
+          </Box>
         </Box>
+
+        {/* House CTA, same shape as About's "Download CV" and Skills' "Contact
+            Me" — MagneticButton wrapping a Link whose `.magnetic-label` gets
+            the counter-move. Sized at eyebrow rather than About's `text-item`:
+            it sits beside a display-scale statement and is a secondary path,
+            so it should read as an offer, not compete for the same voice. */}
+        <MagneticButton className="mb-2 shrink-0">
+          <Link
+            href={ARTICLES_INDEX_URL}
+            className="magnetic-label font-mono text-eyebrow text-paper hover:text-accent group inline-flex items-center gap-3 tracking-[0.08em] uppercase underline decoration-1 underline-offset-8 transition-colors"
+          >
+            View All Articles
+            <Box
+              as="span"
+              aria-hidden
+              className="text-accent transition-transform group-hover:translate-x-1"
+            >
+              →
+            </Box>
+          </Link>
+        </MagneticButton>
       </Box>
 
       {/* Rail. In the pinned branch the row is height-constrained (`min-h-0`
@@ -265,18 +296,23 @@ export function ArticlesSection() {
       <Box
         className={cn(
           "flex",
-          staticMode ? "mt-14 items-start overflow-x-auto" : "min-h-0 flex-1 items-center pt-12 pb-10",
+          // Lean padding in the pinned branch, for the same reason the header's
+          // svh padding is lean: the section is a fixed viewport, so gutters
+          // here are subtracted directly from card height (owner ask
+          // 2026-08-01 — taller cards).
+          staticMode ? "mt-14 items-start overflow-x-auto" : "min-h-0 flex-1 items-center pt-6 pb-6",
         )}
       >
-        {/* `max-h` is the other half of the height contract: `h-full` alone
-            handed the cover every spare pixel, so on a 1024-tall viewport a
-            400px-wide card grew an 800px cover. Capped, the clipping keeps a
-            portrait-ish silhouette at every height, and `items-center` parks
-            the shortfall symmetrically instead of at the top. */}
+        {/* `max-h` is the ceiling on how tall a clipping may get on a very tall
+            viewport; below it the rail's own height decides, and `items-center`
+            parks any shortfall symmetrically instead of at the top. Raised
+            34rem → 42rem with the 2026-08-01 taller-cards pass: at 1080 the old
+            cap was binding at exactly the available height, so it would have
+            eaten the reclaimed padding before a single pixel reached a card. */}
         <Box
           as="ul"
           ref={trackRef}
-          className={cn("px-page-x flex gap-6", staticMode ? "snap-x snap-mandatory" : "h-full max-h-[34rem]")}
+          className={cn("px-page-x flex gap-6", staticMode ? "snap-x snap-mandatory" : "h-full max-h-[42rem]")}
         >
           {articles.map((article, i) => (
             <Box
@@ -445,7 +481,7 @@ export function ArticlesSection() {
       {!staticMode && (
         <Box
           aria-hidden
-          className="px-page-x flex items-center gap-5 pb-10"
+          className="px-page-x flex items-center gap-5 pb-6"
         >
           {/* 2px, not the system's 1px hairline: this is a meter, not a
               boundary, and at 1px the chapter's single ember moment washed out
