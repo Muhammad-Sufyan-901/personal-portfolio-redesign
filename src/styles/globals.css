@@ -137,8 +137,11 @@
   --radius-md: 4px;
   --radius-lg: 8px;
   --radius-xl: 8px;
-  /* Journey reference-card silhouette (owner overdrive 2026-07-22) — the one
-     approved departure from the 8px cap; don't reach for it elsewhere. */
+  /* The approved departure from the 8px cap, for full-card surfaces only:
+     Journey's reference cards (owner overdrive 2026-07-22), the shadcn
+     hover-card panel, and the 09 Articles byline card (owner ask 2026-08-01).
+     It is the "this is a card, not a control" radius — don't put it on
+     buttons, inputs, badges or hairline-bounded blocks. */
   --radius-card: 24px;
 
   /* === Motion (§7.1) === */

@@ -27,6 +27,37 @@ export interface Project {
   featured: boolean;
 }
 
+/** Chapter 09 Articles. NOT PRD-transcribed — the PRD defers a blog ("Blog is
+ *  out of scope unless explicitly requested at planning approval", §5), and
+ *  this chapter is that explicit request (owner ask 2026-07-26). Entries are
+ *  owner-supplied; unknown fields are omitted, never fabricated. No `slug` —
+ *  nothing routes to an article, and `url` is already a stable React key. */
+export interface Article {
+  title: string;
+  /** Where it ran — "Medium", "dev.to", a personal blog. */
+  publication: string;
+  /** Display-ready, not parsed: "Mar 2026". */
+  date: string;
+  url: string;
+  /** Standfirst under the title — one sentence, ~90–140 chars (two lines at the
+   *  card's width, one under 768px tall).
+   *
+   *  REQUIRED, superseding the 2026-07-26 "the card is deliberately minimal"
+   *  decision: the owner asked (2026-08-01) for the background-image byline
+   *  card, whose whole premise is a title plus a line of context over the
+   *  photograph. Optional would put two silhouettes in one rail. */
+  description: string;
+  /** A `public/` path (e.g. "/assets/images/articles/foo.webp") or an absolute
+   *  CDN URL — NOT a `src/assets` import, which fails `vite build` while the
+   *  file is missing. The `Image` primitive falls back to its gray SVG until
+   *  the real file lands.
+   *
+   *  REQUIRED as of the same redesign: the card IS the cover now, so an entry
+   *  without one is a grey rectangle, not a variant of this design. */
+  cover: string;
+  readingTime?: string;
+}
+
 export type JourneyKind = "work" | "education" | "award";
 
 export interface JourneyItem {
