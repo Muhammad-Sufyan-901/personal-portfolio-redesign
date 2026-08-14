@@ -41,6 +41,17 @@ Gotchas found 2026-07-20 (ch.07 gallery — Lighthouse in qa threads):
 - Recent Lighthouse adds `agentic-browsing` / `llms-txt` audits — ignore for the DoD (not one of the four categories).
 - Page-level perf ledger (as of ch.07): LCP/TTI ~24s because the every-load preloader gates the hero paint + one 500kB+ chunk (bundle split deferred to final QA) — perf 62. Don't re-attribute this to whichever chapter is being audited; it predates them.
 
+Gotchas found 2026-08-04 (ch.10 contact revision):
+- **This fallback is also needed in the MAIN thread, not just qa-auditor subagents.** chrome-devtools MCP fails with "The browser is already running for `~/.cache/chrome-devtools-mcp/chrome-profile`" whenever the user has a Chrome instance on that profile. Don't kill their browser — go straight to puppeteer-core.
+- Scroll-target staleness: measure a trigger's document offset (`getBoundingClientRect().top + scrollY`) **after** parking the page deep in the document. Measured at scroll 0, before fonts/images settle and ScrollTrigger refreshes, the target lands *past* a `once` trigger, so every subsequent sample reads the settled end state — reads exactly like "the animation never runs" (cost a false bug report on the contact heading slide).
+- Cover/fit assertions must compare **rendered** geometry to need (`el.getBoundingClientRect().width/2 >= Math.hypot(innerWidth/2, innerHeight)`), never re-implement the component's formula in the probe — when the fix changes the formula, a probe that mirrors the old one keeps reporting failure against correct code.
+- `page.setViewport({width:390, height:844, isMobile:true})` yields `innerWidth/innerHeight` of 441×953, NOT 390×844 — so probes mixing CSS units (`vmax`, `svh`) with `innerWidth/innerHeight` disagree with the page by ~13%. Real divergence too (layout vs visual viewport), so it's a genuine signal, not just harness noise.
+
+Gotchas found 2026-08-03 (ch.10 contact):
+- Focus-ring color probes: Tailwind v4 `transition-colors` includes `outline-color`, so an element with that class transitions its focus ring from currentColor → the rule's color over ~150ms. A t=0 read after Tab returns currentColor (looked like the `[data-invert]` override failing — it wasn't). Wait ≥300ms after focusing before reading `outlineColor`.
+- Horizontal-overflow asserts: `scrollbar-width: none` + Lenis wheel-hijack hide real X overflow from visual checks — always assert `document.documentElement.scrollWidth <= innerWidth` at mobile AND desktop, then prove it's live with `window.scrollTo(80,0)` → `scrollX > 0` (the ch.10 dome panned to 59px at 390w). Bonus isolation trick: if the suspect decor is conditionally not rendered under RM, the RM run's clean scrollWidth fingers it as sole culprit.
+- Form-path caveat: `emailEnabled` gates the whole ContactForm on VITE_EMAILJS_* keys — a keyless dev server never mounts the form, so form aria/status probes silently no-op (`formPresent:false`). Check the gate before trusting "0 form issues".
+
 Gotchas found 2026-07-16 (hero one-line refine):
 - Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
 - Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.

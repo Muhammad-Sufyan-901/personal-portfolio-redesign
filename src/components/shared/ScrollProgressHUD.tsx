@@ -131,7 +131,10 @@ export function ScrollProgressHUD() {
       aria-hidden
       className="pointer-events-none max-lg:hidden"
     >
-      <Box className="fixed left-6 top-1/2 z-60 -translate-y-1/2 font-mono text-index text-muted">
+      {/* mix-blend-difference keeps the paper-toned chrome legible when it
+          crosses 10 Contact's light-invert sheet (≈ink there, unchanged on
+          dark sections). */}
+      <Box className="fixed left-6 top-1/2 z-60 -translate-y-1/2 font-mono text-index text-muted mix-blend-difference">
         (
         <Box
           as="span"
@@ -142,7 +145,7 @@ export function ScrollProgressHUD() {
         </Box>
         )
       </Box>
-      <Box className="fixed right-6 top-1/2 z-60 h-[70svh] -translate-y-1/2">
+      <Box className="fixed right-6 top-1/2 z-60 h-[70svh] -translate-y-1/2 mix-blend-difference">
         <Box
           as="span"
           ref={labelRef}

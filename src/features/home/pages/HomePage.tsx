@@ -7,6 +7,7 @@ import { JourneySection } from "@/features/home/sections/JourneySection";
 import { SkillsSection } from "@/features/home/sections/SkillsSection";
 import { GallerySection } from "@/features/home/sections/GallerySection";
 import { ArticlesSection } from "@/features/home/sections/ArticlesSection";
+import { ContactSection } from "@/features/home/sections/ContactSection";
 
 export function HomePage() {
   return (
@@ -19,6 +20,7 @@ export function HomePage() {
       <SkillsSection />
       <JourneySection />
       <ArticlesSection />
+      <ContactSection />
     </Box>
   );
 }
