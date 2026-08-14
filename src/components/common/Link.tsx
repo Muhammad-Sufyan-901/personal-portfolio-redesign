@@ -22,15 +22,22 @@ export function Link({ href, replace = false, scroll = true, target, rel, onClic
       onClick?.(e);
       if (e.defaultPrevented) return;
       e.preventDefault();
-      const el = document.querySelector(href);
+      const el = document.querySelector<HTMLElement>(href);
       if (el) {
         if (lenis && scroll) {
           // force: survive a stopped Lenis (SiteMenu stops it while open)
-          lenis.scrollTo(el as HTMLElement, { force: true });
+          lenis.scrollTo(el, { force: true });
         } else {
-          (el as HTMLElement).scrollIntoView();
+          el.scrollIntoView();
         }
         history.pushState(null, "", href);
+        // preventDefault() above kills the browser's fragment-navigation focus
+        // reset, and pushState never sets one — so without this the caret stays
+        // on the anchor and the next Tab resumes where it was. That silently
+        // made the skip link bypass nothing. preventScroll so we don't fight
+        // the scroll we just started.
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+        el.focus({ preventScroll: true });
       }
     };
     return (

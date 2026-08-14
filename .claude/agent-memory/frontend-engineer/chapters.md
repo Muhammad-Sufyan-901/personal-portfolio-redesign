@@ -55,3 +55,19 @@ Reusable rules this chapter proved: contrast over arbitrary photography is bough
 - **`ScrollProgressHUD` fixed layers carry `mix-blend-difference`** so paper-toned chrome stays legible crossing the light sheet (≈ink there, unchanged over dark).
 
 **DEAD contracts — don't restore:** (a) the **dome cap** (`130vw` half-ellipse, `scaleY→0`, `absolute bottom-[calc(100%-1px)]`) — it's section-anchored so its centre rises with the page; the reference's centre never moves. Replaced by the fixed circle. (b) `overflow-x-clip` on the root — it existed only to contain the 130vw dome; a `fixed` disc creates no page scroll. (c) the **duotone portrait** (grayscale `Image` + `bg-accent mix-blend-multiply`) — replaced by `GradientPanel`; `about-profile.png` is no longer reused here. (d) `RevealText mode="chars"` on the heading — its own `top 80%` trigger fired while the screen was still dark. (e) `CONTACT_STATEMENT` singular.
+
+## Footer (2026-08-14)
+
+`sections/FooterSection.tsx` (**not** `components/shared/Footer.tsx` as PLAN v3.1 §3 specced — it consumes `features/home/data/*`, and shared→feature inverts Golden Rule 1). Rendered by HomePage after Contact, slides beneath 08's `rounded-b-[50%_5rem]` exit curve with no Contact changes. Built to `reference/footer-refine.mp4`, which **supersedes** PLAN's spec: no name `Marquee`, no back-to-top `MagneticButton`, and the ASCII hands replace the planned ember "ornament converge".
+
+Three bands inside `flex min-h-svh flex-col overflow-hidden px-page-x pt-section`:
+
+1. **Meta row** — plain `flex flex-wrap justify-between` of three stacked blocks (measured against the reference: it really is space-between, not a grid). Left = gmail `mailto:` + `© {new Date().getFullYear()}`; centre = `socialLinks`; right = a 3-anchor `navLinks` subset (`#projects`/`#about`/`#contact`, the reference's WORK/INFO/CONTACT). **Zero data-layer delta.**
+2. **ASCII hands** — `components/AsciiHands.tsx`, see motion-engineer's MEMORY. Sized box lives in the SECTION (`relative my-12 -mx-page-x min-h-0 flex-1`) with the lazy component `absolute inset-0` inside it, so the band keeps its shape while the chunk loads and if the image is missing. **`flex-1`, never percentage insets** — the first build used `top-[22%] bottom-[26%]` and it collided with the wrapped link columns at 390px.
+3. **Name** — `profile.heroName` at `text-hero-line`, lead `font-display-lead font-medium` / tail `font-display-tail italic`, terminal period peeled off the tail string and given `text-accent`. `justify-between` gives the reference's ~16vw centre gap (lead+tail ≈ 4.77em × 15.5vw ≈ 74vw of a 90vw content box — reusing the hero token is correct, don't invent a new `--text-*`). Descenders are **deliberately cropped** by the page edge: `-mb-[0.02em]` inside the root's `overflow-hidden`. That is the INVERSE of the hero's `pb-[0.12em] -mb-[0.12em]`, which exists to keep descenders whole — don't "fix" one to match the other. a11y = `sr-only` `profile.name` + `aria-hidden` on the visual row (an `aria-label` on a `<p>` is not reliably exposed).
+
+**HARD CONSTRAINT — `.hero-word` must stay unique.** `Preloader.tsx:122` polls `.hero-name .hero-word` and requires **exactly two** matches document-wide for its FLIP morph. Any future giant-name treatment needs its own class names; this one uses `.footer-name` / `.footer-word`.
+
+**Owed asset:** `public/assets/images/hands.png` (owner-supplied, wide ~3:1, light subject on transparency — `asciify` maps `alpha === 0` straight to a space). Until it lands the field renders nothing and the gap stays.
+
+Skip-to-content link (hero audit F7, deferred to "footer polish") landed with this chapter in `RootLayout.tsx` — `sr-only focus:not-sr-only`, `focus:z-70` between the z-60 chrome and the z-80 SiteMenu.

@@ -89,6 +89,10 @@
      the site-wide display/body faces; kept as distinct tokens for semantics. */
   --font-display-lead: "Switzer", system-ui, sans-serif;
   --font-display-tail: "Instrument Serif", serif;
+  /* Footer ASCII field only. `--font-mono` renders Inter by design (2026-07-20),
+     which is proportional — ASCII art needs fixed advance widths or the glyph
+     columns jitter. System stack, so no webfont cost. */
+  --font-ascii: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* Fluid type scale (§4.3) */
   --text-display: clamp(3.5rem, 12vw, 11rem);

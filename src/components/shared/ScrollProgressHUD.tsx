@@ -107,11 +107,22 @@ export function ScrollProgressHUD() {
         },
       });
 
+      // The HUD also RETIRES at the footer. The footer isn't a navLinks
+      // chapter, so past Contact the label has nothing left to name — and its
+      // rail-end parking spot lands the mix-blend-difference label directly on
+      // the footer's display-scale name (measured 18px of overlap at 1440).
+      const hudEnd = () => {
+        const footer = document.getElementById("footer");
+        if (!footer) return HUD_END;
+        return footer.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.35;
+      };
+
       // After-hero reveal, mirroring MenuPopout.
       gsap.set(root, { autoAlpha: 0 });
       ScrollTrigger.create({
         start: () => window.innerHeight * HUD_START,
-        end: HUD_END,
+        end: hudEnd,
+        invalidateOnRefresh: true,
         onToggle: (self) =>
           prefersReducedMotion
             ? gsap.set(root, { autoAlpha: self.isActive ? 1 : 0 })
