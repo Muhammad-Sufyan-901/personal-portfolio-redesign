@@ -94,12 +94,13 @@ const PRE_CLASS =
  *  stop extends forever, so `REST_MIX` of accent-deep is the field's resting
  *  colour.
  *
- *  14% is measured, not taste: sampled over a dense hand patch, the reference
- *  field runs meanR 10.2 / p95 13 / lit-fraction 2.7% against ink. At 32% the
- *  glyphs came out flat #40150a — p95 64, lit 14.5% — legible as text rather
- *  than the barely-there texture the reference has. */
+ *  34% is an OWNER OVERRIDE (2026-08-14) — deliberately brighter than the
+ *  reference. Matching it measured out at 14% (reference: meanR 12.8, p95 34
+ *  over a matched-scale patch; 14% gave 13.9 / 31), but the reference is an
+ *  H.264 capture and on a real display that reads as vanishing into the ink.
+ *  Don't "correct" this back toward the video. */
 const SPOT = "4.5rem";
-const REST_MIX = "14%";
+const REST_MIX = "34%";
 const SPOT_GRADIENT =
   `radial-gradient(circle ${SPOT} at var(--ascii-x) var(--ascii-y),` +
   " var(--color-accent) 0 55%," +

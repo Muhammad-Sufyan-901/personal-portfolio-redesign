@@ -47,7 +47,7 @@ Keep derived art out of `public/` unless it is actually used — `public/` is co
 ## Calibration against the reference (measured, don't re-eyeball)
 
 - **180 columns.** Autocorrelating a dense strip of the reference field gives a 20px pitch in its 3600px frame. Ours measures 183 at 1440.
-- **Resting glyph colour `REST_MIX 14%` of accent-deep.** Matched-scale patch: reference meanR 12.8 / p95 34 / lit 12.1%; ours 13.9 / 31 / 18.5%. Ours is flatter (cap 37 vs reference peaks 77) — solid text colour has no antialiasing falloff and the reference is an H.264 encode. Not worth chasing further.
+- **Resting glyph colour: `REST_MIX` is 34%, an OWNER OVERRIDE — not the reference match.** Matching the video measured out at 14% (reference meanR 12.8 / p95 34 over a matched-scale patch; 14% gave 13.9 / 31). On a real display that reads as vanishing into the ink, because the reference is an H.264 capture. Owner picked 34% from a rendered 14/24/34/46% ladder. **Don't re-derive this knob from the video.**
 
 > **MEASUREMENT TRAP.** The reference frame is 3600px for a ~1500 CSS px viewport (2.4×); a Playwright shot at DPR 2 is 2880px for 1440. Cropping the same *pixel* rectangle from each compares different CSS areas — it made the field read 5× too bright and the grid twice as coarse as it actually was, and sent me tuning in the wrong direction twice. **Scale both to the same CSS width before comparing anything.**
 
