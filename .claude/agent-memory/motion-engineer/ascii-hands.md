@@ -35,9 +35,29 @@ Both shaders are **verbatim from the source** and are load-bearing: the vertex w
 - Missing image / no WebGL → returns `null`. The Footer owns the sized box around it, so the band keeps its shape either way.
 - Pointer spotlight is gated on `(hover: hover)`; on touch the field just sits at its resting ember.
 
+## Source art prep (required — do this before blaming the renderer)
+
+`public/assets/images/hands.png` is a DERIVED file; the owner's original is `reference/hands-source.png`. Two things had to be fixed and will need fixing again for any replacement art:
+
+1. **Alpha.** The supplied file was a PNG with the editor's transparency checkerboard flattened into real grey pixels. `asciify` maps `alpha === 0` to a space, so without real alpha the background rasterises as a solid glyph field. The checker is neutral (`max−min ≤ 2`) and skin is not (`≈45–65`) → key on saturation with ffmpeg `geq`, multiplying RGB by the mask as well as alpha so feathered edges go dark, not bright. Exact command in `logs/feature-changes/2026-08-14-footer.md`.
+2. **Crop to content.** ~30% of the height was empty padding, which shrank the hands inside the band. Final art is 1456×502 (2.90:1).
+
+Keep derived art out of `public/` unless it is actually used — `public/` is copied wholesale into `dist/`.
+
+## Calibration against the reference (measured, don't re-eyeball)
+
+- **180 columns.** Autocorrelating a dense strip of the reference field gives a 20px pitch in its 3600px frame. Ours measures 183 at 1440.
+- **Resting glyph colour `REST_MIX 14%` of accent-deep.** Matched-scale patch: reference meanR 12.8 / p95 34 / lit 12.1%; ours 13.9 / 31 / 18.5%. Ours is flatter (cap 37 vs reference peaks 77) — solid text colour has no antialiasing falloff and the reference is an H.264 encode. Not worth chasing further.
+
+> **MEASUREMENT TRAP.** The reference frame is 3600px for a ~1500 CSS px viewport (2.4×); a Playwright shot at DPR 2 is 2880px for 1440. Cropping the same *pixel* rectangle from each compares different CSS areas — it made the field read 5× too bright and the grid twice as coarse as it actually was, and sent me tuning in the wrong direction twice. **Scale both to the same CSS width before comparing anything.**
+
 ## Tune knobs
 
-`CELL_PX` (9 → ~165 cols at 1440; reference measured ~180), `SPOT` (4.5rem radius), `WAVE_STRENGTH` (0.35; 1.0 reads as a flapping flag), `PLANE_FILL` (0.96), `RENDER_FPS`.
+`TARGET_COLS` (180, measured off the reference) with `MIN_CELL_PX` 7 / `MAX_CELL_PX` 13 — the cell is SOLVED from the width, not fixed: a fixed 13px gave 183 cols at 1440 but only 49 at 390, where the hands read as noise. `MAX_CELLS` 16k is a hard budget over both (2560×1440 would otherwise be ~27k cells rebuilt per frame). Then `REST_MIX`, `SPOT` (4.5rem), `WAVE_STRENGTH` (0.35; 1.0 reads as a flapping flag), `PLANE_FILL` (1 — edge to edge, as the reference does), `RENDER_FPS`.
+
+## Layout coupling (in FooterSection, but the renderer depends on it)
+
+The artwork is ~2.9:1 and the leftover band is ~3.6:1, so **`-mb-[15vw]` on the hands box is load-bearing, not decoration** — it lets the field bleed down behind the name (z-10 above it) as the reference does, which brings the box aspect near the artwork's. Without it the plane fits to height and the hands span barely half the width. 15vw tracks the name's own height (`text-hero-line` 15.5vw × 0.95 leading) so it scales.
 
 ## Footer entrance timeline
 

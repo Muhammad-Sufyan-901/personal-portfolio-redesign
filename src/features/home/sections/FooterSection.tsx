@@ -24,6 +24,12 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 // is the last band of the page — eager-importing it doubles the entry chunk.
 const AsciiHands = lazy(() => import("@/features/home/components/AsciiHands").then((m) => ({ default: m.AsciiHands })));
 
+/** Alpha-keyed derivative of the owner's `hands.jpg` (which is a PNG with the
+ *  transparency checkerboard flattened into real grey pixels — those would
+ *  rasterise as a solid field of glyphs). The checker is neutral and skin is
+ *  not, so the key is on saturation; recipe is in the change log. */
+const HANDS_SRC = "/assets/images/hands.png";
+
 const YEAR = new Date().getFullYear();
 
 /** The reference's WORK / INFO / CONTACT column, mapped onto our anchors. */
@@ -148,14 +154,20 @@ export function FooterSection() {
 
       {/* Flex child, not an absolute inset: percentage insets collided with
           the wrapped link columns at 390px. flex-1 hands it exactly the space
-          between the two bands at every viewport; -mx-page-x is the house
-          full-bleed idiom, so the hands still reach both edges. The box lives
-          here rather than inside AsciiHands so the band keeps its shape while
-          the lazy chunk is still in flight. */}
-      <Box className="footer-hands pointer-events-none relative my-12 -mx-page-x min-h-0 flex-1">
+          below the meta row at every viewport; -mx-page-x is the house
+          full-bleed idiom. The box lives here rather than inside AsciiHands so
+          the band keeps its shape while the lazy chunk is still in flight.
+
+          -mb-[15vw] lets the field BLEED DOWN behind the name (which is z-10
+          above it), as the reference does. That is not decoration: the artwork
+          is ~2:1 and the leftover band is ~3.6:1, so without the bleed the
+          plane fits to height and the hands span barely half the width. 15vw
+          tracks the name's own height (text-hero-line 15.5vw × 0.95 leading),
+          so it scales instead of guessing px. */}
+      <Box className="footer-hands pointer-events-none relative mt-10 -mx-page-x -mb-[15vw] min-h-0 flex-1">
         <Suspense fallback={null}>
           <AsciiHands
-            src="/assets/images/hands.png"
+            src={HANDS_SRC}
             className="absolute inset-0"
           />
         </Suspense>

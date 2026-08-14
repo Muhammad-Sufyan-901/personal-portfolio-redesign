@@ -58,28 +58,52 @@ void main() {
 
 const CHARSET = ` .'\`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$`;
 
-/** Cell size in px. ~9px gives ≈165 columns on a 1440 viewport, matching the
- *  reference field's density (measured ≈180 at its capture width). */
-const CELL_PX = 9;
+/** Column count is what decides whether the artwork reads, so the cell is
+ *  solved from the container width rather than fixed. 180 is measured off the
+ *  reference: autocorrelating a dense strip of its field gives a 20px pitch in
+ *  a 3600px frame. */
+const TARGET_COLS = 180;
+/** Clamps on that solve. A fixed 13px cell gave 183 columns at 1440 but only
+ *  49 at 390 — coarse enough that the hands read as noise. The floor trades
+ *  fidelity for cost: 180 columns at 390px would mean ~2px glyphs and ~30k
+ *  cells to rebuild per frame, where 7px yields ~93 columns and a grid the
+ *  same order of magnitude as desktop's. */
+const MIN_CELL_PX = 7;
+const MAX_CELL_PX = 13;
+/** Hard ceiling on the grid, independent of the two above. Past 1440 the cell
+ *  stays at MAX (glyph size should match the reference, ~14px there) and the
+ *  column count grows with the viewport — a 2560×1440 window works out to ~27k
+ *  cells, and a tall portrait window is worse. Every cell is rebuilt and
+ *  relaid-out each frame, so the budget wins over the aesthetic cell size. */
+const MAX_CELLS = 16_000;
 /** The glyph field is noise — every rebuild relayouts a ~7.5k-char `pre`, and
  *  at 60fps that alone pins a core. 15fps still reads as a live shimmer. */
 const RENDER_FPS = 15;
 /** Full-strength waves (1.0) ripple the plane hard enough to read as a flag;
  *  the reference only shimmers. */
 const WAVE_STRENGTH = 0.35;
-/** How much of the frame the hands span before letterboxing kicks in. */
-const PLANE_FILL = 0.96;
+/** How much of the frame the artwork spans before letterboxing kicks in. 1 =
+ *  edge to edge, which is what the reference does — its arms run off both
+ *  sides rather than sitting inside a margin. */
+const PLANE_FILL = 1;
 
 const PRE_CLASS =
   "pointer-events-none absolute top-1/2 left-1/2 m-0 -translate-x-1/2 -translate-y-1/2 p-0 font-ascii leading-none whitespace-pre select-none";
 
 /** Spotlight radius, and the ember pair it fades between. The gradient's last
- *  stop extends forever, so `deep` is also the field's resting colour. */
+ *  stop extends forever, so `REST_MIX` of accent-deep is the field's resting
+ *  colour.
+ *
+ *  14% is measured, not taste: sampled over a dense hand patch, the reference
+ *  field runs meanR 10.2 / p95 13 / lit-fraction 2.7% against ink. At 32% the
+ *  glyphs came out flat #40150a — p95 64, lit 14.5% — legible as text rather
+ *  than the barely-there texture the reference has. */
 const SPOT = "4.5rem";
+const REST_MIX = "14%";
 const SPOT_GRADIENT =
   `radial-gradient(circle ${SPOT} at var(--ascii-x) var(--ascii-y),` +
   " var(--color-accent) 0 55%," +
-  " color-mix(in srgb, var(--color-accent-deep) 32%, transparent) 100%)";
+  ` color-mix(in srgb, var(--color-accent-deep) ${REST_MIX}, transparent) 100%)`;
 
 type AsciiHandsProps = {
   /** Wide (~3:1) artwork; light subject on transparency reads best — alpha 0
@@ -156,7 +180,6 @@ export function AsciiHands({ src, className }: AsciiHandsProps) {
       const pre = document.createElement("pre");
       pre.className = PRE_CLASS;
       pre.setAttribute("aria-hidden", "true");
-      pre.style.fontSize = `${CELL_PX}px`;
       // Every rebuild relayouts the whole block; containment keeps that cost
       // inside the element instead of dirtying the footer's layout tree.
       // `strict` implies size containment, so setSize() must give it explicit
@@ -183,18 +206,31 @@ export function AsciiHands({ src, className }: AsciiHandsProps) {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
 
-        // Cell advance comes from the rendered face, so the grid stays locked
-        // to whatever --font-ascii resolves to on this platform.
-        ctx.font = `${CELL_PX}px ${getComputedStyle(pre).fontFamily}`;
-        const cellW = ctx.measureText("A").width || CELL_PX * 0.6;
-        cols = Math.max(1, Math.floor(w / cellW));
-        rows = Math.max(1, Math.floor(h / CELL_PX));
+        // Measure the advance ratio off the rendered face so the grid stays
+        // locked to whatever --font-ascii resolves to on this platform, then
+        // solve the cell size for TARGET_COLS.
+        const family = getComputedStyle(pre).fontFamily;
+        ctx.font = `100px ${family}`;
+        const advance = (ctx.measureText("A").width || 60) / 100;
+        let cell = Math.min(MAX_CELL_PX, Math.max(MIN_CELL_PX, w / (TARGET_COLS * advance)));
+        const grid = (px: number): [number, number] => [
+          Math.max(1, Math.floor(w / (px * advance))),
+          Math.max(1, Math.floor(h / px)),
+        ];
+        [cols, rows] = grid(cell);
+        if (cols * rows > MAX_CELLS) {
+          cell *= Math.sqrt((cols * rows) / MAX_CELLS);
+          [cols, rows] = grid(cell);
+        }
+        pre.style.fontSize = `${cell}px`;
+
+        const cellW = cell * advance;
         scratch.width = cols;
         scratch.height = rows;
         // Required by `contain: strict`, and it anchors the spotlight gradient
         // to a box that only changes on resize.
         pre.style.width = `${cols * cellW}px`;
-        pre.style.height = `${rows * CELL_PX}px`;
+        pre.style.height = `${rows * cell}px`;
 
         const visibleH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
         let planeW = visibleH * camera.aspect * PLANE_FILL;
