@@ -100,3 +100,33 @@ The pin + exp-damp engine again (Gallery → Articles → here), but it's the va
 **The progress track is static, by construction.** The active node is always at horizontal centre, so the traversed/ahead boundary never moves off 50% — two half-width elements with different `repeating-linear-gradient` cycles, zero per-frame writes. Rejected `scaleX` (stretches the dash *pattern*, not the line) and `clip-path` (a per-frame string for a boundary that is fixed). The gradient phase discontinuity at the seam hides under the disc parked exactly there. Arbitrary values need underscores (`to_right`, `0_10px`) — verify the class survives into the built CSS, a literal space drops it silently.
 
 **Adjacent pinned sections are fine.** Workflow (3.95vh) pins immediately above Articles' pin; measured gap between `workflow.end` and `articles.start` is exactly 1.00 viewport, no dead zone, and never two `position: fixed` sections at once. Standard config: both `start: "top top"` + function `end` + `invalidateOnRefresh`. `onRefresh` MUST reset `converged = false` or the tick's early-return strands old-viewport `gap` px (SkillsSection documented this first; re-verified here with a mid-pin `ScrollTrigger.refresh()`).
+
+### GSAP trap: per-word `stagger` silently resizes a positioned timeline (2026-08-26, ch.10)
+
+Shipped as a real bug and worth generalising. A timeline that mixes **a staggered tween** with
+**tweens at absolute positions** is only correct if you know the stagger's total length:
+
+```js
+// WRONG — cascade is 0.5 + 0.09*(n-1); at n=19 that is 2.12s, so GSAP sizes the
+// timeline to 2.12 and the "0.55" below actually lands at 26% of it.
+tl.to(words, { duration: 0.5, stagger: 0.09, ... }, 0);
+tl.to(intro, { ..., duration: 0.45 }, 0.55);
+
+// RIGHT — `amount` spreads the STARTS across a fixed window, so cascade length
+// is independent of word count and the absolute positions keep meaning.
+tl.to(words, { duration: 0.22, stagger: { amount: 0.38 }, ... }, 0);  // ends 0.60
+tl.to(intro, { ..., duration: 0.32 }, 0.68);                          // ends 1.00
+```
+
+Symptom: the *next* beat starts on top of a half-finished reveal, with no error and no console
+noise — the numbers simply mean a different thing than they read. Use `stagger: { amount }` in ANY
+timeline whose other children are positioned absolutely, and when the mapping assumes a unit-length
+timeline, assert it (`if (import.meta.env.DEV && Math.abs(tl.duration() - 1) > 1e-6) console.warn(...)`).
+
+**`ArticlesSection` uses the per-word form today.** It is safe only because its `headingTl` has a
+single child, so normalising over the longer duration is harmless — it acquires this exact bug the
+moment a second positioned tween is added. Fix it there in the same commit if you ever do.
+
+Related sizing rule from the same pass: `pin.headVh` must cover the cascade **plus** a read beat.
+Workflow's cascade ends at 60% of the head beat and the remaining 40% is where the statement sits
+legible; at the original 0.6vh that read beat was under a quarter-viewport of scroll (now 0.8vh).

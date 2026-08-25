@@ -144,8 +144,17 @@ export interface WorkflowStep {
   /** ONE OR TWO WORDS. Renders at `--text-chapter`, centred, on one line —
    *  three words wrap and break the fold. */
   title: string;
-  /** One line, ~60–110 chars. It is the only body copy on the whole fold. */
+  /** Two sentences, ~150–190 chars. It is the main body copy on the fold, so
+   *  it carries the weight — but it shares a fixed-height fold with a
+   *  chapter-scale title, and past ~200 chars it pushes `detail` off a
+   *  1024x600 viewport. */
   description: string;
+  /** 3 short noun labels, 1–2 words each — what this step actually produces.
+   *  Rendered as a hairline chip row under the description and HIDDEN on short
+   *  viewports, so nothing load-bearing may live here. Every label must be
+   *  covered by the same PRD anchor as its step; these are the step's own
+   *  outputs, not a claim about tooling or process ceremony. */
+  detail: string[];
   /** A key, deliberately not a component: importing `LucideIcon` here would
    *  drag React and lucide into the content contract. The section owns the
    *  key → component map, and a bad key fails compilation (`tech-icons.ts`

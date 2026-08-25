@@ -131,18 +131,44 @@ export function WorkflowSection() {
       gsap.set(words, { opacity: 0, filter: `blur(${WORKFLOW.heading.blurFrom}px)` });
       if (rail) gsap.set(rail, { opacity: 0 });
 
-      const introTl = gsap
-        .timeline({ paused: true })
-        .to(words, {
+      const H = WORKFLOW.heading;
+      const cascadeEnd = H.wordSpread + H.wordDuration;
+
+      const introTl = gsap.timeline({ paused: true });
+      introTl.to(
+        words,
+        {
           opacity: 1,
           filter: "blur(0px)",
-          duration: 0.5,
-          stagger: WORKFLOW.heading.wordStagger,
+          duration: H.wordDuration,
+          // `stagger.amount`, NOT a per-word number. A per-word stagger makes
+          // the cascade length depend on the word count, which silently resized
+          // this timeline past 1.0 and desynced every absolute position below
+          // it — the rail faded in over a half-revealed statement. `amount`
+          // spreads the starts across a fixed window, so re-voicing
+          // WORKFLOW_STATEMENT can never re-break the timing.
+          stagger: { amount: H.wordSpread },
           ease: "none",
-        })
-        .set(words, { filter: "none" }, 0.5);
-      if (intro) introTl.to(intro, { opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "none" }, 0.55);
-      if (rail) introTl.to(rail, { opacity: 1, duration: 0.45, ease: "none" }, 0.55);
+        },
+        0,
+      );
+      // Blur is finite: drop the filter entirely once the cascade has landed,
+      // so a display-scale heading isn't left on a filtered layer.
+      introTl.set(words, { filter: "none" }, cascadeEnd);
+      if (intro) {
+        introTl.to(
+          intro,
+          { opacity: 0, filter: `blur(${H.blurFrom + 2}px)`, duration: H.handoffDuration, ease: "none" },
+          H.handoffAt,
+        );
+      }
+      if (rail) introTl.to(rail, { opacity: 1, duration: H.handoffDuration, ease: "none" }, H.handoffAt);
+
+      // The progress mapping below assumes a 1.0-long timeline. Fail loudly in
+      // dev rather than shipping another silent desync.
+      if (import.meta.env.DEV && Math.abs(introTl.duration() - 1) > 1e-6) {
+        console.warn(`[workflow] introTl duration is ${introTl.duration()}, expected 1 — check WORKFLOW.heading.`);
+      }
 
       const { discScaleFrom: FROM, farAlpha: FAR, alphaSpan, copyBand, liftPx, blurPx } = WORKFLOW;
 
@@ -450,18 +476,56 @@ export function WorkflowSection() {
                       <Box
                         as="p"
                         aria-hidden
-                        className="font-mono text-meta text-faint my-4"
+                        className="font-mono text-meta text-faint my-4 [@media(max-height:768px)]:my-2"
                       >
                         — • —
                       </Box>
                     )}
 
+                    {/* 64ch, not the house 52ch: the copy grew to two sentences
+                        (owner ask 2026-08-26) and at 52ch that is four lines on
+                        the fold, which pushes the chip row off a 1024x600
+                        viewport. Wider measure, fewer lines — horizontal room is
+                        exactly what is abundant here. */}
                     <Box
                       as="p"
-                      className={cn("text-body text-muted", staticMode ? "mt-2 max-w-[60ch]" : "mx-auto max-w-[52ch]")}
+                      className={cn("text-body text-muted", staticMode ? "mt-2 max-w-[68ch]" : "mx-auto max-w-[64ch]")}
                     >
                       {step.description}
                     </Box>
+
+                    {/* What the step produces. Hairline chips, deliberately
+                        quiet — they are texture under the description, not a
+                        second heading, so they get `text-meta`/`text-faint` and
+                        no ember. Hidden on short viewports (the lede's rule):
+                        this is the first thing that can go, which is why the
+                        data file forbids anything load-bearing here. */}
+                    {step.detail.length > 0 && (
+                      <Box
+                        as="ul"
+                        role="list"
+                        className={cn(
+                          "flex flex-wrap items-center gap-2",
+                          staticMode ? "mt-4" : "mt-6 justify-center [@media(max-height:768px)]:hidden",
+                        )}
+                      >
+                        {step.detail.map((label) => (
+                          <Box
+                            as="li"
+                            key={label}
+                            /* text-muted, NOT text-faint. These are announced
+                               list items, not ornament — and `--text-meta` is
+                               12px, so they need 4.5:1. faint measures 2.34:1
+                               on ink; muted measures 7.04:1. They still read
+                               quieter than the description because they are a
+                               third of its size, not because they are dimmer. */
+                            className="border-line text-muted font-mono text-meta rounded-full border px-3 py-1 uppercase"
+                          >
+                            {label}
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               );

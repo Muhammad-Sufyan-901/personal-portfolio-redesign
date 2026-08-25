@@ -18,8 +18,24 @@ import type { WorkflowStep } from "@/types/portfolio";
  *    03 Development ← §3.3.1–3 "Built full mobile apps", "Built features across…"
  *    04 Quality Testing ← §3.3.4 VERBATIM: "Quality Assurance — Debugged and
  *                     tested features on ADMTC and EDH platforms"
- *    05 Maintenance ← §3.3.1–2, two full-time roles spanning 2+ years on the
- *                     same products (Tampang.com, FindDW, Optimus, Litani)
+ *    05 Maintenance ← §3.3.1–2, two full-time roles on the same products
+ *                     (Tampang.com, FindDW, Optimus, Litani)
+ *
+ *  The enriched copy (2026-08-26, owner ask) adds no new claim. Every extra
+ *  fact it names is checkable in the PRD:
+ *    · "seven stacks in three years"        → §2 headline stats, verbatim
+ *    · "search filters, form validation"    → §3.3.3, verbatim
+ *    · "an internship spent entirely on
+ *       platforms other people had written" → §3.3.4 (QA internship, ADMTC and
+ *                                             EDH — platforms he tested, not built)
+ *    · "one of the roles ran over two years" → §3.3.2, May 2023 – Aug 2025 = 27
+ *                                             months. NOTE it is ONE role, not
+ *                                             both: §3.3.1 is Feb 2024 – Aug 2025
+ *                                             = 18 months. Do not round that up.
+ *
+ *  `detail` labels name what a step PRODUCES and nothing else. They must not
+ *  drift into tooling or methodology (no "Agile", no "Figma", no "CI") — the
+ *  PRD lists Jira and Docs for the QA role and says nothing about process.
  *
  *  Step ordering is the process order, NOT most-recent-first — this is the one
  *  data file in the chapter set that reads forward.
@@ -31,27 +47,37 @@ import type { WorkflowStep } from "@/types/portfolio";
 export const workflowSteps: WorkflowStep[] = [
   {
     title: "Discovery",
-    description: "Understanding the problem, the constraints, and what the thing actually has to do.",
+    description:
+      "Working out what the thing actually has to do, and who it has to do it for. Requirements first, then the constraints that will not move — those decide more than any preference does.",
+    detail: ["Requirements", "Constraints", "Scope"],
     icon: "discover",
   },
   {
     title: "Planning",
-    description: "Mapping the flow, the features, and the stack that fits the job.",
+    description:
+      "Turning the goal into a shape: the flow, the features, the data, and the stack that fits it. Across seven stacks in three years, that last choice gets made per project rather than by default.",
+    detail: ["Flow", "Features", "Stack"],
     icon: "shape",
   },
   {
     title: "Development",
-    description: "Building it — UI and API, web or mobile — feature by feature.",
+    description:
+      "Building it for real — interface work and API integration, on the web or on a phone. Whole apps or single features: search filters, form validation, whatever the screen actually needs.",
+    detail: ["Interface", "API integration", "Features"],
     icon: "build",
   },
   {
     title: "Quality Testing",
-    description: "Debugging and testing every path before anyone else has to find it.",
+    description:
+      "Debugging and testing every path before anyone else has to find it. This was a job title before it was a habit — an internship spent entirely on platforms other people had written.",
+    detail: ["Debugging", "Test passes", "Edge cases"],
     icon: "verify",
   },
   {
     title: "Maintenance",
-    description: "Staying with it after launch — fixes, updates, and the things that come up later.",
+    description:
+      "Staying with it after launch: fixes, updates, and the things nobody predicted. One of the roles behind this site ran over two years on the same products, which is where most of the real work lives.",
+    detail: ["Fixes", "Updates", "Support"],
     icon: "sustain",
   },
 ];

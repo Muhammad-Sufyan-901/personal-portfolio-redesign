@@ -31,7 +31,7 @@ export const WORKFLOW = {
      *  fades up. Without it the chapter has no entrance — at progress 0 the
      *  rail would already be settled. 0.6 is two comfortable wheel flicks at
      *  Lenis `lerp 0.09`, enough to read the statement before it goes. */
-    headVh: 0.6,
+    headVh: 0.8,
     /** Scroll cost of ONE step-to-step transition. Four transitions → 3.0vh;
      *  total pin 3.95vh, between Gallery's 3.4 and the Manifesto's 5.2. Below
      *  ~0.6 the titles strobe past unread; above ~0.9 the rail feels stuck. */
@@ -100,11 +100,31 @@ export const WORKFLOW = {
    *  of those frames. Re-measure on Safari before going past ~10. */
   blurPx: 8,
 
+  /** Statement de-veil, then the handoff to the rail. All four numbers are
+   *  positions/durations on ONE paused timeline whose total is exactly 1.0, so
+   *  `introTl.progress(p / HEAD_FRAC)` maps straight onto the opening beat.
+   *
+   *  KEEPING THE TOTAL AT 1.0 IS THE WHOLE CONTRACT, and it is easy to break.
+   *  The first build used Articles' per-word `stagger: 0.09` with
+   *  `duration: 0.5`; at 19 words that is a 2.12s cascade, GSAP sized the
+   *  timeline to its longest child, and the handoff placed at "0.55" landed at
+   *  26% of a 2.12s timeline instead of 55% of a 1.0s one — so the rail faded
+   *  in over a statement that was still less than half revealed (owner bug
+   *  report 2026-08-26, screenshot). `stagger.amount` is the fix: it spreads
+   *  the starts across a FIXED window no matter how many words there are, so
+   *  re-voicing `WORKFLOW_STATEMENT` can never re-break the timing.
+   *
+   *  Invariant to preserve: `wordSpread + wordDuration <= handoffAt` and
+   *  `handoffAt + handoffDuration === 1`. */
   heading: {
-    /** Statement de-veil, Articles' numbers verbatim. The reveal SPAN is not a
-     *  tunable — it is derived as the opening beat (`HEAD_FRAC`), because by
-     *  definition the statement must finish reading before the rail arrives. */
-    wordStagger: 0.09,
+    /** total spread of the word starts (NOT per-word) */
+    wordSpread: 0.38,
+    /** per-word de-veil duration → cascade ends at 0.60 */
+    wordDuration: 0.22,
+    /** ...then 0.08 of read beat before anything moves */
+    handoffAt: 0.68,
+    /** intro blurs out / rail fades in, landing exactly on 1.0 */
+    handoffDuration: 0.32,
     blurFrom: 6,
   },
 } as const;
