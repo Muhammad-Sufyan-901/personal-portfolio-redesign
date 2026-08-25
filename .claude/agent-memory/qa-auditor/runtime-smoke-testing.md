@@ -64,3 +64,20 @@ Gotchas found 2026-08-14 (Footer chapter):
 Gotchas found 2026-07-16 (hero one-line refine):
 - Mixed-font "same row" checks: baseline-aligned words in different faces (Switzer vs Instrument Serif) have rect tops ~5px apart from differing ascent metrics — assert vertical OVERLAP (`a.top < b.bottom && b.top < a.bottom`) + `flexDirection`, never top equality.
 - Entrance-reveal probes: the preloader (~4.5s) + 1s char reveal means a fixed 5s sleep samples mid-tween (`matrix(...,80.5)` false-fail). Poll the char transform until identity (200ms × up to 12s) instead of sleeping a guessed duration.
+
+Gotcha found 2026-08-26 (ch.10 workflow — **the most expensive false alarm so far**):
+
+- **chrome-devtools MCP reporting ~2 fps everywhere is a WINDOW state problem, not a perf regression.** Symptoms: `requestAnimationFrame` fires ~2×/sec at *every* scroll position (including a static section that runs no code), and `take_screenshot` times out with `Page.captureScreenshot timed out`. `document.visibilityState` still reads `"visible"` and `document.hasFocus()` still reads `true`, so those two checks do NOT rule it out.
+  **The three-line triage that settles it:**
+  ```js
+  const t=performance.now(); let a=0; for(let i=0;i<5e6;i++) a+=Math.sqrt(i);
+  const busyMs = performance.now()-t;            // main-thread health
+  // then count setTimeout(…,0) callbacks vs rAF callbacks over 1s
+  ```
+  Main thread idle (5M sqrt in ~7 ms) + `setTimeout` ~200/sec + rAF 2/sec = **vsync starved**, i.e. the Chrome window is minimised or fully occluded and the compositor is producing no frames. A real workload would show a busy main thread AND would vary between a WebGL section and a static one — uniformity across the whole page is the tell.
+  Corroborating signal from the same cause: `resize_page` errors with *"Restore window to normal state before setting content size"*.
+  **Fix:** don't fight the window (`osascript` un-minimise needs assistive access, which is usually not granted). Switch to the headless puppeteer-core fallback at the top of this file — headless has no window state, so rAF, screenshots and Lighthouse all behave.
+- Parking a pinned section at an exact progress from a puppeteer script: `const st = window.__ScrollTrigger.getAll().find(t => t.trigger === document.querySelector("#id")); const y = st.start + frac*(st.end - st.start);` then `window.scrollTo(0,y)` **and** `window.__lenis?.scrollTo(y,{immediate:true})`, then wait ~900 ms for an exp-damped applier to converge. Works for scrub-only chapters; `once` triggers still need the scroll-to-element dance.
+- Testing a mid-session reduced-motion flip (what `useGSAP` cleanup + `clearProps` must survive): load normally, park mid-animation, snapshot `el.getAttribute("style")`, then `page.emulateMediaFeatures([{name:"prefers-reduced-motion",value:"reduce"}])` and re-read. A correct teardown leaves **empty** style strings; a leaky one strands `transform`/`opacity`/`filter`/`will-change`.
+- Adjacent pinned sections: assert the seam by walking `pin.end ± 200` and checking that no two sections report `getComputedStyle(el).position === "fixed"` simultaneously, and that `nextPin.start − prevPin.end` is a sane gap (one viewport here).
+- Document height settles for ~seconds after load (fonts/lazy images), so a ScrollTrigger's `start`/`end` read at t=2.5s can differ from a post-`refresh()` read by tens of px. Compare **length** (`end − start`), not absolute positions, when asserting a refresh didn't break geometry.

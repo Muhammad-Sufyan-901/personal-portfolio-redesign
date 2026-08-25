@@ -133,3 +133,22 @@ export interface ContactChannel {
   value: string;
   href: string;
 }
+
+/** Chapter 10 Workflow. NOT PRD-transcribed — the PRD describes no process
+ *  anywhere (§2–§3.8 carry persona, skills, work, education, awards, projects
+ *  and contact, and nothing about method). Owner-ask chapter, same footing as
+ *  `Article`: entries are owner-supplied, drafted against PRD facts only. */
+export type WorkflowIconKey = "discover" | "shape" | "build" | "verify" | "sustain";
+
+export interface WorkflowStep {
+  /** ONE OR TWO WORDS. Renders at `--text-chapter`, centred, on one line —
+   *  three words wrap and break the fold. */
+  title: string;
+  /** One line, ~60–110 chars. It is the only body copy on the whole fold. */
+  description: string;
+  /** A key, deliberately not a component: importing `LucideIcon` here would
+   *  drag React and lucide into the content contract. The section owns the
+   *  key → component map, and a bad key fails compilation (`tech-icons.ts`
+   *  is the same shape). */
+  icon: WorkflowIconKey;
+}

@@ -234,7 +234,7 @@ export function ArticlesSection() {
       <Box className="px-page-x flex flex-wrap items-end justify-between gap-x-10 gap-y-6 pt-[6svh]">
         <Box className="min-w-0">
           <ChapterEyebrow
-            index="10"
+            index="11"
             label="Writing"
           />
           <Box

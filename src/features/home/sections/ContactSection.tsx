@@ -217,7 +217,7 @@ export function ContactSection() {
       >
         <Box className="contact-lede">
           <ChapterEyebrow
-            index="11"
+            index="12"
             label="Let's Talk"
           />
         </Box>

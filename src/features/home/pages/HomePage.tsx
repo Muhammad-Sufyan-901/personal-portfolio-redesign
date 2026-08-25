@@ -6,6 +6,7 @@ import { AboutSection } from "@/features/home/sections/AboutSection";
 import { ProjectsSection } from "@/features/home/sections/ProjectsSection";
 import { JourneySection } from "@/features/home/sections/JourneySection";
 import { AchievementsSection } from "@/features/home/sections/AchievementsSection";
+import { WorkflowSection } from "@/features/home/sections/WorkflowSection";
 import { SkillsSection } from "@/features/home/sections/SkillsSection";
 import { GallerySection } from "@/features/home/sections/GallerySection";
 import { ArticlesSection } from "@/features/home/sections/ArticlesSection";
@@ -26,6 +27,7 @@ export function HomePage() {
         <SkillsSection />
         <JourneySection />
         <AchievementsSection />
+        <WorkflowSection />
         <ArticlesSection />
         <ContactSection />
       </Box>

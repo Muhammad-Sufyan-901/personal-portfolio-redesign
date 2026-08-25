@@ -95,3 +95,17 @@ Skip-to-content link (hero audit F7, deferred to "footer polish") landed with th
 **Deleted with this chapter:** `components/ui/hover-card.tsx` (Journey's award pill was its only call site — `npx shadcn add hover-card` restores it), `--animate-hover-card` + both `hover-card-in` keyframe blocks, `JOURNEY.reveal.awardY`, and Journey's `cardOrdinal` (every row is a card now, so the ordinal IS the index).
 
 **Repo gotcha found here:** bare `npx tsc --noEmit` is a **NO-OP** — root `tsconfig.json` is solution-style (`files: []`). Use `npx tsc --noEmit -p tsconfig.app.json` or `npm run build`. CLAUDE.md's Commands section still lists the bare form.
+
+## 10 Workflow (2026-08-26)
+
+`sections/WorkflowSection.tsx` + `data/workflow.data.ts` + `utils/workflow.tunables.ts`, nav anchor `#workflow`, eyebrow `10 — How I Work`. Slots between Achievements and Articles, which pushed Articles' eyebrow to `11` and Contact's to `12` (the eyebrow numbers are hand-written per section — inserting a chapter always means renumbering everything below it; `SiteMenu` numbers by array index and needs nothing).
+
+Five process steps on a pinned horizontal rail (owner reference `reference/workflow-reference.mp4`). Engine + the layout inversion are in motion-engineer MEMORY.
+
+- **Content is NOT PRD-transcribed and cannot be.** `grep -niE "process|workflow|discovery|maintenance"` over `product_requirements.md` returns zero across §2–§3.8. This is an owner-ask chapter on the Articles footing. The copy is *drafted against PRD facts* — the strongest anchor is §3.3.4, which is literally "Quality Assurance — Debugged and tested features"; the rest lean on §3.3.1–3 build duties and §2's "works well solo or in a team". `workflow.data.ts` carries the banner and is the owner's single edit surface. **Never add a step whose claim the PRD can't cover.**
+- **`WorkflowStep.title` is capped at one or two words** — it renders at `--text-chapter` centred with room for exactly one line. "Quality Testing" is the longest that fits at 390px. This is stated in the data file; honour it.
+- Step order is **process order, not most-recent-first** — the only data file in the set that reads forward.
+- **`icon` is a string key (`WorkflowIconKey`), not a component.** A `LucideIcon` type in `types/portfolio.ts` would drag React and lucide into the content contract. `STEP_ICONS` maps key → component at the top of the section (six lines); a bad key fails compilation. Same shape as `utils/tech-icons.ts`.
+- The active disc is **`bg-paper` + `text-ink`, never `bg-accent`** — a 128px ember disc is a wash, not a scalpel. Ember appears exactly twice: the eyebrow index and a 4px connector dot between disc and bubble. (Reuse this reasoning for any future large filled shape.)
+- **Geometry is calibrated to the reference, not eyeballed**, and two tunables are *derived from* the Tailwind size classes: `liftPx: 112` = disc r64 + 24 dot clearance + bubble r24, and `discScaleFrom: 0.375` = `size-12`/`size-32`. Change `size-32` or `size-12` and BOTH must move — the doc comments say so.
+- Title stays on `--text-chapter` even though the reference measures ~84px: there is no 84px token and inventing one to shave 12px would fail tokens-only. The **disc** grew (112→128) to fix the same ratio instead. Good precedent for "fix the ratio with the untokenised side".

@@ -1,0 +1,474 @@
+import { Fragment, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { BugPlay, Code2, PencilRuler, RefreshCw, Search, type LucideIcon } from "lucide-react";
+import { Box, ChapterEyebrow } from "@/components/common";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { cn } from "@/lib/utils";
+import { WORKFLOW_LEDE, WORKFLOW_STATEMENT, workflowSteps } from "@/features/home/data/workflow.data";
+import { WORKFLOW } from "@/features/home/utils/workflow.tunables";
+import type { WorkflowIconKey } from "@/types/portfolio";
+
+/** Key → component, kept HERE rather than in the data file so `portfolio.ts`
+ *  never has to import React or lucide (`tech-icons.ts` precedent). A key with
+ *  no entry fails compilation, which is the whole point of the string union. */
+const STEP_ICONS: Record<WorkflowIconKey, LucideIcon> = {
+  discover: Search,
+  shape: PencilRuler,
+  build: Code2,
+  verify: BugPlay,
+  sustain: RefreshCw,
+};
+
+const pad2 = (value: number) => String(value).padStart(2, "0");
+const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+// StatementWords pattern (Achievements/Articles/Gallery precedent): RevealText
+// can't carry nested emphasis — split-type treats a nested span as one atomic
+// unit — so the focal words have to be React-owned markup, split at module scope.
+const statementWords = WORKFLOW_STATEMENT.text.split(" ");
+const focalWords = new Set(WORKFLOW_STATEMENT.focalWords.map((word) => word.toLowerCase()));
+const isFocalWord = (word: string) => focalWords.has(word.replace(/[^\p{L}\p{N}]/gu, "").toLowerCase());
+
+// Pin budget, resolved once at module scope: a held opening beat, then the
+// travel, then a real rest beat. The playhead maps onto TRAVEL_FRAC only, which
+// is what makes the tail an actual hold rather than Articles' slow-down.
+const lastIndex = workflowSteps.length - 1;
+const TOTAL_VH = WORKFLOW.pin.headVh + WORKFLOW.pin.perStepVh * lastIndex + WORKFLOW.pin.tailVh;
+const HEAD_FRAC = WORKFLOW.pin.headVh / TOTAL_VH;
+const TRAVEL_FRAC = (WORKFLOW.pin.perStepVh * lastIndex) / TOTAL_VH;
+
+/** 10 Workflow — the five steps every build runs through, as a pinned rail
+ *  (owner reference `reference/workflow-reference.mp4`).
+ *
+ *  Not a PRD chapter: see the provenance banner in `workflow.data.ts`.
+ *
+ *  THE INVERSION worth understanding before editing this. The reference reads
+ *  as "a rail sliding left", but building it that way puts five chapter-scale
+ *  titles inside one transformed track at ~190px spacing — they overlap, and
+ *  each needs a counter-translation write to stay legible. So nothing here
+ *  translates as a group: every step is an `absolute inset-0` overlay of the
+ *  whole stage, and only its `.wf-travel` cluster (disc + bubble) takes the
+ *  per-frame `x`. `.wf-copy` sits at a fixed centred position and merely
+ *  crossfades. Same picture, one list, no counter-translation, no measurement.
+ *
+ *  Settled state is the MARKUP default (Achievements precedent) — all five
+ *  steps render filled and legible, and only the motion branch idles them. That
+ *  is what makes the reduced-motion path a readable vertical list for free. */
+export function WorkflowSection() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  // Reduced motion is the ONLY static trigger. Articles' `fitsInView` guard
+  // does not port: a rail's travel here is `lastIndex × gap`, which is always
+  // positive, so there is no degenerate case to detect. And `gap.min` keeps
+  // both neighbours on screen at 390px, so there is no mobile branch either.
+  const staticMode = prefersReducedMotion;
+
+  useGSAP(
+    () => {
+      if (staticMode) return;
+
+      const setters = gsap.utils
+        .toArray<HTMLElement>(".wf-step")
+        .map((step) => {
+          const travel = step.querySelector<HTMLElement>(".wf-travel");
+          const disc = step.querySelector<HTMLElement>(".wf-disc");
+          const on = step.querySelector<HTMLElement>(".wf-on");
+          const bubble = step.querySelector<HTMLElement>(".wf-bubble");
+          const copy = step.querySelector<HTMLElement>(".wf-copy");
+          if (!travel || !disc || !on || !bubble || !copy) return null;
+
+          // Centring lives in the transform, not in a Tailwind -translate class:
+          // GSAP owns the whole `transform` string on these nodes, so a class
+          // translate would be overwritten on the first write (Gallery idiom).
+          gsap.set(travel, { xPercent: -50, yPercent: -50 });
+          gsap.set(bubble, { xPercent: -50, yPercent: -50 });
+          gsap.set(copy, { xPercent: -50 });
+
+          return {
+            travel,
+            copy,
+            x: gsap.quickSetter(travel, "x", "px"),
+            // scaleX/scaleY, never "scale" — the shorthand silently no-ops in
+            // quickSetter (already documented at GallerySection.tsx:105).
+            sx: gsap.quickSetter(disc, "scaleX"),
+            sy: gsap.quickSetter(disc, "scaleY"),
+            // Halo + fill + ember dot + numeral share this wrapper, so the
+            // whole "active" look is ONE opacity write per step per frame.
+            on: gsap.quickSetter(on, "opacity"),
+            by: gsap.quickSetter(bubble, "y", "px"),
+            a: gsap.quickSetter(step, "opacity"),
+            ca: gsap.quickSetter(copy, "opacity"),
+            cf: gsap.quickSetter(copy, "filter"),
+            lastBlur: -1,
+          };
+        })
+        .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+      if (setters.length === 0) return;
+
+      let gap = 0;
+      const measure = () => {
+        gap = gsap.utils.clamp(WORKFLOW.gap.min, WORKFLOW.gap.max, window.innerWidth * WORKFLOW.gap.vw);
+      };
+      measure();
+
+      // Opening beat, one paused timeline scrubbed off raw pin progress (no
+      // second ScrollTrigger — Gallery/Articles precedent): the statement
+      // de-veils across the first half, then the whole intro card blurs away
+      // and the rail fades up. Everything is visible by markup default; this
+      // branch is the only thing that hides any of it.
+      const intro = sectionRef.current?.querySelector<HTMLElement>(".wf-intro");
+      const rail = sectionRef.current?.querySelector<HTMLElement>(".wf-rail");
+      const words = gsap.utils.toArray<HTMLElement>(".wf-word");
+
+      // Plain opacity, never autoAlpha, anywhere in this chapter: autoAlpha
+      // resolves to `visibility: hidden`, which deletes the node from the
+      // accessibility tree — and four of five process steps plus the chapter's
+      // own h2 spend most of this pin at opacity 0. Nothing here is
+      // interactive, so opacity alone costs nothing.
+      gsap.set(words, { opacity: 0, filter: `blur(${WORKFLOW.heading.blurFrom}px)` });
+      if (rail) gsap.set(rail, { opacity: 0 });
+
+      const introTl = gsap
+        .timeline({ paused: true })
+        .to(words, {
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 0.5,
+          stagger: WORKFLOW.heading.wordStagger,
+          ease: "none",
+        })
+        .set(words, { filter: "none" }, 0.5);
+      if (intro) introTl.to(intro, { opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "none" }, 0.55);
+      if (rail) introTl.to(rail, { opacity: 1, duration: 0.45, ease: "none" }, 0.55);
+
+      const { discScaleFrom: FROM, farAlpha: FAR, alphaSpan, copyBand, liftPx, blurPx } = WORKFLOW;
+
+      const apply = (progress: number) => {
+        const playhead = clamp01((progress - HEAD_FRAC) / TRAVEL_FRAC) * lastIndex;
+
+        for (let i = 0; i < setters.length; i += 1) {
+          const s = setters[i];
+          const distance = Math.abs(i - playhead);
+
+          s.x((i - playhead) * gap);
+
+          // Activeness, smoothstepped. Linear read as mush through the
+          // crossfade; smoothstep(0.5) is still exactly 0.5, so the two
+          // neighbours' opacities sum to 1 at mid-transit and the fold never
+          // dips dark between steps.
+          const smoothstep = (t: number) => t * t * (3 - 2 * t);
+          const e = smoothstep(1 - Math.min(1, distance));
+
+          const scale = FROM + (1 - FROM) * e;
+          s.sx(scale);
+          s.sy(scale);
+          s.on(e);
+          s.by(-liftPx * e);
+
+          // Ambient fade over a wider span than the morph, so a step two slots
+          // out ghosts on the track instead of hard-cutting at the neighbour
+          // boundary.
+          s.a(FAR + (1 - FAR) * (1 - Math.min(1, distance / alphaSpan)));
+
+          // The copy runs on its OWN, narrower band — see `copyBand`. Sharing
+          // the node's band stacks two half-lit titles on each other mid-transit
+          // and reads as a smear; the reference goes fully dark between titles.
+          const ec = smoothstep(Math.max(0, 1 - distance / copyBand));
+          s.ca(ec);
+          // The one expensive write, so it is guarded twice: only steps inside
+          // the (narrow) copy band ever carry a filter at all, and the string is
+          // only rewritten when the rounded px value actually changes.
+          // Everything else parks on "none".
+          const blur = ec === 0 ? 0 : Math.round((1 - ec) * blurPx);
+          if (blur !== s.lastBlur) {
+            s.lastBlur = blur;
+            s.cf(blur === 0 ? "none" : `blur(${blur}px)`);
+          }
+        }
+      };
+
+      const state = { target: 0, rendered: 0, converged: true };
+
+      const st = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: () => "+=" + Math.round(window.innerHeight * TOTAL_VH),
+        pin: true,
+        invalidateOnRefresh: true,
+        onRefresh: (self) => {
+          measure();
+          state.target = self.progress;
+          // Mandatory. Without it the tick's converged early-return holds
+          // old-viewport `gap` px through the `document.fonts.ready` refresh and
+          // every resize — the exact trap SkillsSection documents.
+          state.converged = false;
+        },
+        onUpdate: (self) => {
+          state.target = self.progress;
+          introTl.progress(clamp01(self.progress / HEAD_FRAC));
+        },
+        // Promoted only while the pin is live, so the compositor isn't holding
+        // layers for a chapter nobody is looking at. `filter` is deliberately
+        // NOT in this list — a permanently promoted chapter-scale blurred text
+        // layer is the cost the blur guard above exists to avoid.
+        onToggle: (self) => {
+          for (const s of setters) {
+            s.travel.style.willChange = self.isActive ? "transform" : "";
+            s.copy.style.willChange = self.isActive ? "opacity" : "";
+          }
+        },
+      });
+
+      // Damped applier on the single gsap.ticker (Gallery/Articles precedent —
+      // no second RAF): chases the scrub target, lands one exact write on
+      // convergence, then idles. Freeze-on-pause and exact reverse retrace come
+      // free with it.
+      const tick = (_time: number, deltaTime: number) => {
+        const dt = Math.min(deltaTime / 1000, 1 / 30);
+        const k = 1 - Math.exp(-WORKFLOW.damp * dt);
+        state.rendered += (state.target - state.rendered) * k;
+        if (Math.abs(state.target - state.rendered) < 1e-4) {
+          if (state.converged) return;
+          state.rendered = state.target;
+          state.converged = true;
+        } else {
+          state.converged = false;
+        }
+        apply(state.rendered);
+      };
+      gsap.ticker.add(tick);
+      apply(0);
+
+      return () => {
+        gsap.ticker.remove(tick);
+        st.kill();
+        // quickSetter writes bypass the GSAP context, so `revertOnUpdate` does
+        // NOT clear them. Without this, toggling the OS reduced-motion switch
+        // mid-session leaves the static list wearing translated, faded, blurred
+        // inline styles. (Articles and Gallery have the same latent hole —
+        // separate follow-up, not this chapter's job.)
+        gsap.set([".wf-step", ".wf-travel", ".wf-disc", ".wf-on", ".wf-bubble", ".wf-copy", ".wf-word"], {
+          clearProps: "all",
+        });
+      };
+    },
+    { scope: sectionRef, dependencies: [staticMode], revertOnUpdate: true },
+  );
+
+  // A one-step rail would eat ~4 viewports of pinned scroll to move nothing.
+  if (workflowSteps.length < 2) return null;
+
+  return (
+    <Box
+      as="section"
+      id="workflow"
+      ref={sectionRef}
+      className={cn("bg-ink relative", staticMode ? "px-page-x py-section" : "h-svh overflow-hidden")}
+    >
+      {/* 1×1 grid stack in the pinned branch: the intro card and the rail
+          occupy the same cell, so the intro can blur away exactly where the
+          rail arrives instead of scrolling off above it. */}
+      <Box className={cn(!staticMode && "grid h-full")}>
+        <Box
+          className={cn(
+            "wf-intro",
+            // pointer-events-none because at rest this card sits transparent
+            // ON TOP of the rail. Nothing in it is interactive, so nothing is
+            // lost — but without this it would swallow the whole stage.
+            !staticMode && "px-page-x pointer-events-none z-10 col-start-1 row-start-1 grid place-items-center",
+          )}
+        >
+          <Box className={cn(!staticMode && "max-w-[46rem] text-center")}>
+            <ChapterEyebrow
+              index="10"
+              label="How I Work"
+            />
+            {/* Box as="h2" + token classes, not Heading: Heading's
+                default-variant responsive sizes survive twMerge over the fluid
+                --text-* tokens (documented in the Journey build). */}
+            <Box
+              as="h2"
+              className={cn(
+                "font-display-lead text-statement text-paper mt-6",
+                staticMode ? "max-w-[30ch]" : "mx-auto",
+              )}
+            >
+              {statementWords.map((word, i) => (
+                <Fragment key={i}>
+                  <Box
+                    as="span"
+                    className={cn("wf-word inline-block", isFocalWord(word) && "font-display-tail italic")}
+                  >
+                    {word}
+                  </Box>
+                  {i < statementWords.length - 1 ? " " : ""}
+                </Fragment>
+              ))}
+            </Box>
+            {/* Short viewports give their pixels to the rail (Articles
+                precedent) — the lede is the first thing that can go. */}
+            <Box
+              as="p"
+              className={cn(
+                "text-body text-muted mt-5 max-w-[52ch] [@media(max-height:768px)]:hidden",
+                !staticMode && "mx-auto",
+              )}
+            >
+              {WORKFLOW_LEDE}
+            </Box>
+          </Box>
+        </Box>
+
+        <Box className={cn("wf-rail", !staticMode && "relative col-start-1 row-start-1")}>
+          {/* The track. It needs no animation at all: the active node is always
+              at horizontal centre, so the traversed/ahead boundary is
+              permanently at 50% — two static halves beat any mask or scaleX on
+              both cost and code, and scaling a repeating gradient would stretch
+              the dash pattern anyway. The phase discontinuity at the seam sits
+              under the 112px disc that is always parked exactly there.
+              Underscores are required in arbitrary values (GallerySection:275). */}
+          {!staticMode && (
+            <Box
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-[45%] h-px"
+            >
+              <Box className="absolute inset-y-0 left-0 w-1/2 bg-[repeating-linear-gradient(to_right,var(--color-line-strong)_0_10px,transparent_10px_16px)] opacity-60" />
+              <Box className="absolute inset-y-0 left-1/2 w-1/2 bg-[repeating-linear-gradient(to_right,var(--color-line)_0_6px,transparent_6px_18px)]" />
+            </Box>
+          )}
+
+          {/* role="list" is not redundant: Tailwind preflight sets
+              list-style:none, and Safari/VoiceOver drops list semantics when it
+              does — on an ordered process that is the one thing AT must keep. */}
+          <Box
+            as="ol"
+            role="list"
+            className={cn(staticMode ? "border-line mt-14 border-t" : "absolute inset-0")}
+          >
+            {workflowSteps.map((step, i) => {
+              const Icon = STEP_ICONS[step.icon];
+              return (
+                <Box
+                  as="li"
+                  key={step.title}
+                  className={cn(
+                    "wf-step",
+                    staticMode
+                      ? "border-line grid grid-cols-[auto_1fr] items-center gap-x-6 border-b py-8"
+                      : "pointer-events-none absolute inset-0",
+                  )}
+                >
+                  <Box
+                    className={cn("wf-travel", staticMode ? "flex items-center gap-4" : "absolute top-[45%] left-1/2")}
+                  >
+                    {/* No border on the disc. At neighbour distance its fill is
+                        at opacity 0 and the bubble alone reads as the
+                        reference's small outlined circle — a bordered disc
+                        would double that ring. */}
+                    <Box className={cn("wf-disc relative rounded-full", staticMode ? "size-14" : "size-32")}>
+                      <Box className="wf-on absolute inset-0">
+                        {!staticMode && (
+                          <Box
+                            aria-hidden
+                            className="bg-paper/8 absolute -inset-2 rounded-full"
+                          />
+                        )}
+                        <Box
+                          aria-hidden
+                          className="bg-paper absolute inset-0 rounded-full"
+                        />
+                        {/* The chapter's one ember object besides the eyebrow
+                            index: a 4px connector between disc and bubble,
+                            visible only while a step is centred. A 112px ember
+                            disc would be a wash, not a scalpel. */}
+                        {!staticMode && (
+                          <Box
+                            aria-hidden
+                            className="bg-accent absolute -top-3 left-1/2 size-1 -translate-x-1/2 rounded-full"
+                          />
+                        )}
+                        {/* font-sans font-medium, not font-display: Instrument
+                            Serif ships weight 400 only and the reference
+                            numeral is bold. aria-hidden because it duplicates
+                            the sr-only ordinal on the heading below. */}
+                        <Box
+                          as="span"
+                          aria-hidden
+                          className={cn(
+                            "text-ink absolute inset-0 grid place-items-center font-sans font-medium tabular-nums",
+                            staticMode ? "text-item" : "text-statement",
+                          )}
+                        >
+                          {pad2(i + 1)}
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <Box
+                      className={cn(
+                        "wf-bubble border-line bg-ink grid size-12 shrink-0 place-items-center rounded-full border",
+                        !staticMode && "absolute top-1/2 left-1/2",
+                      )}
+                    >
+                      <Icon
+                        aria-hidden
+                        className="text-muted size-5"
+                      />
+                    </Box>
+                  </Box>
+
+                  <Box
+                    className={cn(
+                      "wf-copy",
+                      !staticMode &&
+                        "absolute top-[calc(45%+8rem)] left-1/2 w-[min(88vw,46rem)] text-center [@media(max-height:768px)]:top-[calc(45%+5.5rem)]",
+                    )}
+                  >
+                    <Box
+                      as="h3"
+                      className={cn(
+                        "font-sans font-medium",
+                        staticMode ? "text-item text-paper-bright" : "text-chapter text-paper-bright text-balance",
+                      )}
+                    >
+                      {/* Stated once, AT-independently — no reliance on
+                          aria-posinset, and it cannot double-announce because
+                          the visible numeral is aria-hidden. */}
+                      <Box
+                        as="span"
+                        className="sr-only"
+                      >
+                        {`Step ${i + 1}. `}
+                      </Box>
+                      {step.title}
+                    </Box>
+
+                    {!staticMode && (
+                      <Box
+                        as="p"
+                        aria-hidden
+                        className="font-mono text-meta text-faint my-4"
+                      >
+                        — • —
+                      </Box>
+                    )}
+
+                    <Box
+                      as="p"
+                      className={cn("text-body text-muted", staticMode ? "mt-2 max-w-[60ch]" : "mx-auto max-w-[52ch]")}
+                    >
+                      {step.description}
+                    </Box>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
