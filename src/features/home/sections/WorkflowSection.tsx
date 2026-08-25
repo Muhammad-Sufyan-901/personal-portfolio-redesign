@@ -30,13 +30,27 @@ const statementWords = WORKFLOW_STATEMENT.text.split(" ");
 const focalWords = new Set(WORKFLOW_STATEMENT.focalWords.map((word) => word.toLowerCase()));
 const isFocalWord = (word: string) => focalWords.has(word.replace(/[^\p{L}\p{N}]/gu, "").toLowerCase());
 
-// Pin budget, resolved once at module scope: a held opening beat, then the
-// travel, then a real rest beat. The playhead maps onto TRAVEL_FRAC only, which
-// is what makes the tail an actual hold rather than Articles' slow-down.
+// Pin budget, resolved once at module scope: an opening beat (cascade → read →
+// handoff), then the travel, then a real rest beat. The playhead maps onto
+// TRAVEL_FRAC only, which is what makes the tail an actual hold rather than
+// Articles' slow-down.
 const lastIndex = workflowSteps.length - 1;
-const TOTAL_VH = WORKFLOW.pin.headVh + WORKFLOW.pin.perStepVh * lastIndex + WORKFLOW.pin.tailVh;
-const HEAD_FRAC = WORKFLOW.pin.headVh / TOTAL_VH;
-const TRAVEL_FRAC = (WORKFLOW.pin.perStepVh * lastIndex) / TOTAL_VH;
+const P = WORKFLOW.pin;
+const HEAD_VH = P.cascadeVh + P.readVh + P.handoffVh;
+const TOTAL_VH = HEAD_VH + P.perStepVh * lastIndex + P.tailVh;
+const HEAD_FRAC = HEAD_VH / TOTAL_VH;
+const TRAVEL_FRAC = (P.perStepVh * lastIndex) / TOTAL_VH;
+
+// introTl positions, DERIVED as shares of the opening beat rather than written
+// as literals. They therefore sum to exactly 1 by construction — which is the
+// property `introTl.progress(p / HEAD_FRAC)` depends on, and the property the
+// first build broke by hand-placing "0.55" against a timeline that had silently
+// grown to 2.12s. Retuning `readVh` now moves all three together.
+const CASCADE_END = P.cascadeVh / HEAD_VH;
+const HANDOFF_AT = (P.cascadeVh + P.readVh) / HEAD_VH;
+const HANDOFF_DUR = P.handoffVh / HEAD_VH;
+const WORD_SPREAD = CASCADE_END * WORKFLOW.heading.spreadRatio;
+const WORD_DURATION = CASCADE_END - WORD_SPREAD;
 
 /** 10 Workflow — the five steps every build runs through, as a pinned rail
  *  (owner reference `reference/workflow-reference.mp4`).
@@ -132,7 +146,6 @@ export function WorkflowSection() {
       if (rail) gsap.set(rail, { opacity: 0 });
 
       const H = WORKFLOW.heading;
-      const cascadeEnd = H.wordSpread + H.wordDuration;
 
       const introTl = gsap.timeline({ paused: true });
       introTl.to(
@@ -140,29 +153,31 @@ export function WorkflowSection() {
         {
           opacity: 1,
           filter: "blur(0px)",
-          duration: H.wordDuration,
-          // `stagger.amount`, NOT a per-word number. A per-word stagger makes
-          // the cascade length depend on the word count, which silently resized
-          // this timeline past 1.0 and desynced every absolute position below
-          // it — the rail faded in over a half-revealed statement. `amount`
-          // spreads the starts across a fixed window, so re-voicing
-          // WORKFLOW_STATEMENT can never re-break the timing.
-          stagger: { amount: H.wordSpread },
+          duration: WORD_DURATION,
+          // `stagger.amount`, NOT a per-word number — see the tunables' note.
+          // `amount` spreads the starts across a fixed window, so the cascade's
+          // length never depends on how many words the statement has.
+          stagger: { amount: WORD_SPREAD },
           ease: "none",
         },
         0,
       );
       // Blur is finite: drop the filter entirely once the cascade has landed,
       // so a display-scale heading isn't left on a filtered layer.
-      introTl.set(words, { filter: "none" }, cascadeEnd);
+      introTl.set(words, { filter: "none" }, CASCADE_END);
+      // CASCADE_END → HANDOFF_AT is the READ BEAT — deliberately empty. Nothing
+      // is scheduled across it, which is exactly what makes it a hold: the
+      // statement sits fully revealed and the rail sits at zero for `readVh` of
+      // scroll (~1s at a normal scroll rate). Lengthen it with `pin.readVh`
+      // alone; every position here is derived, so nothing else moves.
       if (intro) {
         introTl.to(
           intro,
-          { opacity: 0, filter: `blur(${H.blurFrom + 2}px)`, duration: H.handoffDuration, ease: "none" },
-          H.handoffAt,
+          { opacity: 0, filter: `blur(${H.blurFrom + 2}px)`, duration: HANDOFF_DUR, ease: "none" },
+          HANDOFF_AT,
         );
       }
-      if (rail) introTl.to(rail, { opacity: 1, duration: H.handoffDuration, ease: "none" }, H.handoffAt);
+      if (rail) introTl.to(rail, { opacity: 1, duration: HANDOFF_DUR, ease: "none" }, HANDOFF_AT);
 
       // The progress mapping below assumes a 1.0-long timeline. Fail loudly in
       // dev rather than shipping another silent desync.

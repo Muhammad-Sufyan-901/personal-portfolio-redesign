@@ -130,3 +130,32 @@ moment a second positioned tween is added. Fix it there in the same commit if yo
 Related sizing rule from the same pass: `pin.headVh` must cover the cascade **plus** a read beat.
 Workflow's cascade ends at 60% of the head beat and the remaining 40% is where the statement sits
 legible; at the original 0.6vh that read beat was under a quarter-viewport of scroll (now 0.8vh).
+
+### "Add an N-second delay" inside a SCRUBBED chapter (2026-08-26, ch.10)
+
+Owner asks of this shape arrive regularly and the literal reading is always wrong here. A scrubbed
+timeline has no wall clock — `progress()` is a pure function of scroll position. A real timed hold
+can only be built by freezing the page (scrolling visibly does nothing → reads as broken) or by
+letting the pin advance while the content stays hidden (the content then surfaces already
+mid-travel). **The correct translation is a hold measured in scroll distance**, i.e. an empty
+stretch of timeline the visitor crosses in about that long at a normal scroll rate.
+
+Working conversion, used for ch.10's read beat: **~600 px/s** is a fair normal-reading scroll rate
+for a wheel or trackpad, so `0.7vh` ≈ 630px @900 ≈ **1.05s**. State the rate assumption when you
+quote a duration — it is the soft part, not the implementation.
+
+**Structural lesson, more important than the number.** Don't hand-write timeline positions as
+literals when they encode phases. Split the beat into named vh tunables and DERIVE every position
+as a share of their sum:
+
+```ts
+const HEAD_VH = P.cascadeVh + P.readVh + P.handoffVh;
+const CASCADE_END = P.cascadeVh / HEAD_VH;
+const HANDOFF_AT  = (P.cascadeVh + P.readVh) / HEAD_VH;
+const HANDOFF_DUR = P.handoffVh / HEAD_VH;   // the three sum to 1 BY CONSTRUCTION
+```
+
+The hold is then literally **empty timeline** between `CASCADE_END` and `HANDOFF_AT` — nothing
+scheduled across it, which is what makes it a hold and not a slow tween. This is also the permanent
+fix for the desync class documented above: with derived positions, retuning one phase cannot
+silently move another. ch.10 shipped that bug once with hand-written `0.55`/`0.68` literals.

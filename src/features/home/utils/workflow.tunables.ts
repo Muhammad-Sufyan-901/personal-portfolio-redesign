@@ -25,16 +25,40 @@ export const WORKFLOW = {
    *  come to rest to be read. 4.5 leaves a visible float after the wheel stops. */
   damp: 5,
 
+  /** The opening beat, split into its three real phases instead of one
+   *  `headVh`. Splitting it is what lets the READ BEAT be tuned on its own —
+   *  the whole point of the 2026-08-26 owner ask. Units are viewport heights;
+   *  `HEAD_VH` is their sum and the section derives every `introTl` position
+   *  from these three, so they can never drift out of proportion.
+   *
+   *  WHY SCROLL DISTANCE AND NOT SECONDS. The owner asked for "1 second after
+   *  the title finishes, then the rail". This chapter's entrance is SCRUBBED —
+   *  its progress is a pure function of scroll position, so there is no wall
+   *  clock in it to delay against. A real timed hold would have to either (a)
+   *  freeze the page for a second, which reads as a broken scroll, or (b) let
+   *  the pin keep advancing while the rail stays hidden, in which case the rail
+   *  surfaces already mid-travel at step 2. The honest equivalent is a hold
+   *  measured in scroll: a stretch the visitor crosses in roughly a second at a
+   *  normal scroll rate, during which the statement is fully legible and
+   *  nothing moves. That is `readVh`. */
   pin: {
-    /** Opening beat, in viewport heights: the playhead is held on step 1 while
-     *  the intro card (eyebrow + statement + lede) blurs away and the rail
-     *  fades up. Without it the chapter has no entrance — at progress 0 the
-     *  rail would already be settled. 0.6 is two comfortable wheel flicks at
-     *  Lenis `lerp 0.09`, enough to read the statement before it goes. */
-    headVh: 0.8,
+    /** Statement cascade — the words de-veil across this. */
+    cascadeVh: 0.4,
+    /** THE READ BEAT. Statement fully revealed, unblurred, nothing moving, rail
+     *  still at zero. 0.7 viewport ≈ 630px at a 900px viewport; at the ~600px/s
+     *  a trackpad or wheel produces at a normal reading scroll that is ≈1.0s,
+     *  which is the owner's ask expressed in the only unit a scrub has.
+     *  It was effectively 0.06 viewport (~58px, under one wheel notch) before —
+     *  which is why it read as no pause at all.
+     *  THIS IS THE DIAL: raise it for a longer hold, lower it for a shorter
+     *  one. Nothing else needs to move with it. */
+    readVh: 0.7,
+    /** Intro blurs out, rail fades in. */
+    handoffVh: 0.35,
     /** Scroll cost of ONE step-to-step transition. Four transitions → 3.0vh;
-     *  total pin 3.95vh, between Gallery's 3.4 and the Manifesto's 5.2. Below
-     *  ~0.6 the titles strobe past unread; above ~0.9 the rail feels stuck. */
+     *  total pin now 4.80vh (1.45 head + 3.0 travel + 0.35 tail), still under
+     *  the Manifesto's 5.2. Below ~0.6 the titles strobe past unread; above
+     *  ~0.9 the rail feels stuck. */
     perStepVh: 0.75,
     /** Rest beat on step 5 before the section unpins, so the last step is not
      *  snatched away mid-read. Shorter than Articles' 0.45 because the payload
@@ -100,31 +124,25 @@ export const WORKFLOW = {
    *  of those frames. Re-measure on Safari before going past ~10. */
   blurPx: 8,
 
-  /** Statement de-veil, then the handoff to the rail. All four numbers are
-   *  positions/durations on ONE paused timeline whose total is exactly 1.0, so
-   *  `introTl.progress(p / HEAD_FRAC)` maps straight onto the opening beat.
+  /** The statement cascade's internal split. Every ABSOLUTE position on
+   *  `introTl` is now derived from `pin.cascadeVh` / `readVh` / `handoffVh`
+   *  (see the section), so the timeline is exactly 1.0 long by construction and
+   *  retuning the read beat cannot desync the handoff.
    *
-   *  KEEPING THE TOTAL AT 1.0 IS THE WHOLE CONTRACT, and it is easy to break.
-   *  The first build used Articles' per-word `stagger: 0.09` with
-   *  `duration: 0.5`; at 19 words that is a 2.12s cascade, GSAP sized the
-   *  timeline to its longest child, and the handoff placed at "0.55" landed at
-   *  26% of a 2.12s timeline instead of 55% of a 1.0s one — so the rail faded
-   *  in over a statement that was still less than half revealed (owner bug
-   *  report 2026-08-26, screenshot). `stagger.amount` is the fix: it spreads
-   *  the starts across a FIXED window no matter how many words there are, so
-   *  re-voicing `WORKFLOW_STATEMENT` can never re-break the timing.
-   *
-   *  Invariant to preserve: `wordSpread + wordDuration <= handoffAt` and
-   *  `handoffAt + handoffDuration === 1`. */
+   *  THE TRAP THIS REPLACED, because it cost a shipped bug: the first build
+   *  used Articles' PER-WORD `stagger: 0.09` with `duration: 0.5`. At 19 words
+   *  that is a 2.12s cascade; GSAP sizes a timeline to its longest child, so
+   *  the handoff written at "0.55" landed at 26% of a 2.12s timeline instead of
+   *  55% of a 1.0s one, and the rail faded in over a half-revealed statement
+   *  (owner bug report 2026-08-26). `stagger.amount` spreads the word STARTS
+   *  across a fixed window no matter how many words there are, so re-voicing
+   *  `WORKFLOW_STATEMENT` can never re-break the timing. Never reintroduce a
+   *  per-word stagger in a timeline that has absolutely-positioned children. */
   heading: {
-    /** total spread of the word starts (NOT per-word) */
-    wordSpread: 0.38,
-    /** per-word de-veil duration → cascade ends at 0.60 */
-    wordDuration: 0.22,
-    /** ...then 0.08 of read beat before anything moves */
-    handoffAt: 0.68,
-    /** intro blurs out / rail fades in, landing exactly on 1.0 */
-    handoffDuration: 0.32,
+    /** Share of the cascade spent spreading word starts; the remainder is each
+     *  word's own de-veil duration. 0.63/0.37 keeps the last word's reveal
+     *  landing exactly on the cascade's end. */
+    spreadRatio: 0.63,
     blurFrom: 6,
   },
 } as const;
