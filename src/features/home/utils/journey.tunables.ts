@@ -11,8 +11,7 @@
  *  finale runway (mirrors 04 Projects' path handoff). Each card's arrival
  *  side scrub-slides in from its OUTER edge (right cards from +x, left
  *  cards from −x) — damped via GSAP numeric scrub, so cards freeze
- *  mid-flight and retrace exactly while the undamped line leads. Awards are
- *  compact hover-invert moments between sweeps. */
+ *  mid-flight and retrace exactly while the undamped line leads. */
 export const JOURNEY = {
   /** Gallery-clone statement de-veil (owner overdrive 2026-07-22): centered
    *  serif-lead h2, words blur→clear on a scrubbed window (section not
@@ -97,7 +96,5 @@ export const JOURNEY = {
     scrub: 1.2,
     /** card slide-in distance from its outer edge, px */
     x: 120,
-    /** award moments rise instead of sliding */
-    awardY: 24,
   },
 } as const;

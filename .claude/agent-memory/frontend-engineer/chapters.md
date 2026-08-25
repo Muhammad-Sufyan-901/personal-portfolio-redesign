@@ -71,3 +71,27 @@ Three bands inside `flex min-h-svh flex-col overflow-hidden px-page-x pt-section
 **Owed asset:** `public/assets/images/hands.png` (owner-supplied, wide ~3:1, light subject on transparency — `asciify` maps `alpha === 0` straight to a space). Until it lands the field renders nothing and the gap stays.
 
 Skip-to-content link (hero audit F7, deferred to "footer polish") landed with this chapter in `RootLayout.tsx` — `sr-only focus:not-sr-only`, `focus:z-70` between the z-60 chrome and the z-80 SiteMenu.
+
+## 09 Achievements (2026-08-25)
+
+`sections/AchievementsSection.tsx` + `data/achievements.data.ts` + `utils/achievements.tunables.ts`. Mounted between Journey and Articles; eyebrow `09 — RECOGNITION` (Articles renumbered to 10, Contact to 11).
+
+**Why it exists:** PRD §3.5's three awards used to be ember hover-pills inside 08 Journey behind a Radix HoverCard whose whole body was PLACEHOLDER — §3.5 is title/issuer/date only. Owner reference `reference/achievement-refine.mp4` (lukebaffait.fr's "Awards & Misc") is a flat table needing exactly three facts, so the extraction **deleted** the six placeholder strings rather than moving them.
+
+**Type:** `Achievement { title; org; period }` in `types/portfolio.ts` — deliberately three fields. Don't add an optional description without adding it to PRD §3.5 first; that is exactly how the old hover panel filled up with placeholders. `JourneyKind` is now `"work" | "education"` (narrowing it is what surfaces any stray award consumer as a compile error).
+
+**Heading is a STATEMENT, not the word "Achievements"** (owner asks 2026-08-25, two rounds). `font-display-lead text-statement max-w-[30ch]` — the same pair `.journey-statement` uses, so the two chapters' h2s are pixel-identical (Switzer 400). Copy lives in `ACHIEVEMENTS_STATEMENT` in `achievements.data.ts` (ARTICLES_STATEMENT precedent — chapter-owned statements live beside the data they frame; only person-level ones go in `profile.data.ts`), split at module scope into word spans with `font-display-tail italic` focals. The eyebrow carries the section name. Don't "restore" `text-item` or the bare title here.
+
+**No blur de-veil on this statement** — Journey/Gallery/Articles all scrub `.xxx-word` blur→clear, this one deliberately doesn't: the row wipe already owns the viewport's reveal. Deliberate, not an omission.
+
+**Row grammar:** `Box as="ul"` with `border-t`, each `li` `border-b`, `grid-cols-[2.5rem_1fr]` → `md:grid-cols-[3.5rem_1fr_1.4fr_auto]`, `px-4 py-8`. `px-4` is the reference's inset — its rows run the full page gutter but the first/last cells sit 16px inside the fill edge. Cells: `pad2` index (`font-mono text-index`), org, title (`md:text-center`), period (`md:text-right`). Row lands ~91px, reference is 94 at 1920.
+
+**The fill is one `mix-blend-difference` layer, not a duplicated clipped row** — invert-bg over ink stays a light panel, over paper collapses to near-ink, so the text flips *mid-glyph* at the bar's moving edge (which is what the reference does). Two constraints fall out and are load-bearing:
+- section root needs **`isolate`** — the blend must resolve against this section's own `bg-ink`, not the page;
+- **no coloured text may sit under the bar** — `accent-deep` differences to cyan. The ember hover tick is a sibling rendered AFTER the bar, outside the blend.
+
+**`--color-invert-bg` now has two consumers** (Contact's circle wipe + these rows). The "reserved for Contact" note in older docs is dead.
+
+**Deleted with this chapter:** `components/ui/hover-card.tsx` (Journey's award pill was its only call site — `npx shadcn add hover-card` restores it), `--animate-hover-card` + both `hover-card-in` keyframe blocks, `JOURNEY.reveal.awardY`, and Journey's `cardOrdinal` (every row is a card now, so the ordinal IS the index).
+
+**Repo gotcha found here:** bare `npx tsc --noEmit` is a **NO-OP** — root `tsconfig.json` is solution-style (`files: []`). Use `npx tsc --noEmit -p tsconfig.app.json` or `npm run build`. CLAUDE.md's Commands section still lists the bare form.

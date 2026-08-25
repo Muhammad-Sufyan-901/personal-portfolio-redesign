@@ -1,7 +1,7 @@
 import type { JourneyItem } from "@/types/portfolio";
 
-/** PRD §3.3 (work) + §3.4 (education) + §3.5 (awards) merged into one
- *  timeline, most recent first (chapter 05 Journey). Facts verbatim.
+/** PRD §3.3 (work) + §3.4 (education) merged into one timeline, most recent
+ *  first (chapter 08 Journey). Facts verbatim.
  *
  *  `summary` = the card's OVERVIEW line, `highlights` = the list below it.
  *  Both are re-voicings of PRD facts, never new ones — the overviews sit a
@@ -11,10 +11,10 @@ import type { JourneyItem } from "@/types/portfolio";
  *  derivable from PRD dates/employer/type; the specifics stay in the
  *  bullets. Same precedent as the education summaries below (2026-07-22).
  *
- *  Awards carry the same two fields as of 2026-07-25 — they feed the hover
- *  panel on the award pill (chapter 08). Unlike work/education there is no
- *  PRD text to re-voice (§3.5 is title/issuer/date only), so all three are
- *  PLACEHOLDER until the owner supplies the real accounts. */
+ *  Awards (§3.5) left this file on 2026-08-25 — they are their own chapter
+ *  now, `achievements.data.ts` / 09 Achievements. Their `summary`/`highlights`
+ *  went with them: §3.5 is title/issuer/date only, so those six strings were
+ *  PLACEHOLDER from the day they were added and the flat table needs neither. */
 export const journey: JourneyItem[] = [
   {
     kind: "work",
@@ -51,22 +51,6 @@ export const journey: JourneyItem[] = [
       "Worked across the stack — Bootstrap fronts over MySQL data behind Laravel",
     ],
     stack: ["Laravel", "Bootstrap", "MySQL", "PHP"],
-  },
-  {
-    kind: "award",
-    title: "5th Winner, Web Design Competition",
-    org: "UNBI University",
-    period: "Sep 2023",
-    // PLACEHOLDER — owner to replace (added 2026-07-25 for the award hover
-    // panel). PRD §3.5 carries title/issuer/date ONLY, so NOTHING below is
-    // transcribed — it is shaped copy holding the slot open. Swap 1:1 with the
-    // real account, and add it to PRD §3.5 first so this file goes back to
-    // transcription-only. Same convention as the education highlights below.
-    summary: "PLACEHOLDER — one or two lines on what the competition brief was and what was built for it.",
-    highlights: [
-      "PLACEHOLDER — the brief, and what the entry had to do",
-      "PLACEHOLDER — what the placing was judged against",
-    ],
   },
   {
     kind: "education",
@@ -106,18 +90,6 @@ export const journey: JourneyItem[] = [
     ],
   },
   {
-    kind: "award",
-    title: "Completed ZettaCamp Frontend Bootcamp",
-    org: "ZettaByte Pte Ltd",
-    period: "Apr 2022",
-    // PLACEHOLDER — owner to replace (see the note on the UNBI award above).
-    summary: "PLACEHOLDER — one or two lines on what the bootcamp covered and what came out of it.",
-    highlights: [
-      "PLACEHOLDER — what the programme taught, week to week",
-      "PLACEHOLDER — what had to be shipped to complete it",
-    ],
-  },
-  {
     kind: "work",
     title: "Frontend Developer",
     org: "ZettaByte Pte Ltd",
@@ -147,17 +119,5 @@ export const journey: JourneyItem[] = [
       "Tracked issues in Jira and kept the test documentation in Docs",
     ],
     stack: ["Jira", "Docs"],
-  },
-  {
-    kind: "award",
-    title: "Completed ZettaCamp Angular Bootcamp",
-    org: "ZettaByte Pte Ltd",
-    period: "Jan 2022",
-    // PLACEHOLDER — owner to replace (see the note on the UNBI award above).
-    summary: "PLACEHOLDER — one or two lines on what the Angular track covered and what came out of it.",
-    highlights: [
-      "PLACEHOLDER — what the programme taught, week to week",
-      "PLACEHOLDER — what had to be shipped to complete it",
-    ],
   },
 ];

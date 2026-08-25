@@ -58,7 +58,9 @@ export interface Article {
   readingTime?: string;
 }
 
-export type JourneyKind = "work" | "education" | "award";
+/** Awards left this union on 2026-08-25 — PRD §3.5 is its own chapter now
+ *  (`achievements.data.ts` / 09 Achievements). */
+export type JourneyKind = "work" | "education";
 
 export interface JourneyItem {
   kind: JourneyKind;
@@ -72,6 +74,17 @@ export interface JourneyItem {
    *  overdrive 2026-07-22); never new facts. */
   highlights?: string[];
   stack?: TechStack[];
+}
+
+/** PRD §3.5 recognition. Three facts is the whole contract — the §3.5 source
+ *  carries title/issuer/date and nothing else, and 09 Achievements is a flat
+ *  table built for exactly that. Adding an optional description here without
+ *  adding it to the PRD first is how the old award hover panel ended up full
+ *  of PLACEHOLDER strings. */
+export interface Achievement {
+  title: string;
+  org: string;
+  period: string;
 }
 
 export interface ProfileStat {

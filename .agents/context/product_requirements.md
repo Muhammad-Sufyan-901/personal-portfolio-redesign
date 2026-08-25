@@ -106,7 +106,8 @@ The homepage is one vertical story of numbered chapters (see `design_system.md �
 - **01 · Hero (Intro)** — name + one-line tagline + role ("Software Engineer · Web & Mobile") + scroll cue. Maps from old **Home**.
 - **02 · Manifesto (Who I am)** — the bio (§2), scroll-filled word by word. Maps from old **About**.
 - **03 · Craft (What I do)** — two pillars **Web** & **Mobile** (§3.1) as editorial blocks + skills marquee. Maps from old **Skills**.
-- **04 · Journey (The Path)** — **Experience (§3.3) + Education (§3.4) + Awards (§3.5)** merged into one scrubbed timeline, most recent first. Maps from old **Experiences + Educations**.
+- **04 · Journey (The Path)** — **Experience (§3.3) + Education (§3.4)** merged into one scrubbed timeline, most recent first. Maps from old **Experiences + Educations**.
+- **Achievements (Recognition)** — **Awards (§3.5)** as a flat recognition table directly under Journey (extracted 2026-08-25; §3.5 is title/issuer/date only, which is exactly what the table shows).
 - **05 · Selected Work** — featured **Projects (§3.6)** with clip-path reveals + parallax + hover. Maps from old **Portfolio**.
 - **06 · Contact (Let's talk)** — big line + magnetic CTA + EmailJS form + socials (§3.7). Maps from old **Contact**.
 - **Footer** — giant name marquee + copyright.

@@ -65,3 +65,16 @@
 - 2026-07-07: `LenisContext` export in SmoothScrollProvider carries an eslint-disable for `react-refresh/only-export-components` (context must live with its owner).
 - Known gap (deliberate): native `cursor: pointer` still shows over links while custom cursor is active; add a scoped `* { cursor: none }` in QA if it bothers.
 - design_system v2 authoritative — accent ember `#E8380F` live. Aurora SHIPPED, PathDraw BUILT (wires in at 04→05). Footer ornament converge is DEAD — 2026-08-14 the owner's reference/footer-refine.mp4 replaced it with the ASCII hands field. Borrowed components via `.agents/skills/animated-ui-references` — never install framer-motion.
+
+## 09 Achievements row wipe (2026-08-25) — `sections/AchievementsSection.tsx` + `ACHIEVEMENTS` tunables
+
+The repo's first **per-row-trigger** chapter, and the counter-example to the pin + exp-damp engine: no pin, no scrub, no ticker. Each row owns `ScrollTrigger.create({ trigger: row, start: "top 88%", end: "top 22%", animation: tl, toggleActions: "play reverse play reverse" })` over a paused 2-tween timeline (`.ach-fill` `scaleX 0→1` origin-left + `.ach-text` opacity `0.6→1` at `"<"`).
+
+- **The stagger is emergent, not authored.** Rows are ~91px apart, so each crosses its own trigger line in sequence — that IS the reference's top-down wave. Don't add `stagger` on top of it.
+- **`"play reverse play reverse"` is the whole reverse behaviour** the reference shows (row empties once its top passes `end`, refills on scroll-back). Owner picked it over fill-once, 2026-08-25.
+- **Settled state is the FILLED row**, so markup renders filled and the motion branch sets the idle state (`gsap.set` scaleX 0 / opacity .6). Same rule as Articles' words: never hide in CSS. Reduced motion therefore falls through to a readable static light table with zero extra branches.
+- Returns `() => triggers.forEach(t => t.kill())` from the useGSAP callback; `revertOnUpdate: true` as always.
+
+**GOTCHA — `mix-blend-difference` inversion:** the fill is one blend layer ABOVE the text (difference blends against its *backdrop*, so the text must be underneath), and the section root carries `isolate` so it resolves against that section's `bg-ink` rather than the page. Consequence: **only neutral text can sit under the bar** — `accent-deep` comes back cyan. Anything coloured (the ember hover tick) renders as a sibling AFTER the bar. Documented fallback if compositing ever misbehaves: `clip-path: inset(0 100% 0 0)` on an `aria-hidden` ink copy of the row.
+
+Journey (08) lost its award pills in the same change — every `.journey-row` now carries `data-side`, so the reveal tween's `side ? … : …` guards are gone and `JOURNEY.reveal.awardY` is deleted.

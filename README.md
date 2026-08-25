@@ -19,7 +19,8 @@ The page reads as a single vertical narrative, built one chapter at a time (each
 | 02 | **Manifesto** | WebGL MacBook scroll story (R3F island, DRACO-compressed GLB) — center-born entry, zoom-slide slow expansion, statement with ember focal word, seam blend into About | ✅ built |
 | 03 | **About** | persona statement with italic focal phrases, staged bio reveals, odometer ignition stat cards in glass chrome (Instrument Serif numerals), CV blur reveal, ember-duotone portrait with glare hover | ✅ built |
 | 04 | **Project/Craft** | Web/Mobile pillars + keyword marquee + hover-swap index of all 6 projects | ⏳ next |
-| 05 | **Journey** | one timeline merging work experience, education, and awards (9 items) | ⏳ pending |
+| 05 | **Journey** | one timeline merging work experience and education (6 items) | ⏳ pending |
+| 09 | **Achievements** | flat recognition table, awards extracted from Journey 2026-08-25 (3 items) | ⏳ pending |
 | 06 | **Skills** | positioning statement + scroll-driven category accordion (21 skills) | ⏳ pending |
 | 07 | **Gallery** | the 5 featured projects as WorkCards (clip reveals, parallax) | ⏳ pending |
 | 08 | **Contact** | the light-invert section — magnetic CTA + EmailJS form (WhatsApp · Gmail · Telegram) | ⏳ pending |

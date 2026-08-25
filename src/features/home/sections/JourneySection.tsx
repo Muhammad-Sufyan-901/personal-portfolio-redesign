@@ -1,8 +1,7 @@
 import { Fragment, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { Award, Briefcase, GraduationCap } from "lucide-react";
+import { Briefcase, GraduationCap } from "lucide-react";
 import { Box, ChapterEyebrow, PathDraw } from "@/components/common";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { gsap } from "@/lib/gsap";
@@ -12,10 +11,6 @@ import { profile } from "@/features/home/data/profile.data";
 import { JOURNEY } from "@/features/home/utils/journey.tunables";
 import { TECH_ICONS } from "@/features/home/utils/tech-icons";
 import { buildZigzagPath, type ZigzagTip } from "@/features/home/utils/path";
-
-/** Card ordinal per journey index (awards excluded) — decides which side a
- *  card's sweep arrives at. Module-scope: `journey` is a static constant. */
-const cardOrdinal = journey.map((_, i) => journey.slice(0, i).filter((j) => j.kind !== "award").length);
 
 /** Rim fade (owner ask 2026-07-24): solid brown across the bottom + both
  *  corners, easing to a faint warm hairline that carries the rest of the
@@ -37,9 +32,10 @@ const isFocalWord = (word: string) => STATEMENT.focalWords.includes(word.replace
 /** 08 Journey — intro statement, then a THICK serpentine ember line (the 04
  *  thread weight) drawing itself down the runway while work/education cards
  *  scrub-slide in on the side each sweep arrives at (zigzag conveyor, owner
- *  overdrive 2026-07-22). Awards ride between sweeps as compact
- *  hover-invert moments. Fully scrubbed: everything freezes mid-flight and
- *  retraces with scroll. */
+ *  overdrive 2026-07-22). Fully scrubbed: everything freezes mid-flight and
+ *  retraces with scroll.
+ *
+ *  Awards left this chapter on 2026-08-25 — they are 09 Achievements now. */
 export function JourneySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const lineLayerRef = useRef<HTMLDivElement>(null);
@@ -114,8 +110,7 @@ export function JourneySection() {
         if (!target) return;
         gsap.from(target, {
           autoAlpha: 0,
-          x: side ? (side === "left" ? -JOURNEY.reveal.x : JOURNEY.reveal.x) : 0,
-          y: side ? 0 : JOURNEY.reveal.awardY,
+          x: side === "left" ? -JOURNEY.reveal.x : JOURNEY.reveal.x,
           ease: "none",
           scrollTrigger: {
             trigger: row,
@@ -236,119 +231,9 @@ export function JourneySection() {
           className="relative z-10 flex flex-col"
         >
           {journey.map((item, index) => {
-            if (item.kind === "award") {
-              return (
-                <Box
-                  as="li"
-                  key={`${item.title}-${item.period}`}
-                  className="journey-row flex justify-center py-10"
-                >
-                  {/* The pill keeps its hover-invert micro-echo (design_system
-                      §450) and gains a panel explaining the achievement (owner
-                      ask 2026-07-25). `tabIndex` is load-bearing: Radix
-                      HoverCard opens on FOCUS as well as hover, so one
-                      attribute buys keyboard access AND touch access (a tap
-                      focuses) for an otherwise pointer-only primitive — and it
-                      gives the pill the keyboard affordance it never had.
-
-                      Hover = FULL EMBER (owner ask 2026-07-25), replacing the
-                      near-white `invert-bg` echo; `--color-invert-*` now has no
-                      consumer in src/ and is reserved for 08 Contact. Two knock-
-                      ons that are load-bearing, not polish: the ember dot must
-                      flip to ink or it dissolves into its own pill, and
-                      `ring-ink` does for the pill exactly what it does for the
-                      card's connector node above — an ember pill sits ON the
-                      ember zigzag (this `<ul>` is z-10 over the line layer), so
-                      without an ink gap the two fuse where the stroke crosses.
-                      The ring is transparent at rest so only its colour
-                      transitions, and it is invisible against the ink page. */}
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Box
-                        tabIndex={0}
-                        className="journey-reveal group border-line bg-surface hover:bg-accent hover:border-accent hover:text-ink hover:ring-ink text-paper flex items-center gap-3 rounded-full border px-5 py-2.5 ring-[3px] ring-transparent transition-colors"
-                      >
-                        {/* The dot inverts to ink on hover — it is ember at
-                            rest, so on the ember pill it would otherwise
-                            dissolve into its own background. */}
-                        <Box
-                          aria-hidden
-                          className="bg-accent group-hover:bg-ink size-2.5 shrink-0 rounded-full transition-colors"
-                        />
-                        <Box
-                          as="span"
-                          className="text-body font-medium"
-                        >
-                          {item.title}
-                        </Box>
-                        {/* Full ink on hover, not the old `/70`: ink at 70% over
-                            ember lands ~3.5:1, under AA for 12px text. The
-                            hierarchy is already carried by the mono/uppercase/
-                            size shift, so the opacity was buying nothing. */}
-                        <Box
-                          as="span"
-                          className="font-mono text-meta text-muted group-hover:text-ink uppercase transition-colors"
-                        >
-                          {item.org} · {item.period}
-                        </Box>
-                      </Box>
-                    </HoverCardTrigger>
-                    {/* A shrunken sibling of the journey card — same icon
-                        badge, same type ramp, same ember halo at lower spread.
-                        Portalled by the primitive, so the section's
-                        overflow-x-clip can't crop it. */}
-                    <HoverCardContent
-                      side="top"
-                      className="shadow-[0_-6px_36px_4px_var(--color-ember-glow-soft),0_0_12px_1px_var(--color-ember-glow-deep)]"
-                    >
-                      <Box className="border-line bg-raised mb-4 inline-flex size-9 items-center justify-center rounded-full border">
-                        <Award
-                          aria-hidden
-                          className="text-accent size-4"
-                        />
-                      </Box>
-                      <Box
-                        as="h3"
-                        className="text-body text-paper font-sans font-semibold leading-tight"
-                      >
-                        {item.title}
-                      </Box>
-                      <Box
-                        as="p"
-                        className="font-mono text-meta text-muted mt-1.5 uppercase"
-                      >
-                        {item.org} · {item.period}
-                      </Box>
-                      {item.summary && (
-                        <Box
-                          as="p"
-                          className="border-line text-body text-muted mt-4 border-t pt-4"
-                        >
-                          {item.summary}
-                        </Box>
-                      )}
-                      {item.highlights && (
-                        <Box
-                          as="ul"
-                          className="text-body text-muted marker:text-accent mt-3 grid list-disc gap-1.5 pl-4"
-                        >
-                          {item.highlights.map((line) => (
-                            <Box
-                              as="li"
-                              key={line}
-                            >
-                              {line}
-                            </Box>
-                          ))}
-                        </Box>
-                      )}
-                    </HoverCardContent>
-                  </HoverCard>
-                </Box>
-              );
-            }
-
-            const side = cardOrdinal[index] % 2 === 0 ? "right" : "left";
+            // Every row is a card since the awards left (2026-08-25), so the card
+            // ordinal IS the index — the alternation reads straight off it.
+            const side = index % 2 === 0 ? "right" : "left";
             return (
               <Box
                 as="li"

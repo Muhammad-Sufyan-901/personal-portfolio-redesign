@@ -8,4 +8,4 @@
 - Preserve real URLs (live/repo/social) verbatim.
 - Transcribe content into typed constants checked against `src/types/portfolio.ts` — as built they live in `features/home/data/*.data.ts` + `src/constants/projects.data.ts`.
 
-**Why this matters here:** the full dataset is already transcribed (profile, 21 skills, 9 journey items — 4 work + 2 education + 3 awards — 6 projects with real live/repo URLs, 3 contact channels). Any "improvement" that invents a metric, rounds a date, or rewrites a URL corrupts a real person's public CV; the typed contract catches shape errors but only this rule catches fabrication.
+**Why this matters here:** the full dataset is already transcribed (profile, 21 skills, 6 journey items — 4 work + 2 education — 3 achievements from §3.5, 6 projects with real live/repo URLs, 3 contact channels). Any "improvement" that invents a metric, rounds a date, or rewrites a URL corrupts a real person's public CV; the typed contract catches shape errors but only this rule catches fabrication.

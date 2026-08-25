@@ -23,7 +23,7 @@ A plan is done when it names, per chapter: data source (verify-only vs delta), l
 ## Project-specific pitfalls
 
 - **Planning is whole-site; building is one section per approval gate** — never let a plan authorize more than one unbuilt chapter without a stop (`workflows/section.md`).
-- **Data reuse over re-transcription**: the 21 skills / 9 journey items / 6 projects / 3 channels are typed constants already; a plan step is "verify data" not "create data".
+- **Data reuse over re-transcription**: the 21 skills / 6 journey items / 3 achievements / 6 projects / 3 channels are typed constants already; a plan step is "verify data" not "create data".
 - **Check as-built deltas before re-planning a shipped chapter** — chapters 00–03 each have as-built notes in PLAN §1/§3 and `logs/feature-changes/`; the reset-era history (`fe849ff`…`b245c1e`) describes deleted code.
 
 ## Hard Rules

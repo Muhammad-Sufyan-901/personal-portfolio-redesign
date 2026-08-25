@@ -7,7 +7,7 @@
 **10 chapters:** `00 Preloader ✅ · 01 Hero ✅ · 02 Manifesto · 03 About · 04 Project/Craft · 05 Journey · 06 Skills · 07 Gallery · 08 Contact · Footer` — supersedes design_system §11's 7-chapter order; matches the reference's real 10-beat arc (REFERENCE-NOTES).
 
 - **Project/Craft ↔ Gallery boundary** (two treatments of ONE dataset, reference beats 5/6): **04 = the approach chapter** — Web/Mobile pillar blocks + titled **index of all 6 projects** (hover-swap-preview list) + keyword marquee. **07 = the visual showcase** — the `featured` 5 as WorkCards (clip reveals, parallax, links). The list tells *what I do*; the gallery shows *what I made*. One `projects` constant, two render modes.
-- **Invert section: 08 Contact** (what the reference actually does — white section, huge heading, socials); Journey's awards keep hover-invert rows as a micro-echo.
+- **Invert section: 08 Contact** (what the reference actually does — white section, huge heading, socials). A SECOND light surface landed 2026-08-25: 09 Achievements' filled rows, which is also what the reference does (its awards list is its light-invert moment, `design_system.md §63`).
 - **Manifesto (02) vs About (03):** 02 = the emotional scroll-fill statement (`profile.manifesto`); 03 = the factual persona block (statement + portrait + bio + stats 3·7·10 + CV link, reference beat 4).
 
 ## 1. Foundation + chapters 00–01 — SHIPPED ✅
@@ -52,8 +52,8 @@ Every remaining chapter carries these forward; deviations need a reason at its g
 
 ### 05 Journey — `id="journey"`, eyebrow `05 — THE PATH`
 
-- **Layout:** ONE merged vertical timeline, the 9 `journey` items most-recent-first (4 work · 2 education · 3 awards — **awards not dropped**); each entry: title (`Box as="h3"` + `text-item` — Heading trap), org, mono period + `employmentType` chip, one-line summary, optional stack chips. Node dots: awards `bg-accent`, work/education `bg-faint` (decided pre-reset, kept).
-- **Motion:** **PathDraw bold organic rail** (the planned upgrade over the old 1 px scaleY rail; scrub `start:"top 80%" end:"bottom 60%"`); entries `autoAlpha + y` reveal, stagger 0.08; awards rows get the reference's **hover-invert micro-echo** (`hover:bg-invert-bg hover:text-invert-text`).
+- **Layout:** ONE merged vertical timeline, the 6 `journey` items most-recent-first (4 work · 2 education — the 3 awards left for 09 Achievements on 2026-08-25); each entry: title (`Box as="h3"` + `text-item` — Heading trap), org, mono period + `employmentType` chip, one-line summary, optional stack chips. Node dots: work/education `bg-faint` (decided pre-reset, kept).
+- **Motion:** **PathDraw bold organic rail** (the planned upgrade over the old 1 px scaleY rail; scrub `start:"top 80%" end:"bottom 60%"`); entries `autoAlpha + y` reveal, stagger 0.08. (The reference's hover-invert micro-echo went with the awards to 09 Achievements, where it became the full row wipe.)
 - **Data:** exists (`journey`, 9 items) — no delta.
 
 ### 06 Skills — `id="skills"`, eyebrow `06 — TOOLKIT` (reference beat 7)
@@ -89,7 +89,8 @@ Loud open (preloader curtain → aurora hero) → **quiet typographic middle** (
 |---|---|---|
 | §2 persona/bio/stats/CV | `features/home/data/profile.data.ts` | 01, 02, 03, 06 |
 | §3.1 skills (21, with levels) + §3.2 tools (6) | `features/home/data/skills.data.ts` (presentation `category`) | 04 pillars, 06 accordion |
-| §3.3 work (4) + §3.4 education (2) + §3.5 awards (3) | `features/home/data/journey.data.ts` (9 items) | 05 |
+| §3.3 work (4) + §3.4 education (2) | `features/home/data/journey.data.ts` (6 items) | 05 |
+| §3.5 awards (3) | `features/home/data/achievements.data.ts` (3 items) | 09 |
 | §3.6 projects (6) | `src/data/projects.data.ts` (`featured` flags) | 04 index (all 6), 07 gallery (featured 5) |
 | §3.7 contact (3 channels) | `features/home/data/contact.data.ts` | 08, footer |
 | §3.8 navigation | `src/constants/navigation.constant.ts` (8 anchors, already matches the chapter map) | SiteMenu, footer |
