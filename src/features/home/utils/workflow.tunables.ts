@@ -45,19 +45,21 @@ export const WORKFLOW = {
     /** Statement cascade — the words de-veil across this. */
     cascadeVh: 0.4,
     /** THE READ BEAT. Statement fully revealed, unblurred, nothing moving, rail
-     *  still at zero. 0.7 viewport ≈ 630px at a 900px viewport; at the ~600px/s
-     *  a trackpad or wheel produces at a normal reading scroll that is ≈1.0s,
-     *  which is the owner's ask expressed in the only unit a scrub has.
+     *  still at zero. 0.9 viewport ≈ 810px at a 900px viewport; at the ~600px/s
+     *  a trackpad or wheel produces at a normal reading scroll that is ≈1.35s.
+     *  Owner picked 0.9 over the original 0.7 (≈1.05s) on 2026-08-26 — the
+     *  scroll-rate assumption is the soft part of this, so the felt length is
+     *  the owner's call, not a derived number.
      *  It was effectively 0.06 viewport (~58px, under one wheel notch) before —
      *  which is why it read as no pause at all.
      *  THIS IS THE DIAL: raise it for a longer hold, lower it for a shorter
      *  one. Nothing else needs to move with it. */
-    readVh: 0.7,
+    readVh: 0.9,
     /** Intro blurs out, rail fades in. */
     handoffVh: 0.35,
     /** Scroll cost of ONE step-to-step transition. Four transitions → 3.0vh;
-     *  total pin now 4.80vh (1.45 head + 3.0 travel + 0.35 tail), still under
-     *  the Manifesto's 5.2. Below ~0.6 the titles strobe past unread; above
+     *  total pin now 5.00vh (1.65 head + 3.0 travel + 0.35 tail), just under
+     *  the Manifesto's 5.2 — the longest chapter pin on the site bar that one. Below ~0.6 the titles strobe past unread; above
      *  ~0.9 the rail feels stuck. */
     perStepVh: 0.75,
     /** Rest beat on step 5 before the section unpins, so the last step is not

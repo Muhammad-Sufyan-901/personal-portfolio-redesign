@@ -163,8 +163,15 @@ export function WorkflowSection() {
         0,
       );
       // Blur is finite: drop the filter entirely once the cascade has landed,
-      // so a display-scale heading isn't left on a filtered layer.
-      introTl.set(words, { filter: "none" }, CASCADE_END);
+      // so a display-scale heading isn't left on 19 composited filter layers
+      // for the rest of the pin.
+      // The nudge past CASCADE_END is load-bearing. Placed exactly AT it, this
+      // set collides with the end of the last staggered sub-tween, and on a
+      // forward scrub the completed tween re-asserts its own end value — the
+      // last word came back `blur(0px)` (measured). Visually identical to
+      // `none`, but it still promotes a layer, which is the whole thing this
+      // line exists to avoid. One frame's worth of offset removes the tie.
+      introTl.set(words, { filter: "none" }, CASCADE_END + 1e-3);
       // CASCADE_END → HANDOFF_AT is the READ BEAT — deliberately empty. Nothing
       // is scheduled across it, which is exactly what makes it a hold: the
       // statement sits fully revealed and the rail sits at zero for `readVh` of

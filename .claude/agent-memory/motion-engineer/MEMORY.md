@@ -159,3 +159,11 @@ The hold is then literally **empty timeline** between `CASCADE_END` and `HANDOFF
 scheduled across it, which is what makes it a hold and not a slow tween. This is also the permanent
 fix for the desync class documented above: with derived positions, retuning one phase cannot
 silently move another. ch.10 shipped that bug once with hand-written `0.55`/`0.68` literals.
+
+**GSAP tie-break gotcha (ch.10, 2026-08-26):** a zero-duration `.set()` placed at exactly the end
+of a staggered `.to()` loses on forward scrub — the completed tween re-asserts its own end value
+after the set. Symptom in ch.10: `filter: "none"` never stuck, so 19 word spans kept
+`filter: blur(0px)` (visually identical to none, but still a promoted compositing layer) for the
+rest of the pin. Offset the set by ~`1e-3` past the tween's end to break the tie. Also: when
+probing for "is it still blurred", test for a real radius (`/blur\(([\d.]+)px\)/` > 0), not
+`filter !== "none"` — the latter flags a harmless `blur(0px)` and misses nothing useful.
